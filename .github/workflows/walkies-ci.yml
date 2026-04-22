@@ -7,23 +7,74 @@ on:
     branches: [ master ]
 
 jobs:
-  build-and-test:
+  build-api-and-tests:
+    name: Build API and Tests
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 10.0.x
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
 
-    - name: Restore dependencies
-      run: dotnet restore Walkies.API/Walkies.API.csproj
+      - name: Restore Walkies.API
+        run: dotnet restore Walkies.API/Walkies.API.csproj
 
-    - name: Build API
-      run: dotnet build Walkies.API/Walkies.API.csproj --no-restore --configuration Release
+      - name: Restore Walkies.Tests
+        run: dotnet restore Walkies.Tests/Walkies.Tests.csproj
 
-    - name: Run Tests
-      run: dotnet test Walkies.Tests/Walkies.Tests.csproj --configuration Release --verbosity normal
+      - name: Build Walkies.API
+        run: dotnet build Walkies.API/Walkies.API.csproj --no-restore --configuration Release
+
+      - name: Build Walkies.Tests
+        run: dotnet build Walkies.Tests/Walkies.Tests.csproj --no-restore --configuration Release
+
+      - name: Run tests
+        run: dotnet test Walkies.Tests/Walkies.Tests.csproj --no-build --configuration Release
+
+  build-maui-android:
+    name: Build MAUI Android
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install MAUI Android workload
+        run: dotnet workload install maui-android
+
+      - name: Restore Walkies.MAUI
+        run: dotnet restore Walkies.MAUI/Walkies.MAUI.csproj
+
+      - name: Build Walkies.MAUI Android
+        run: dotnet build Walkies.MAUI/Walkies.MAUI.csproj --no-restore --configuration Release -f net10.0-android
+
+  build-maui-windows:
+    name: Build MAUI Windows
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install MAUI Windows workload
+        run: dotnet workload install maui-windows
+
+      - name: Restore Walkies.MAUI
+        run: dotnet restore Walkies.MAUI/Walkies.MAUI.csproj
+
+      - name: Build Walkies.MAUI Windows
+        run: dotnet build Walkies.MAUI/Walkies.MAUI.csproj --no-restore --configuration Release -f net10.0-windows10.0.19041.0
