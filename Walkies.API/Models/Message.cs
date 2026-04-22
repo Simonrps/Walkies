@@ -20,7 +20,7 @@ namespace Walkies.API.Models
         /// <summary>
         /// Gets or sets the user who sent the message.
         /// </summary>
-        public User Sender { get; set; }
+        public required User Sender { get; set; }
 
         /// <summary>
         /// Gets or sets the foreign key of the user who is the recipient of the message.
@@ -30,7 +30,7 @@ namespace Walkies.API.Models
         /// <summary>
         /// Gets or sets the user who is the recipient of the message.
         /// </summary>
-        public User Recipient { get; set; }
+        public required User Recipient { get; set; }
 
         /// <summary>
         /// Gets or sets the text content of the message.
