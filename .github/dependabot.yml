@@ -1,0 +1,33 @@
+version: 2
+updates:
+  # Check for NuGet package updates in Walkies.API
+  - package-ecosystem: "nuget"
+    directory: "/Walkies.API"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependabot"
+
+  # Check for NuGet package updates in Walkies.MAUI
+  - package-ecosystem: "nuget"
+    directory: "/Walkies.MAUI"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependabot"
+
+  # Check for NuGet package updates in Walkies.Tests
+  - package-ecosystem: "nuget"
+    directory: "/Walkies.Tests"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependabot"
+
+  # Check for GitHub Actions updates
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependabot"
