@@ -71,10 +71,10 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Install MAUI Windows workload
-        run: dotnet workload install maui-android maui-windows
+        run: dotnet workload install maui-windows
 
       - name: Restore Walkies.MAUI Windows only
-        run: dotnet restore Walkies.MAUI/Walkies.MAUI.csproj -p:TargetFrameworks=net10.0-windows10.0.19041.0
+        run: dotnet restore Walkies.MAUI/Walkies.MAUI.csproj -p:TargetFrameworks=net10.0-windows10.0.19041.0 -r win-x64
 
       - name: Build Walkies.MAUI Windows
-        run: dotnet build Walkies.MAUI/Walkies.MAUI.csproj --no-restore --configuration Release -f net10.0-windows10.0.19041.0
+        run: dotnet build Walkies.MAUI/Walkies.MAUI.csproj --no-restore --configuration Release -f net10.0-windows10.0.19041.0 -r win-x64 --self-contained false
