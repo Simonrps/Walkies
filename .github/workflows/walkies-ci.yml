@@ -71,7 +71,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Install MAUI Windows workload
-        run: dotnet workload install maui-windows
+        run: dotnet workload install maui-android maui-windows
 
       - name: Restore Walkies.MAUI
         run: dotnet restore Walkies.MAUI/Walkies.MAUI.csproj
