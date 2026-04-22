@@ -78,3 +78,25 @@ jobs:
 
       - name: Build Walkies.MAUI Windows
         run: dotnet build Walkies.MAUI/Walkies.MAUI.csproj --no-restore --configuration Release -f net10.0-windows10.0.19041.0 -r win-x64 --self-contained false
+
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore Walkies.API
+        run: dotnet restore Walkies.API/Walkies.API.csproj
+
+      - name: Restore Walkies.Tests
+        run: dotnet restore Walkies.Tests/Walkies.Tests.csproj
+
+      - name: Check code formatting
+        run: dotnet format Walkies.API/Walkies.API.csproj --verify-no-changes --verbosity diagnostic
