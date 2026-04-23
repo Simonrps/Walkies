@@ -2,14 +2,39 @@ name: Walkies CI
 
 on:
   push:
-    branches: [ master ]
+    branches-ignore:
+      - master
   pull_request:
     branches: [ master ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  check-branch-name:
+    name: Check Branch Name
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate branch name
+        run: |
+          BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
+          echo "Branch name: $BRANCH"
+          if [[ "$BRANCH" == "master" ]]; then
+            echo "Master branch - skipping name check"
+            exit 0
+          fi
+          if [[ ! "$BRANCH" =~ ^(feature|fix|chore|hotfix|docs|test)/.+ ]]; then
+            echo "ERROR: Branch '$BRANCH' does not follow naming convention"
+            echo "Must start with: feature/, fix/, chore/, hotfix/, docs/, or test/"
+            exit 1
+          fi
+          echo "Branch name is valid"
+
   build-api-and-tests:
     name: Build API and Tests
     runs-on: ubuntu-latest
+    needs: check-branch-name
 
     steps:
       - name: Checkout code
@@ -19,6 +44,14 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
       - name: Restore Walkies.API
         run: dotnet restore Walkies.API/Walkies.API.csproj
@@ -33,11 +66,19 @@ jobs:
         run: dotnet build Walkies.Tests/Walkies.Tests.csproj --no-restore --configuration Release
 
       - name: Run tests
-        run: dotnet test Walkies.Tests/Walkies.Tests.csproj --no-build --configuration Release
+        run: dotnet test Walkies.Tests/Walkies.Tests.csproj --no-build --configuration Release --logger trx --results-directory TestResults
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: TestResults/*.trx
 
   build-maui-android:
     name: Build MAUI Android
     runs-on: ubuntu-latest
+    needs: check-branch-name
 
     steps:
       - name: Checkout code
@@ -47,6 +88,14 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
       - name: Install MAUI Android workload
         run: dotnet workload install maui-android
@@ -60,6 +109,7 @@ jobs:
   build-maui-windows:
     name: Build MAUI Windows
     runs-on: windows-latest
+    needs: check-branch-name
 
     steps:
       - name: Checkout code
@@ -69,6 +119,14 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
       - name: Install MAUI Windows workload
         run: dotnet workload install maui-windows
@@ -82,6 +140,7 @@ jobs:
   code-quality:
     name: Code Quality
     runs-on: ubuntu-latest
+    needs: check-branch-name
 
     steps:
       - name: Checkout code
@@ -92,6 +151,14 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
       - name: Restore Walkies.API
         run: dotnet restore Walkies.API/Walkies.API.csproj
 
@@ -100,3 +167,141 @@ jobs:
 
       - name: Check code formatting
         run: dotnet format Walkies.API/Walkies.API.csproj --verify-no-changes --verbosity diagnostic
+
+  dependency-security:
+    name: Dependency Security Scan
+    runs-on: ubuntu-latest
+    needs: check-branch-name
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore Walkies.API
+        run: dotnet restore Walkies.API/Walkies.API.csproj
+
+      - name: Restore Walkies.Tests
+        run: dotnet restore Walkies.Tests/Walkies.Tests.csproj
+
+      - name: Scan for vulnerable dependencies
+        run: |
+          echo "Scanning Walkies.API for vulnerable dependencies..."
+          dotnet list Walkies.API/Walkies.API.csproj package --vulnerable --include-transitive
+          echo "Scanning Walkies.Tests for vulnerable dependencies..."
+          dotnet list Walkies.Tests/Walkies.Tests.csproj package --vulnerable --include-transitive
+
+  generate-sbom:
+    name: Generate SBOM
+    runs-on: ubuntu-latest
+    needs: build-api-and-tests
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Install CycloneDX SBOM tool
+        run: dotnet tool install --global CycloneDX
+
+      - name: Restore Walkies.API
+        run: dotnet restore Walkies.API/Walkies.API.csproj
+
+      - name: Generate SBOM for Walkies.API
+        run: dotnet CycloneDX Walkies.API/Walkies.API.csproj -o sbom -j
+
+      - name: Upload SBOM artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom/
+
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: windows-latest
+    needs: build-api-and-tests
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'zulu'
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~\sonar\cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Cache SonarCloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}\scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+
+      - name: Install SonarCloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: powershell
+        run: |
+          New-Item -Path ${{ runner.temp }}\scanner -ItemType Directory
+          dotnet tool update dotnet-sonarscanner --tool-path ${{ runner.temp }}\scanner
+
+      - name: Install MAUI Windows workload
+        shell: powershell
+        run: dotnet workload install maui-windows
+
+      - name: Restore solution
+        shell: powershell
+        run: |
+          dotnet restore Walkies.API/Walkies.API.csproj
+          dotnet restore Walkies.Tests/Walkies.Tests.csproj
+          dotnet restore Walkies.MAUI/Walkies.MAUI.csproj -p:TargetFrameworks=net10.0-windows10.0.19041.0 -r win-x64
+
+      - name: Build and analyse
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        shell: powershell
+        run: |
+          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"Simonrps_Walkies" /o:"simonrps" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+          dotnet build Walkies.API/Walkies.API.csproj --configuration Release
+          dotnet build Walkies.Tests/Walkies.Tests.csproj --configuration Release
+          dotnet build Walkies.MAUI/Walkies.MAUI.csproj --configuration Release -f net10.0-windows10.0.19041.0 -r win-x64 --self-contained false
+          ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
