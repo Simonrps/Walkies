@@ -74,16 +74,15 @@
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.1" />
 		<PackageReference Include="CommunityToolkit.Maui" Version="14.0.1" />
 		<PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.50" />
-		<PackageReference Include="System.Text.Json" Version="10.0.5" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Data\" />
-	  <Folder Include="Models\" />
-	  <Folder Include="Services\" />
-	  <Folder Include="Utilities\" />
-	  <Folder Include="Views\" />
-	  <Folder Include="ViewModels\" />
+		<Folder Include="Data\" />
+		<Folder Include="Models\" />
+		<Folder Include="Services\" />
+		<Folder Include="Utilities\" />
+		<Folder Include="Views\" />
+		<Folder Include="ViewModels\" />
 	</ItemGroup>
-	
+
 </Project>

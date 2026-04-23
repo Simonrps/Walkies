@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography.Pkcs;
 
 namespace Walkies.API.Models
 {
@@ -20,19 +19,19 @@ namespace Walkies.API.Models
         public string LastName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Used to log in and must be unique across all registered users.
+        /// gets or sets email used for log in and must be unique across all registered users.
         /// </summary>
         [Required, MaxLength(100)]
         public string Email { get; set; } = string.Empty;
 
         /// <summary>
-        /// Used for storing user password. Plain text is never stored.
+        /// gets or sets the hashed password of the user. Plain text is never stored.
         /// </summary>
         [Required]
         public string PasswordHash { get; set; } = string.Empty;
 
         /// <summary>
-        /// The set role of the user which determines their access level and functionality
+        /// gets or sets the role of the user which determines their access level and functionality
         /// </summary>
         [Required, MaxLength(20)]
         public string Role { get; set; } = string.Empty;
@@ -44,17 +43,17 @@ namespace Walkies.API.Models
         public string? Address { get; set; }
 
         /// <summary>
-        /// Used to calculate the proximity of dog walkers to dog owners
+        /// gets or sets the latitude for determining the proximity of dog walkers to dog owners
         /// </summary>
         public double? Latitude { get; set; }
 
         /// <summary>
-        /// Used to calculate the proximity of dog walkers to dog owners
+        /// gets or sets the longitude for determining the proximity of dog walkers to dog owners
         /// </summary>
         public double? Longitude { get; set; }
 
         /// <summary>
-        /// A date and time stamp of account creation.
+        /// gets or sets date and time stamp of account creation.
         /// </summary>
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
