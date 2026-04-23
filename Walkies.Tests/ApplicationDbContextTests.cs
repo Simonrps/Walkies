@@ -43,10 +43,12 @@ namespace Walkies.Tests
 
             // Act
             context.Users.Add(user);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             // Assert
-            var savedUser = await context.Users.FirstOrDefaultAsync(u => u.Email == "simon@email.com");
+            var savedUser = await context.Users.FirstOrDefaultAsync(
+                u => u.Email == "simon@email.com",
+                TestContext.Current.CancellationToken);
             Assert.NotNull(savedUser);
             Assert.Equal("Simon", savedUser.FirstName);
             Assert.Equal("Owner", savedUser.Role);
@@ -70,7 +72,7 @@ namespace Walkies.Tests
                 Role = "Owner"
             };
             context.Users.Add(owner);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             var dog = new Dog
             {
@@ -82,12 +84,13 @@ namespace Walkies.Tests
 
             // Act
             context.Dogs.Add(dog);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             // Assert
             var savedDog = await context.Dogs
                 .Include(d => d.Owner)
-                .FirstOrDefaultAsync(d => d.Name == "Dinah");
+                .FirstOrDefaultAsync(d => d.Name == "Dinah",
+                TestContext.Current.CancellationToken);
             Assert.NotNull(savedDog);
             Assert.Equal("Dinah", savedDog.Name);
             Assert.Equal("simon@email.com", savedDog.Owner.Email);
@@ -111,7 +114,7 @@ namespace Walkies.Tests
                 Role = "Owner"
             };
             context.Users.Add(owner);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             var dog = new Dog
             {
@@ -121,7 +124,7 @@ namespace Walkies.Tests
                 OwnerId = owner.Id
             };
             context.Dogs.Add(dog);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             var walkRequest = new WalkRequest
             {
@@ -137,13 +140,14 @@ namespace Walkies.Tests
 
             // Act
             context.WalkRequests.Add(walkRequest);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             // Assert
             var savedRequest = await context.WalkRequests
                 .Include(wr => wr.Owner)
                 .Include(wr => wr.Dog)
-                .FirstOrDefaultAsync(wr => wr.OwnerId == owner.Id);
+                .FirstOrDefaultAsync(wr => wr.OwnerId == owner.Id,
+                TestContext.Current.CancellationToken);
             Assert.NotNull(savedRequest);
             Assert.Equal("Open", savedRequest.Status);
             Assert.Equal("Dinah", savedRequest.Dog.Name);
@@ -176,7 +180,7 @@ namespace Walkies.Tests
                 Role = "Walker"
             };
             context.Users.AddRange(owner, walker);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             var dog = new Dog
             {
@@ -186,7 +190,7 @@ namespace Walkies.Tests
                 OwnerId = owner.Id
             };
             context.Dogs.Add(dog);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             var walkRequest = new WalkRequest
             {
@@ -200,7 +204,7 @@ namespace Walkies.Tests
                 Status = "Accepted"
             };
             context.WalkRequests.Add(walkRequest);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             var booking = new WalkBooking
             {
@@ -211,13 +215,14 @@ namespace Walkies.Tests
 
             // Act
             context.WalkBookings.Add(booking);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             // Assert
             var savedBooking = await context.WalkBookings
                 .Include(wb => wb.Walker)
                 .Include(wb => wb.WalkRequest)
-                .FirstOrDefaultAsync(wb => wb.WalkerId == walker.Id);
+                .FirstOrDefaultAsync(wb => wb.WalkerId == walker.Id,
+                TestContext.Current.CancellationToken);
             Assert.NotNull(savedBooking);
             Assert.Equal("Accepted", savedBooking.Status);
             Assert.Equal("walker@email.com", savedBooking.Walker.Email);
@@ -249,7 +254,7 @@ namespace Walkies.Tests
                 Role = "Walker"
             };
             context.Users.AddRange(owner, walker);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             var message = new Message
             {
@@ -263,13 +268,14 @@ namespace Walkies.Tests
 
             // Act
             context.Messages.Add(message);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             // Assert
             var savedMessage = await context.Messages
                 .Include(m => m.Sender)
                 .Include(m => m.Recipient)
-                .FirstOrDefaultAsync(m => m.SenderId == owner.Id);
+                .FirstOrDefaultAsync(m => m.SenderId == owner.Id,
+                TestContext.Current.CancellationToken);
             Assert.NotNull(savedMessage);
             Assert.Equal("Hi, are you availble tomorrow?", savedMessage.Content);
             Assert.Equal("simon@email.com", savedMessage.Sender.Email);
