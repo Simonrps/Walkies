@@ -226,13 +226,13 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Install CycloneDX SBOM tool
-        run: dotnet tool install --global CycloneDX
+        run: dotnet tool install --global CycloneDX --version 6.1.1
 
       - name: Restore Walkies.API
         run: dotnet restore Walkies.API/Walkies.API.csproj
 
       - name: Generate SBOM for Walkies.API
-        run: dotnet CycloneDX Walkies.API/Walkies.API.csproj -o sbom
+        run: dotnet CycloneDX Walkies.API/Walkies.API.csproj -o sbom --output-format json
 
       - name: Upload SBOM artefact
         uses: actions/upload-artifact@v4
