@@ -1,9 +1,6 @@
 name: Walkies CI
 
 on:
-  push:
-    branches-ignore:
-      - master
   pull_request:
     branches: [ master ]
 
@@ -93,9 +90,16 @@ jobs:
       - name: Scan for vulnerable dependencies
         run: |
           echo "Scanning Walkies.API for vulnerable dependencies..."
-          dotnet list Walkies.API/Walkies.API.csproj package --vulnerable --include-transitive
+          API_RESULT=$(dotnet list Walkies.API/Walkies.API.csproj package --vulnerable --include-transitive)
+          echo "$API_RESULT"
           echo "Scanning Walkies.Tests for vulnerable dependencies..."
-          dotnet list Walkies.Tests/Walkies.Tests.csproj package --vulnerable --include-transitive
+          TEST_RESULT=$(dotnet list Walkies.Tests/Walkies.Tests.csproj package --vulnerable --include-transitive)
+          echo "$TEST_RESULT"
+          if echo "$API_RESULT$TEST_RESULT" | grep -q "has the following vulnerable packages"; then
+            echo "ERROR: Vulnerable packages detected — pipeline blocked"
+            exit 1
+          fi
+          echo "No vulnerable packages found"
 
   build-api-and-tests:
     name: Build API and Tests
@@ -282,7 +286,7 @@ jobs:
         shell: powershell
         run: |
           New-Item -Path ${{ runner.temp }}\scanner -ItemType Directory
-          dotnet tool update dotnet-sonarscanner --tool-path ${{ runner.temp }}\scanner
+          dotnet tool update dotnet-sonarscanner --version 9.0.0 --tool-path ${{ runner.temp }}\scanner
 
       - name: Install MAUI Windows workload
         shell: powershell
