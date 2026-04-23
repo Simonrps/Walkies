@@ -35,6 +35,12 @@ namespace Walkies.API.Data
         public DbSet<WalkRequest> WalkRequests { get; set; }
 
         /// <summary>
+        /// gets or sets the DbSet of walk bookings created when
+        /// a dog walker accepts a walk request.
+        /// </summary>
+        public DbSet<WalkBooking> WalkBookings { get; set; }
+
+        /// <summary>
         /// gets or sets the DbSet of availability slots by dog walkers.
         /// </summary>
         public DbSet<WalkerAvailability> WalkerAvailabilities { get; set; }
