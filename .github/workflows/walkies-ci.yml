@@ -31,112 +31,6 @@ jobs:
           fi
           echo "Branch name is valid"
 
-  build-api-and-tests:
-    name: Build API and Tests
-    runs-on: ubuntu-latest
-    needs: check-branch-name
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
-      - name: Cache NuGet packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Restore Walkies.API
-        run: dotnet restore Walkies.API/Walkies.API.csproj
-
-      - name: Restore Walkies.Tests
-        run: dotnet restore Walkies.Tests/Walkies.Tests.csproj
-
-      - name: Build Walkies.API
-        run: dotnet build Walkies.API/Walkies.API.csproj --no-restore --configuration Release
-
-      - name: Build Walkies.Tests
-        run: dotnet build Walkies.Tests/Walkies.Tests.csproj --no-restore --configuration Release
-
-      - name: Run tests
-        run: dotnet test Walkies.Tests/Walkies.Tests.csproj --no-build --configuration Release --logger trx --results-directory TestResults
-
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-results
-          path: TestResults/*.trx
-
-  build-maui-android:
-    name: Build MAUI Android
-    runs-on: ubuntu-latest
-    needs: check-branch-name
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
-      - name: Cache NuGet packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Install MAUI Android workload
-        run: dotnet workload install maui-android
-
-      - name: Restore Walkies.MAUI
-        run: dotnet restore Walkies.MAUI/Walkies.MAUI.csproj
-
-      - name: Build Walkies.MAUI Android
-        run: dotnet build Walkies.MAUI/Walkies.MAUI.csproj --no-restore --configuration Release -f net10.0-android
-
-  build-maui-windows:
-    name: Build MAUI Windows
-    runs-on: windows-latest
-    needs: check-branch-name
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
-      - name: Cache NuGet packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Install MAUI Windows workload
-        run: dotnet workload install maui-windows
-
-      - name: Restore Walkies.MAUI Windows only
-        run: dotnet restore Walkies.MAUI/Walkies.MAUI.csproj -p:TargetFrameworks=net10.0-windows10.0.19041.0 -r win-x64
-
-      - name: Build Walkies.MAUI Windows
-        run: dotnet build Walkies.MAUI/Walkies.MAUI.csproj --no-restore --configuration Release -f net10.0-windows10.0.19041.0 -r win-x64 --self-contained false
-
   code-quality:
     name: Code Quality
     runs-on: ubuntu-latest
@@ -203,6 +97,112 @@ jobs:
           echo "Scanning Walkies.Tests for vulnerable dependencies..."
           dotnet list Walkies.Tests/Walkies.Tests.csproj package --vulnerable --include-transitive
 
+  build-api-and-tests:
+    name: Build API and Tests
+    runs-on: ubuntu-latest
+    needs: [check-branch-name, code-quality, dependency-security]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore Walkies.API
+        run: dotnet restore Walkies.API/Walkies.API.csproj
+
+      - name: Restore Walkies.Tests
+        run: dotnet restore Walkies.Tests/Walkies.Tests.csproj
+
+      - name: Build Walkies.API
+        run: dotnet build Walkies.API/Walkies.API.csproj --no-restore --configuration Release
+
+      - name: Build Walkies.Tests
+        run: dotnet build Walkies.Tests/Walkies.Tests.csproj --no-restore --configuration Release
+
+      - name: Run tests
+        run: dotnet test Walkies.Tests/Walkies.Tests.csproj --no-build --configuration Release --logger trx --results-directory TestResults
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: TestResults/*.trx
+
+  build-maui-android:
+    name: Build MAUI Android
+    runs-on: ubuntu-latest
+    needs: build-api-and-tests
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Install MAUI Android workload
+        run: dotnet workload install maui-android
+
+      - name: Restore Walkies.MAUI
+        run: dotnet restore Walkies.MAUI/Walkies.MAUI.csproj
+
+      - name: Build Walkies.MAUI Android
+        run: dotnet build Walkies.MAUI/Walkies.MAUI.csproj --no-restore --configuration Release -f net10.0-android
+
+  build-maui-windows:
+    name: Build MAUI Windows
+    runs-on: windows-latest
+    needs: build-api-and-tests
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Install MAUI Windows workload
+        run: dotnet workload install maui-windows
+
+      - name: Restore Walkies.MAUI Windows only
+        run: dotnet restore Walkies.MAUI/Walkies.MAUI.csproj -p:TargetFrameworks=net10.0-windows10.0.19041.0 -r win-x64
+
+      - name: Build Walkies.MAUI Windows
+        run: dotnet build Walkies.MAUI/Walkies.MAUI.csproj --no-restore --configuration Release -f net10.0-windows10.0.19041.0 -r win-x64 --self-contained false
+
   generate-sbom:
     name: Generate SBOM
     runs-on: ubuntu-latest
@@ -232,7 +232,7 @@ jobs:
         run: dotnet restore Walkies.API/Walkies.API.csproj
 
       - name: Generate SBOM for Walkies.API
-        run: dotnet CycloneDX Walkies.API/Walkies.API.csproj -o sbom -j
+        run: dotnet CycloneDX Walkies.API/Walkies.API.csproj -o sbom
 
       - name: Upload SBOM artefact
         uses: actions/upload-artifact@v4
