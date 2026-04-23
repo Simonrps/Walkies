@@ -299,6 +299,10 @@ jobs:
           dotnet restore Walkies.Tests/Walkies.Tests.csproj
           dotnet restore Walkies.MAUI/Walkies.MAUI.csproj -p:TargetFrameworks=net10.0-windows10.0.19041.0 -r win-x64
 
+      - name: Run tests with coverage
+        shell: powershell
+        run: dotnet test Walkies.Tests/Walkies.Tests.csproj --configuration Release --collect:"XPlat Code Coverage" --results-directory TestResults
+
       - name: Build and analyse
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
