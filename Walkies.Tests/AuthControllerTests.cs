@@ -13,7 +13,7 @@ namespace Walkies.Tests
     /// test JWT configuration.
     /// Relates to US01 - Registration and US02 - Login
     /// </summary>
-    internal class AuthControllerTests
+    public class AuthControllerTests
     {
         /// <summary>
         /// creates a freash in-memory database context for each test.
@@ -36,7 +36,7 @@ namespace Walkies.Tests
                 .ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    { "JwtSettings:SecretKey", "ThisIsATestSecretKey123!#"},
+                    { "JwtSettings:SecretKey", "ThisIsATestSecretKeyForWalkiesApp123!#"},
                     { "JwtSettings:Issuer", "WalkiesAPI"},
                     { "JwtSettings:Audience", "WalkiesClient"},
                     { "JwtSettings:ExpirationMinutes", "60"}
