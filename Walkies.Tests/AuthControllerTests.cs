@@ -193,5 +193,32 @@ namespace Walkies.Tests
             // Assert
             Assert.IsType<UnauthorizedObjectResult>(result);
         }
+
+        /// <summary>
+        /// Verifies that a registration request with missing required
+        /// field returns a 400 bad request response. Related to US01 - Registration
+        /// </summary>
+        [Fact]
+        public async Task Register_MissingRequiredField_Returns400BadRequest()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var controller = CreateController(context);
+            var dto = new RegisterDto
+            {
+                FirstName = "",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                Password = "Password123!#",
+                Role = "Owner"
+            };
+            controller.ModelState.AddModelError("FirstName", "The FirstName field is required.");
+
+            // Act
+            var result = await controller.Register(dto);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
     }
 }
