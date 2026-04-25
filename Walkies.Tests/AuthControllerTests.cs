@@ -101,5 +101,41 @@ namespace Walkies.Tests
             // Assert
             Assert.IsType<ConflictObjectResult>(result);
         }
+
+        /// <summary>
+        /// Verifies that a valid login request returns a 200 response with JWT token.
+        /// Related to US02 - Login
+        /// </summary>
+        [Fact]
+        public async Task Login_ValidRequest_Returns200WithToken()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var controller = CreateController(context);
+            var registerDto = new RegisterDto
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                Password = "Password123!#",
+                Role = "Owner"
+            };
+            await controller.Register(registerDto);
+
+            var loginDto = new LoginDto
+            {
+                Email = "simon@email.com",
+                Password = "Password123!#"
+            };
+
+            // Act
+            var result = await controller.Login(loginDto);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var response = Assert.IsType<AuthResponseDto>(okResult.Value);
+            Assert.NotNull(response.Token);
+            Assert.Equal("Owner", response.Role);
+        }
     }
 }
