@@ -137,5 +137,38 @@ namespace Walkies.Tests
             Assert.NotNull(response.Token);
             Assert.Equal("Owner", response.Role);
         }
+
+        /// <summary>
+        /// Verifies that a login request with incorrect details 
+        /// returns a 401 unauthorized response. Related to US02 - Login
+        /// </summary>
+        [Fact]
+        public async Task Login_InvalidRequest_Returns401Unauthorized()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var controller = CreateController(context);
+            var registerDto = new RegisterDto
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                Password = "Password123!#",
+                Role = "Owner"
+            };
+            await controller.Register(registerDto);
+
+            var loginDto = new LoginDto
+            {
+                Email = "simon@email.com",
+                Password = "WrongPassword!#"
+            };
+
+            // Act
+            var result = await controller.Login(loginDto);
+
+            // Assert
+            Assert.IsType<UnauthorizedObjectResult>(result);
+        }
     }
 }
