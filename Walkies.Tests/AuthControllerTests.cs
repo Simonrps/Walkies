@@ -74,5 +74,32 @@ namespace Walkies.Tests
             Assert.Equal("Owner", response.Role);
             Assert.Equal("Simon", response.FirstName);
         }
+
+        /// <summary>
+        /// Verifies that registering with a duplicate email returns
+        /// a 409 error response. Related to US01 - Registration
+        /// </summary>
+        [Fact]
+        public async Task Register_DuplicateEmail_Returns409Error()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var controller = CreateController(context);
+            var dto = new RegisterDto
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                Password = "Password123!#",
+                Role = "Owner"
+            };
+
+            // Act
+            await controller.Register(dto);
+            var result = await controller.Register(dto);
+
+            // Assert
+            Assert.IsType<ConflictObjectResult>(result);
+        }
     }
 }
