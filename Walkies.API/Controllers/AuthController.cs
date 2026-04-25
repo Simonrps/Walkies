@@ -111,13 +111,41 @@ namespace Walkies.API.Controllers
         }
 
         /// <summary>
-        /// Placeholder for login endpoint. To be implemented in next TDD cycle
+        /// Authenticate a user and return a JWT token on successful login.
+        /// Verifies the provided password against the stored Bcrypt hashed 
+        /// password in the database. Related to US02 - Login
         /// </summary>
+        /// <param name="dto">The login details</param>
+        /// <returns>
+        /// 200 OK with JWT token and user details on success.
+        /// 401 Unauthorized if details are invalid.
+        /// </returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-            await Task.CompletedTask;
-            return StatusCode(501);
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+            if (user == null)
+            {
+                return Unauthorized(new { message = "Invalid email or password" });
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
+            { 
+                return Unauthorized(new { message = "Invalid email or password" });
+            }
+
+            var token = GenerateJwtToken(user);
+
+            return Ok(new AuthResponseDto
+            {
+                Token = token,
+                UserId = user.Id,
+                Role = user.Role,
+                FirstName = user.FirstName,
+                Email = user.Email
+            });
         }
     }
 }
