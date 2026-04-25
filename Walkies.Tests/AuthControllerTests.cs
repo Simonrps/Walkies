@@ -140,10 +140,10 @@ namespace Walkies.Tests
 
         /// <summary>
         /// Verifies that a login request with incorrect details 
-        /// returns a 401 unauthorized response. Related to US02 - Login
+        /// returns a 401 unauthorised response. Related to US02 - Login
         /// </summary>
         [Fact]
-        public async Task Login_InvalidRequest_Returns401Unauthorized()
+        public async Task Login_InvalidRequest_Returns401Unauthorised()
         {
             // Arrange
             using var context = CreateContext();
@@ -162,6 +162,29 @@ namespace Walkies.Tests
             {
                 Email = "simon@email.com",
                 Password = "WrongPassword!#"
+            };
+
+            // Act
+            var result = await controller.Login(loginDto);
+
+            // Assert
+            Assert.IsType<UnauthorizedObjectResult>(result);
+        }
+
+        /// <summary>
+        /// Verifies that a login request with no email address 
+        /// returns a 401 unauthorised response. Related to US02 - Login
+        /// </summary>
+        [Fact]
+        public async Task Login_NoEmail_Returns401Unauthorised()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var controller = CreateController(context);
+            var loginDto = new LoginDto
+            {
+                Email = "",
+                Password = "Password123!#"
             };
 
             // Act

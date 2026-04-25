@@ -118,7 +118,7 @@ namespace Walkies.API.Controllers
         /// <param name="dto">The login details</param>
         /// <returns>
         /// 200 OK with JWT token and user details on success.
-        /// 401 Unauthorized if details are invalid.
+        /// 401 Unauthorised if details are invalid.
         /// </returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
