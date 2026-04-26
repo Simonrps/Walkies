@@ -33,6 +33,10 @@ namespace Walkies.Tests
             return new UsersController(context);
         }
 
+        /// <summary>
+        /// Verifies that a valid user profile request returns a 200 OK
+        /// with the correct profile data. Related to US03 - Profile Management
+        /// </summary>
         [Fact]
         public async Task GetUser_ValidId_Returns200WithProfile()
         {
@@ -60,6 +64,20 @@ namespace Walkies.Tests
             Assert.Equal("Simon", profile.FirstName);
             Assert.Equal("simon@email.com", profile.Email);
             Assert.Equal("Owner", profile.Role);
+        }
+
+        [Fact]
+        public async Task GetUser_InvalidId_Returns404NotFound()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var controller = CreateController(context);
+            
+            // Act
+            var result = await controller.GetUser(999);
+
+            // Assert
+            Assert.IsType<NotFoundObjectResult>(result);
         }
     }
 }
