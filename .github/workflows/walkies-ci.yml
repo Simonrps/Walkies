@@ -138,7 +138,7 @@ jobs:
       - name: Run tests
         env:
            JwtSettings__SecretKey: ${{ secrets.JWT_SECRET_KEY }}
-        run: dotnet test Walkies.Tests/Walkies.Tests.csproj --no-build --configuration Release --logger trx --results-directory TestResults
+        run: dotnet test Walkies.Tests/Walkies.Tests.csproj --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutput=coverage/ /p:CoverletOutputFormat=opencover --logger trx --results-directory TestResults
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -309,10 +309,10 @@ jobs:
           JwtSettings__SecretKey: ${{ secrets.JWT_SECRET_KEY }}
         shell: powershell
         run: |
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"Simonrps_Walkies" /o:"simonrps" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.exclusions="**/Migrations/**,**/Program.cs" /d:sonar.coverage.exclusions="**/Migrations/**,**/Program.cs"
+          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"Simonrps_Walkies" /o:"simonrps" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.cs.opencover.reportsPaths="Walkies.Tests/coverage/coverage.opencover.xml" /d:sonar.exclusions="**/Migrations/**,**/Program.cs" /d:sonar.coverage.exclusions="**/Migrations/**,**/Program.cs"
           dotnet build Walkies.API/Walkies.API.csproj --configuration Release
           dotnet build Walkies.Tests/Walkies.Tests.csproj --configuration Release
           dotnet build Walkies.MAUI/Walkies.MAUI.csproj --configuration Release -f net10.0-windows10.0.19041.0 -r win-x64 --self-contained false
-          dotnet test Walkies.Tests/Walkies.Tests.csproj --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory TestResults --DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
-          Get-ChildItem -Recurse -Path TestResults -Filter *.xml | Select-Object FullName
+          dotnet test Walkies.Tests/Walkies.Tests.csproj --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutput=coverage/ /p:CoverletOutputFormat=opencover
+          Get-ChildItem -Recurse -Path Walkies.Tests/coverage -Filter *.xml | Select-Object FullName
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="$env:SONAR_TOKEN"
