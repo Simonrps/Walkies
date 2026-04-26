@@ -314,4 +314,5 @@ jobs:
           dotnet build Walkies.Tests/Walkies.Tests.csproj --configuration Release
           dotnet build Walkies.MAUI/Walkies.MAUI.csproj --configuration Release -f net10.0-windows10.0.19041.0 -r win-x64 --self-contained false
           dotnet test Walkies.Tests/Walkies.Tests.csproj --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory TestResults --DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+          Get-ChildItem -Recurse -Path TestResults -Filter *.xml | Select-Object FullName
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="$env:SONAR_TOKEN"
