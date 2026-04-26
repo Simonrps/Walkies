@@ -136,6 +136,8 @@ jobs:
         run: dotnet build Walkies.Tests/Walkies.Tests.csproj --no-restore --configuration Release
 
       - name: Run tests
+        env:
+           JwtSettings__SecretKey: ${{ secrets.JWT_SECRET_KEY }}
         run: dotnet test Walkies.Tests/Walkies.Tests.csproj --no-build --configuration Release --logger trx --results-directory TestResults
 
       - name: Upload test results
