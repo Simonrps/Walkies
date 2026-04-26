@@ -290,9 +290,11 @@ jobs:
           New-Item -Path ${{ runner.temp }}\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --version 9.0.0 --tool-path ${{ runner.temp }}\scanner
 
-      - name: Install MAUI Windows workload
+      - name: Install MAUI workload
         shell: powershell
-        run: dotnet workload install maui-windows
+        run: |
+          dotnet workload install maui-windows
+          dotnet workload install maui-android
 
       - name: Restore solution
         shell: powershell
