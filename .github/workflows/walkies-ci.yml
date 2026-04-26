@@ -309,7 +309,7 @@ jobs:
           JwtSettings__SecretKey: ${{ secrets.JWT_SECRET_KEY }}
         shell: powershell
         run: |
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"Simonrps_Walkies" /o:"simonrps" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"Simonrps_Walkies" /o:"simonrps" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.exclusions="**/Migrations/**,**/Program.cs" /d:sonar.coverage.exclusions="**/Migrations/**,**/Program.cs"
           dotnet build Walkies.API/Walkies.API.csproj --configuration Release
           dotnet build Walkies.Tests/Walkies.Tests.csproj --configuration Release
           dotnet build Walkies.MAUI/Walkies.MAUI.csproj --configuration Release -f net10.0-windows10.0.19041.0 -r win-x64 --self-contained false
