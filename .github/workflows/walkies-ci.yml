@@ -302,6 +302,8 @@ jobs:
           dotnet restore Walkies.MAUI/Walkies.MAUI.csproj -p:TargetFrameworks=net10.0-windows10.0.19041.0 -r win-x64
 
       - name: Run tests with coverage
+        env:
+           JwtSettings__SecretKey: ${{ secrets.JWT_SECRET_KEY }}
         shell: powershell
         run: dotnet test Walkies.Tests/Walkies.Tests.csproj --configuration Release --collect:"XPlat Code Coverage" --results-directory TestResults
 
