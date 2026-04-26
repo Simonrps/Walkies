@@ -57,5 +57,44 @@ namespace Walkies.API.Controllers
                 CreatedAt = user.CreatedAt
             });
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+            if (user == null)
+            {
+                return NotFound(new { Message = "User not found" });
+            }
+
+            user.FirstName = dto.FirstName;
+            user.LastName = dto.LastName;
+            user.Phone = dto.Phone;
+            user.Address = dto.Address;
+            user.Latitude = dto.Latitude;
+            user.Longitude = dto.Longitude;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new UserProfileDto
+            {
+                Id=user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Role = user.Role,
+                Phone = user.Phone,
+                Address = user.Address,
+                Latitude = user.Latitude,
+                Longitude = user.Longitude,
+                CreatedAt = user.CreatedAt
+            });
+        }
     }
 }
