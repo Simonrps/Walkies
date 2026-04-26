@@ -136,7 +136,9 @@ jobs:
         run: dotnet build Walkies.Tests/Walkies.Tests.csproj --no-restore --configuration Release
 
       - name: Run tests
-        run: dotnet test Walkies.Tests/Walkies.Tests.csproj --no-build --configuration Release --logger trx --results-directory TestResults
+        env:
+           JwtSettings__SecretKey: ${{ secrets.JWT_SECRET_KEY }}
+        run: dotnet test Walkies.Tests/Walkies.Tests.csproj --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutput=coverage/ /p:CoverletOutputFormat=opencover --logger trx --results-directory TestResults
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -288,9 +290,11 @@ jobs:
           New-Item -Path ${{ runner.temp }}\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --version 9.0.0 --tool-path ${{ runner.temp }}\scanner
 
-      - name: Install MAUI Windows workload
+      - name: Install MAUI workload
         shell: powershell
-        run: dotnet workload install maui-windows
+        run: |
+          dotnet workload install maui-windows
+          dotnet workload install maui-android
 
       - name: Restore solution
         shell: powershell
@@ -299,17 +303,16 @@ jobs:
           dotnet restore Walkies.Tests/Walkies.Tests.csproj
           dotnet restore Walkies.MAUI/Walkies.MAUI.csproj -p:TargetFrameworks=net10.0-windows10.0.19041.0 -r win-x64
 
-      - name: Run tests with coverage
-        shell: powershell
-        run: dotnet test Walkies.Tests/Walkies.Tests.csproj --configuration Release --collect:"XPlat Code Coverage" --results-directory TestResults
-
       - name: Build and analyse
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          JwtSettings__SecretKey: ${{ secrets.JWT_SECRET_KEY }}
         shell: powershell
         run: |
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"Simonrps_Walkies" /o:"simonrps" /d:sonar.token="$env:SONAR_TOKEN"
+          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"Simonrps_Walkies" /o:"simonrps" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.cs.opencover.reportsPaths="Walkies.Tests/coverage/coverage.opencover.xml" /d:sonar.exclusions="**/Migrations/**,**/Program.cs" /d:sonar.coverage.exclusions="**/Migrations/**,**/Program.cs"
           dotnet build Walkies.API/Walkies.API.csproj --configuration Release
           dotnet build Walkies.Tests/Walkies.Tests.csproj --configuration Release
           dotnet build Walkies.MAUI/Walkies.MAUI.csproj --configuration Release -f net10.0-windows10.0.19041.0 -r win-x64 --self-contained false
+          dotnet test Walkies.Tests/Walkies.Tests.csproj --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutput=coverage/ /p:CoverletOutputFormat=opencover
+          Get-ChildItem -Recurse -Path Walkies.Tests/coverage -Filter *.xml | Select-Object FullName
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="$env:SONAR_TOKEN"
