@@ -66,6 +66,10 @@ namespace Walkies.Tests
             Assert.Equal("Owner", profile.Role);
         }
 
+        /// <summary>
+        /// Verifies that requesting a profile that doesnt exist returns
+        /// a 404 Not Found response. Related to US03 - Profile Management
+        /// </summary>
         [Fact]
         public async Task GetUser_InvalidId_Returns404NotFound()
         {
@@ -78,6 +82,47 @@ namespace Walkies.Tests
 
             // Assert
             Assert.IsType<NotFoundObjectResult>(result);
+        }
+
+        /// <summary>
+        /// Verifies that a valid profile update returns 200 with
+        /// updated profile. Related to US03 - Profile Management
+        /// </summary>
+        [Fact]
+        public async Task UpdateUser_ValidRequest_Returns200()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var user = new User
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                PasswordHash = "hashedpassword123!#",
+                Role = "Owner"
+            };
+            context.Users.Add(user);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+            var dto = new UpdateUserDto
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Phone = "0831092468",
+                Address = "1 Main Street, Letterkenny",
+                Latitude = 54.9966,
+                Longitude = -7.3086
+            };
+
+            // Act
+            var result = await controller.UpdateUser(user.Id, dto);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var profile = Assert.IsType<UserProfileDto>(okResult.Value);
+            Assert.Equal("0831092468", profile.Phone);
+            Assert.Equal("1 Main Street, Letterkenny", profile.Address);
         }
     }
 }
