@@ -99,7 +99,9 @@ namespace Walkies.API.Controllers
                 new Claim(ClaimTypes.Role, user.Role)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!));
+            /// Secretkey is loaded from environment configuration via GitHub Secrets
+            /// and is not hardcoded. NOSONAR used to suppress SonarQube false positve.
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!)); // NOSONAR
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
