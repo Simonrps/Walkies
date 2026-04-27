@@ -4913,6 +4913,7 @@ namespace Fonts
         public const string panel_top_gallery_20_regular = "\U000f0312";
         public const string panel_top_gallery_24_regular = "\U000f0313";
         public const string panel_top_gallery_28_regular = "\U000f0314";
+#pragma warning disable S2068
         public const string password_16_regular = "\ue8c8";
         public const string password_20_regular = "\ue8c9";
         public const string password_24_regular = "\uf59e";
@@ -4920,6 +4921,7 @@ namespace Fonts
         public const string password_48_regular = "\U000f05af";
         public const string password_clock_48_regular = "\U000f05b0";
         public const string password_reset_48_regular = "\U000f05b1";
+#pragma warning restore S2068
         public const string patch_20_regular = "\uf6ba";
         public const string patch_24_regular = "\uf6bb";
         public const string patient_20_regular = "\ue8ca";
