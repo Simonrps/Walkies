@@ -136,5 +136,19 @@ namespace Walkies.Tests
             Assert.Equal("Dinah", dto.DogName);
             Assert.Equal(owner.Id, dto.OwnerId);
         }
+
+        [Fact]
+        public async Task GetWalkRequest_InvalidId_Returns404NotFound()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetWalkRequest(999);
+
+            // Assert
+            Assert.IsType<NotFoundObjectResult>(result);
+        }
     }
 }
