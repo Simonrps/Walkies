@@ -78,13 +78,35 @@ namespace Walkies.API.Controllers
         }
 
         /// <summary>
-        /// Not implments yet just a placeholder for the GetDog endpoint.
+        /// Returns a dog profile by its unique identifier.
+        /// Related to US04 - Add Dog
         /// </summary>
+        /// <param name="id">The unique identifier of the dog.</param>
+        /// <returns>
+        /// 200 Ok with dog data on success.
+        /// 404 Not Found if the dog does not exist.
+        /// </returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDog(int id)
         {
-            await Task.CompletedTask;
-            return StatusCode(501);
+            var dog = await _context.Dogs.Include(d => d.Owner)
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            if (dog == null)
+            {
+                return NotFound(new { message = "Dog not found." });
+            }
+
+            return Ok(new DogDto
+            {
+                Id = dog.Id,
+                Name = dog.Name,
+                Breed = dog.Breed,
+                Age = dog.Age,
+                Notes = dog.Notes,
+                OwnerId = dog.OwnerId,
+                OwnerName = $"{dog.Owner.FirstName} {dog.Owner.LastName}"
+            });
         }
     }
 }
