@@ -117,7 +117,13 @@ namespace Walkies.API.Controllers
                 Status = walkRequest.Status
             });
         }
-
+        /// <summary>
+        /// Retrieves a list of open walk requests, including owner and dog details.
+        /// </summary>
+        /// <remarks>Each walk request in the result includes information about the owner and dog
+        /// associated with the request. Only requests with a status of "Open" are returned.</remarks>
+        /// <returns>An <see cref="IActionResult"/> containing a collection of walk request DTOs for all open requests. The
+        /// result is an HTTP 200 response with the list, or an empty list if no open requests exist.</returns>
         [HttpGet]
         public async Task<IActionResult> GetWalkRequests()
         {
@@ -143,6 +149,32 @@ namespace Walkies.API.Controllers
             }).ToList();
 
             return Ok(dtos);
+        }
+
+        /// <summary>
+        /// Cancels a walk requedt by its id. Updates the status to Cancelled
+        /// rather than deleting it to perserve the audit trail.
+        /// Related to US08 - Cancel Walk Request
+        /// </summary>
+        /// <param name="id">The unique identifier of the walk request.</param>
+        /// <returns>
+        /// 204 No Content response on success
+        /// 404 Not Found response if the walk request does not exist.</returns>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> CancelWalkRequest(int id)
+        {
+            var walkRequest = await _context.WalkRequests
+                .FirstOrDefaultAsync(wr => wr.Id == id);
+
+            if (walkRequest == null)
+            {
+                return NotFound(new {message="Walk request not found"});
+            }
+
+            walkRequest.Status = "Cancelled";
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }
