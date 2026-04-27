@@ -80,11 +80,42 @@ namespace Walkies.API.Controllers
             return CreatedAtAction(nameof(GetWalkRequest), new { id = walkRequest.Id }, walkRequestDto);
         }
 
+        /// <summary>
+        /// Retrieves the walk request with the specified identifier.
+        /// Related to US06 - Post Walk Request
+        /// </summary>
+        /// <param name="id">The unique identifier of the walk request</param>
+        /// <returns>
+        /// 200 OK with the walk request details if found
+        /// 404 Not Found if the walk request does not exist
+        /// </returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetWalkRequest(int id)
         {
-            await Task.CompletedTask;
-            return StatusCode(501);
+            var walkRequest = await _context.WalkRequests
+                .Include(wr => wr.Owner)
+                .Include(wr => wr.Dog)
+                .FirstOrDefaultAsync(wr => wr.Id == id);
+
+            if (walkRequest == null)
+            {
+                return NotFound(new {message="Walk request not found"});
+            }
+
+            return Ok(new WalkRequestDto
+            {
+                Id = walkRequest.Id,
+                OwnerId = walkRequest.OwnerId,
+                OwnerName = $"{walkRequest.Owner.FirstName} {walkRequest.Owner.LastName}",
+                DogId = walkRequest.DogId,
+                DogName = walkRequest.Dog.Name,
+                RequestedDate = walkRequest.RequestedDate,
+                DurationMinutes = walkRequest.DurationMinutes,
+                Location = walkRequest.Location,
+                Latitude = walkRequest.Latitude,
+                Longitude = walkRequest.Longitude,
+                Status = walkRequest.Status
+            });
         }
     }
 }
