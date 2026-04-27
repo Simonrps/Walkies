@@ -174,5 +174,44 @@ namespace Walkies.Tests
             Assert.Equal(6, dogDto.Age);
             Assert.Equal("Updated notes", dogDto.Notes);
         }
+
+        [Fact]
+        public async Task DeleteDog_ValidId_Returns204NoCentent()
+        { 
+            // Arrange
+            using var context = CreateContext();
+            var owner = new User
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                PasswordHash = "hashedPassword!##123",
+                Role = "Owner"
+            };
+            context.Users.Add(owner);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var dog = new Dog
+            {
+                Name = "Dinah",
+                Breed = "Boxer",
+                Age = 5,
+                OwnerId = owner.Id
+            };
+            context.Dogs.Add(dog);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.DeleteDog(dog.Id);
+
+            // Assert
+            Assert.IsType<NoContentResult>(result);
+
+            // Verify the dog was deleted
+            var deletedDog = await context.Dogs.FirstOrDefaultAsync(d => d.Id == dog.Id);
+            Assert.Null(deletedDog);
+        }
     }
 }
