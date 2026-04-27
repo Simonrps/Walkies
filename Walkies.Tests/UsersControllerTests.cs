@@ -124,5 +124,31 @@ namespace Walkies.Tests
             Assert.Equal("0831092468", profile.Phone);
             Assert.Equal("1 Main Street, Letterkenny", profile.Address);
         }
+
+        /// <summary>
+        /// Verifies that attempting to update a profile that doesnt exist returns
+        /// a 404 Not Found response. Related to US03 - Profile Management
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task UpdateUser_InvalidId_Returns404NotFound()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var controller = CreateController(context);
+            var dto = new UpdateUserDto
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Phone = "0831092468",
+                Address = "1 Main Street, Letterkenny",
+                Latitude = 54.9966,
+                Longitude = -7.3086
+            };
+            // Act
+            var result = await controller.UpdateUser(999, dto);
+            // Assert
+            Assert.IsType<NotFoundObjectResult>(result);
+        }
     }
 }
