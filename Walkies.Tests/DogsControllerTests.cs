@@ -111,5 +111,23 @@ namespace Walkies.Tests
             Assert.Equal("Boxer", dogDto.Breed);
             Assert.Equal(owner.Id, dogDto.OwnerId);
         }
+
+        /// <summary>
+        /// Verifies that requesting a dog that doesnt exist returns
+        /// a 404 Not Found response. Related to US04 - Add Dog
+        /// </summary>
+        [Fact]
+        public async Task GetDog_InvalidId_Returns404NotFound()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetDog(999);
+
+            // Assert
+            Assert.IsType<NotFoundObjectResult>(result);
+        }
     }
 }
