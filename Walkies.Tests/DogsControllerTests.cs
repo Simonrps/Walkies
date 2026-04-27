@@ -33,6 +33,10 @@ namespace Walkies.Tests
             return new DogsController(context);
         }
 
+        /// <summary>
+        /// Verifies that adding a dog with valid data returns
+        /// a 201 Created response. Related to US04 - Add Dog
+        /// </summary>
         [Fact]
         public async Task AddDog_ValidRequest_Returns201WithDog()
         {
@@ -67,6 +71,45 @@ namespace Walkies.Tests
             Assert.Equal("Dinah", dog.Name);
             Assert.Equal("Boxer", dog.Breed);
             Assert.Equal(owner.Id, dog.OwnerId);
+        }
+
+        [Fact]
+        public async Task GetDog_ValidId_Returns200WithDog()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var owner = new User
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                PasswordHash = "hashedPassword!##123",
+                Role = "Owner"
+            };
+            context.Users.Add(owner);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var dog = new Dog
+            {
+                Name = "Dinah",
+                Breed = "Boxer",
+                Age = 5,
+                OwnerId = owner.Id
+            };
+            context.Dogs.Add(dog);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetDog(dog.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var dogDto = Assert.IsType<DogDto>(okResult.Value);
+            Assert.Equal("Dinah", dogDto.Name);
+            Assert.Equal("Boxer", dogDto.Breed);
+            Assert.Equal(owner.Id, dogDto.OwnerId);
         }
     }
 }
