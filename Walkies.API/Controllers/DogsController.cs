@@ -108,5 +108,40 @@ namespace Walkies.API.Controllers
                 OwnerName = $"{dog.Owner.FirstName} {dog.Owner.LastName}"
             });
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateDog(int id, [FromBody] UpdateDogDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var dog = await _context.Dogs.Include(d => d.Owner)
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            if (dog == null)
+            {
+                return NotFound(new { message = "Dog not found." });
+            }
+
+            dog.Name = dto.Name;
+            dog.Breed = dto.Breed;
+            dog.Age = dto.Age;
+            dog.Notes = dto.Notes;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new DogDto
+            {
+                Id = dog.Id,
+                Name = dog.Name,
+                Breed = dog.Breed,
+                Age = dog.Age,
+                Notes = dog.Notes,
+                OwnerId = dog.OwnerId,
+                OwnerName = $"{dog.Owner.FirstName} {dog.Owner.LastName}"
+            });
+        }
     }
 }
