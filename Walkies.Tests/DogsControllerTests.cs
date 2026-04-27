@@ -210,8 +210,28 @@ namespace Walkies.Tests
             Assert.IsType<NoContentResult>(result);
 
             // Verify the dog was deleted
-            var deletedDog = await context.Dogs.FirstOrDefaultAsync(d => d.Id == dog.Id);
+            var deletedDog = await context.Dogs.FirstOrDefaultAsync(
+                d => d.Id == dog.Id,
+                TestContext.Current.CancellationToken);
             Assert.Null(deletedDog);
+        }
+
+        /// <summary>
+        /// Checks that deleting a non -existant dog returns
+        /// a 404 not found response. Related to US05 - Edit Dog
+        /// </summary>
+        [Fact]
+        public async Task DeleteDog_InvalidId_Returns404NotFound()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.DeleteDog(999);
+
+            // Assert
+            Assert.IsType<NotFoundObjectResult>(result);
         }
     }
 }
