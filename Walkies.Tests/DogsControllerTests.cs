@@ -129,5 +129,50 @@ namespace Walkies.Tests
             // Assert
             Assert.IsType<NotFoundObjectResult>(result);
         }
+
+        [Fact]
+        public async Task UpdateDog_ValidRequest_Returns200()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var owner = new User
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                PasswordHash = "hashedPassword!##123",
+                Role = "Owner"
+            };
+            context.Users.Add(owner);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var dog = new Dog
+            {
+                Name = "Dinah",
+                Breed = "Boxer",
+                Age = 5,
+                OwnerId = owner.Id
+            };
+            context.Dogs.Add(dog);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+            var dto = new UpdateDogDto
+            {
+                Name = "Dinah",
+                Breed = "Boxer",
+                Age = 6,
+                Notes = "Updated notes"
+            };
+
+            // Act
+            var result = await controller.UpdateDog(dog.Id, dto);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var dogDto = Assert.IsType<DogDto>(okResult.Value);
+            Assert.Equal(6, dogDto.Age);
+            Assert.Equal("Updated notes", dogDto.Notes);
+        }
     }
 }
