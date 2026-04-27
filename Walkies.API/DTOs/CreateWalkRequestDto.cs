@@ -26,7 +26,7 @@ namespace Walkies.API.DTOs
         /// <summary>
         /// Gets or sets the date and time when the request was made.
         /// </summary>
-        [Required]
+        [Required, JsonRequired]
         public DateTime RequestedDate { get; set; }
 
         /// <summary>
@@ -44,13 +44,13 @@ namespace Walkies.API.DTOs
         /// <summary>
         /// Gets or sets the latitude coordinate in degrees.
         /// </summary>
-        [Required]
+        [Required, JsonRequired]
         public double Latitude { get; set; }
 
         /// <summary>
         /// Gets or sets the longitude coordinate value
         /// </summary>
-        [Required]
+        [Required, JsonRequired]
         public double Longitude { get; set; }
     }
 }
