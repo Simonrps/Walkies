@@ -177,7 +177,7 @@ namespace Walkies.Tests
 
         [Fact]
         public async Task DeleteDog_ValidId_Returns204NoCentent()
-        { 
+        {
             // Arrange
             using var context = CreateContext();
             var owner = new User

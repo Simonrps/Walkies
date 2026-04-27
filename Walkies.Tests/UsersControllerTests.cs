@@ -76,7 +76,7 @@ namespace Walkies.Tests
             // Arrange
             using var context = CreateContext();
             var controller = CreateController(context);
-            
+
             // Act
             var result = await controller.GetUser(999);
 

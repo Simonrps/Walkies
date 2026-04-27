@@ -48,7 +48,7 @@ namespace Walkies.API.Controllers
 
             if (owner == null)
             {
-                return NotFound(new {message = "Owner not found."});
+                return NotFound(new { message = "Owner not found." });
             }
 
             var dog = new Dog
@@ -146,12 +146,12 @@ namespace Walkies.API.Controllers
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDog(int id)
-        { 
+        {
             var dog = await _context.Dogs.FirstOrDefaultAsync(d => d.Id == id);
 
             if (dog == null)
             {
-                return NotFound(new {message = "Dog not found."});
+                return NotFound(new { message = "Dog not found." });
             }
 
             _context.Dogs.Remove(dog);

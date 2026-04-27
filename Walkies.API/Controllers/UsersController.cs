@@ -21,8 +21,8 @@ namespace Walkies.API.Controllers
         /// </summary>
         /// <param name="context">The database context.</param>
         public UsersController(ApplicationDbContext context)
-        {  
-            _context = context; 
+        {
+            _context = context;
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Walkies.API.Controllers
 
             return Ok(new UserProfileDto
             {
-                Id=user.Id,
+                Id = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
