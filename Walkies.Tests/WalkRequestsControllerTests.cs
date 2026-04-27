@@ -231,6 +231,11 @@ namespace Walkies.Tests
             Assert.Equal("Open", requests[0].Status);
         }
 
+        /// <summary>
+        /// Verifies that cancelling a valid walk request
+        /// returns 204 No Content and updates status to "Cancelled".
+        /// Related to US08 - Cancel Walk Request.
+        /// </summary>
         [Fact]
         public async Task CancelWalkRequest_ValidId_Returns204NoContent()
         {
@@ -284,6 +289,26 @@ namespace Walkies.Tests
                 .FirstOrDefaultAsync(wr => wr.Id == walkRequest.Id,
                 TestContext.Current.CancellationToken);
             Assert.Equal("Cancelled", cancelled!.Status);
+        }
+
+        /// <summary>
+        /// Verifies that cancelling a non-existent walk
+        /// request returns a 404 Not Found result.
+        /// Related to US08 - Cancel Walk Request.
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task CancelWalkRequest_InvalidId_Returns404NotFound()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.CancelWalkRequest(999);
+
+            // Assert
+            Assert.IsType<NotFoundObjectResult>(result);
         }
     }
 }
