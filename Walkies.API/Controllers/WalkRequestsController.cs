@@ -117,5 +117,32 @@ namespace Walkies.API.Controllers
                 Status = walkRequest.Status
             });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetWalkRequests()
+        {
+            var walkRequests = await _context.WalkRequests
+                .Include(wr => wr.Owner)
+                .Include(wr => wr.Dog)
+                .Where(wr => wr.Status == "Open")
+                .ToListAsync();
+
+            var dtos = walkRequests.Select(wr => new WalkRequestDto
+            {
+                Id = wr.Id,
+                OwnerId = wr.OwnerId,
+                OwnerName = $"{wr.Owner.FirstName} {wr.Owner.LastName}",
+                DogId = wr.DogId,
+                DogName = wr.Dog.Name,
+                RequestedDate = wr.RequestedDate,
+                DurationMinutes = wr.DurationMinutes,
+                Location = wr.Location,
+                Latitude= wr.Latitude,
+                Longitude = wr.Longitude,
+                Status = wr.Status
+            }).ToList();
+
+            return Ok(dtos);
+        }
     }
 }
