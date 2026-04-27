@@ -78,9 +78,9 @@ namespace Walkies.Tests
 
             // Assert
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            var walkRequest = Assert.IsType<WalkRequest>(createdResult.Value);
+            var walkRequest = Assert.IsType<WalkRequestDto>(createdResult.Value);
             Assert.Equal("Open", walkRequest.Status);
-            Assert.Equal("Dinah", walkRequest.Dog.Name);
+            Assert.Equal("Dinah", walkRequest.DogName);
             Assert.Equal(owner.Id, walkRequest.OwnerId);
         }
     }
