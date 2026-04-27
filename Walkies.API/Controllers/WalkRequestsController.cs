@@ -44,7 +44,7 @@ namespace Walkies.API.Controllers
             var dog = await _context.Dogs.FirstOrDefaultAsync(d => d.Id == dto.DogId);
             if (dog == null)
             {
-                return NotFound(new {message="Dog not found"});
+                return NotFound(new { message = "Dog not found" });
             }
 
             var walkRequest = new WalkRequest
@@ -99,7 +99,7 @@ namespace Walkies.API.Controllers
 
             if (walkRequest == null)
             {
-                return NotFound(new {message="Walk request not found"});
+                return NotFound(new { message = "Walk request not found" });
             }
 
             return Ok(new WalkRequestDto
@@ -143,7 +143,7 @@ namespace Walkies.API.Controllers
                 RequestedDate = wr.RequestedDate,
                 DurationMinutes = wr.DurationMinutes,
                 Location = wr.Location,
-                Latitude= wr.Latitude,
+                Latitude = wr.Latitude,
                 Longitude = wr.Longitude,
                 Status = wr.Status
             }).ToList();
@@ -168,7 +168,7 @@ namespace Walkies.API.Controllers
 
             if (walkRequest == null)
             {
-                return NotFound(new {message="Walk request not found"});
+                return NotFound(new { message = "Walk request not found" });
             }
 
             walkRequest.Status = "Cancelled";
