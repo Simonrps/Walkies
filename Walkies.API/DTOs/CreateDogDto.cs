@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Walkies.API.DTOs
 {
@@ -38,7 +39,7 @@ namespace Walkies.API.DTOs
         /// <summary>
         /// Gets or sets the unique identifier of the owner
         /// </summary>
-        [Required]
+        [Required, JsonRequired]
         public int OwnerId { get; set; }
     }
 }
