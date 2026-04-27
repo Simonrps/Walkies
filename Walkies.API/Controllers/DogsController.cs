@@ -143,5 +143,21 @@ namespace Walkies.API.Controllers
                 OwnerName = $"{dog.Owner.FirstName} {dog.Owner.LastName}"
             });
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteDog(int id)
+        { 
+            var dog = await _context.Dogs.FirstOrDefaultAsync(d => d.Id == id);
+
+            if (dog == null)
+            {
+                return NotFound(new {message = "Dog not found."});
+            }
+
+            _context.Dogs.Remove(dog);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
