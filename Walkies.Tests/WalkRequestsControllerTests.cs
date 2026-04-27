@@ -164,6 +164,9 @@ namespace Walkies.Tests
             Assert.IsType<NotFoundObjectResult>(result);
         }
 
+        /// <summary>
+        /// Verifies that the GetWalkRequests method returns only walk requests with a status of "Open".
+        /// </summary>
         [Fact]
         public async Task GetWalkRequests_ReturnsOpenRequestsOnly()
         {
@@ -226,6 +229,61 @@ namespace Walkies.Tests
             var requests = Assert.IsType<List<WalkRequestDto>>(okResult.Value);
             Assert.Single(requests);
             Assert.Equal("Open", requests[0].Status);
+        }
+
+        [Fact]
+        public async Task CancelWalkRequest_ValidId_Returns204NoContent()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var owner = new User
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                PasswordHash = "hashedPassword123!##",
+                Role = "Owner"
+            };
+            context.Users.Add(owner);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var dog = new Dog
+            {
+                Name = "Dinah",
+                Breed = "Boxer",
+                Age = 5,
+                OwnerId = owner.Id
+            };
+            context.Dogs.Add(dog);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var walkRequest = new WalkRequest
+            {
+                OwnerId = owner.Id,
+                DogId = dog.Id,
+                RequestedDate = DateTime.UtcNow.AddDays(1),
+                DurationMinutes = 30,
+                Location = "Letterkenny, Co. Donegal",
+                Latitude = 54.9966,
+                Longitude = -7.3086,
+                Status = "Open"
+            };
+            context.WalkRequests.Add(walkRequest);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.CancelWalkRequest(walkRequest.Id);
+
+            // Assert
+            Assert.IsType<NoContentResult>(result);
+
+            // Verify that the walk request status was updated to "Cancelled"
+            var cancelled = await context.WalkRequests
+                .FirstOrDefaultAsync(wr => wr.Id == walkRequest.Id,
+                TestContext.Current.CancellationToken);
+            Assert.Equal("Cancelled", cancelled!.Status);
         }
     }
 }
