@@ -240,6 +240,11 @@ namespace Walkies.Tests
             Assert.NotNull(bookingDto.CheckInTime);
         }
 
+        /// <summary>
+        /// Verifies that checking out on a valid booking returns 200
+        /// with the updated booking status of Completed
+        /// Relates to US13 - Check Out.
+        /// </summary>
         [Fact]
         public async Task CheckOut_ValidId_Returns200WithCompletedStatus()
         {
