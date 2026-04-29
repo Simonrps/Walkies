@@ -31,7 +31,7 @@ namespace Walkies.Tests
         /// <summary>
         /// Creates a test instance of BookingController with in memory DB.
         /// </summary>
-        private static BookingsController CreateController(ApplicationDbContext)
+        private static BookingsController CreateController(ApplicationDbContext context)
         {
             return new BookingsController(context);
         }
