@@ -138,6 +138,12 @@ namespace Walkies.API.Controllers
             });
         }
 
+        /// <summary>
+        /// Retrieves all Bookings. Relates to US11 - View All Bookings
+        /// </summary>
+        /// <returns>
+        /// 200 Ok with a list of bookings
+        /// </returns>
         [HttpGet]
         public async Task<IActionResult> GetBookings()
         {

@@ -186,7 +186,7 @@ namespace Walkies.Tests
             var booking = new WalkBooking
             {
                 WalkRequestId = walkRequest.Id,
-                WalkerId = walkRequest.Id,
+                WalkerId = walker.Id,
                 Status = "Confirmed",
                 CreatedAt = DateTime.UtcNow
             };
@@ -203,6 +203,35 @@ namespace Walkies.Tests
             var bookings = Assert.IsType<List<BookingDto>>(okResult.Value);
             Assert.Single(bookings);
             Assert.Equal("Confirmed", bookings[0].Status);
+        }
+
+        [Fact]
+        public async Task CheckIn_ValidId_Returns200WithActiveStatus()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
+
+            var booking = new WalkBooking
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id,
+                Status = "Confirmed",
+                CreatedAt = DateTime.UtcNow
+            };
+            context.WalkBookings.Add(booking);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.CheckIn(booking.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var bookingDto = Assert.IsType<BookingDto>(okResult.Value);
+            Assert.Equal("Active", bookingDto.Status);
+            Assert.NotNull(bookingDto.CheckInTime);
         }
     }
 }
