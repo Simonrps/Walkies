@@ -27,6 +27,15 @@ namespace Walkies.API.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Creates a new walk booking when a walkeraccepts a walk request.
+        /// Relates to US09 - Accept Walk Request. 
+        /// </summary>
+        /// <param name="dto">The booking details</param>
+        /// <returns>201 Created with booking data n success.
+        /// 400 Bad Request if the request is invalid
+        /// 404 Not Found if the walk request or walker does not exist
+        /// </returns>
         [HttpPost]
         public async Task<IActionResult> CreateBooking([FromBody] CreateBookingDto dto)
         {

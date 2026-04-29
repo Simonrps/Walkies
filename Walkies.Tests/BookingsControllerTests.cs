@@ -89,12 +89,17 @@ namespace Walkies.Tests
             return (owner, walker, dog, walkRequest);
         }
 
+        /// <summary>
+        /// Verifies that a walker accepting a valid walk request returns
+        /// 201 Created with a correct data.
+        /// Related to US09 - Accept Walk Request.
+        /// </summary>
         [Fact]
         public async Task CreateBooking_ValidRequest_Returns201WithBooking()
         {
             /// Arrange
             using var context = CreateContext();
-            var (owner, walker, dog, walkRequest) = await SeedTestDataAsync(context);
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
 
             var controller = CreateController(context);
             var dto = new CreateBookingDto
@@ -112,6 +117,41 @@ namespace Walkies.Tests
             Assert.Equal("Confirmed", booking.Status);
             Assert.Equal("Simone Mulrooney", booking.WalkerName);
             Assert.Equal("Dinah", booking.DogName);
+        }
+
+        /// <summary>
+        /// Verifies that requesting  a valid booking returns 200 OK with correct data.
+        /// Related to US10 - View Booking.
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task GetBooking_ValidId_Returns200WithBooking()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
+
+            var booking = new WalkBooking
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id,
+                Status = "Confirmed",
+                CreatedAt = DateTime.UtcNow
+            };
+            context.WalkBookings.Add(booking);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetBooking(booking.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var bookingDto = Assert.IsType<BookingDto>(okResult.Value);
+            Assert.Equal("Confirmed", bookingDto.Status);
+            Assert.Equal("Simone Mulrooney", bookingDto.WalkerName);
+            Assert.Equal("Dinah", bookingDto.DogName);
         }
     }
 }
