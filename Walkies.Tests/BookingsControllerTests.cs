@@ -303,5 +303,38 @@ namespace Walkies.Tests
             var updatedRequest = Assert.IsType<WalkRequestDto>(okResult.Value);
             Assert.Equal("Declined", updatedRequest.Status);
         }
+
+        [Fact]
+        public async Task CreateBooking_AlreadyAccepted_Returns400BadRequest()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
+
+            // First Acceptance
+            var existingBooking = new WalkBooking
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id,
+                Status = "Confirmed",
+                CreatedAt = DateTime.UtcNow
+            };
+            walkRequest.Status = "Accepted";
+            context.WalkBookings.Add(existingBooking);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+            var dto = new CreateBookingDto
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id
+            };
+
+            // Act
+            var result = await controller.CreateBooking(dto);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
     }
 }
