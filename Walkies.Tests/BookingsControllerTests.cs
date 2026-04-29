@@ -153,5 +153,23 @@ namespace Walkies.Tests
             Assert.Equal("Simone Mulrooney", bookingDto.WalkerName);
             Assert.Equal("Dinah", bookingDto.DogName);
         }
+
+        /// <summary>
+        /// Verifies that requesting a non-existent booking returns
+        /// a 404 Not Found response. Related to US10 - View Booking
+        /// </summary>
+        [Fact]
+        public async Task GetBooking_InvalidId_Returns404NotFound()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetBooking(999);
+
+            // Assert
+            Assert.IsType<NotFoundObjectResult>(result);
+        }
     }
 }
