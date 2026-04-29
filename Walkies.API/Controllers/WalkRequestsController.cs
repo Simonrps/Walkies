@@ -30,6 +30,7 @@ namespace Walkies.API.Controllers
         /// <summary>
         /// Posts a new walk request for a dog owner
         /// Validates that the requested date is in the future
+        /// and that the owner has at least one dog registered
         /// Related ti US06 - Post Walk Request
         /// </summary>
         /// <param name="dto">The walk request details</param>
@@ -55,6 +56,12 @@ namespace Walkies.API.Controllers
             if (owner == null)
             {
                 return NotFound(new { message = "Owner not found" });
+            }
+
+            var ownerHasDogs = await _context.Dogs.AnyAsync(d => d.OwnerId == dto.OwnerId);
+            if (!ownerHasDogs)
+            {
+                return BadRequest(new { message = "Owner must have at least one dog to create a walk request" });
             }
 
             var dog = await _context.Dogs.FirstOrDefaultAsync(d => d.Id == dto.DogId);
