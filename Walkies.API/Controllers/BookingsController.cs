@@ -175,5 +175,45 @@ namespace Walkies.API.Controllers
 
             return Ok(dtos);
         }
+
+        [HttpPut("{id}/checkin")]
+        public async Task<IActionResult> CheckIn(int id)
+        {
+            var booking = await _context.WalkBookings
+                .Include(b => b.Walker)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Owner)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Dog)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (booking == null)
+            {
+                return NotFound(new {message="Booking Not Found"});
+            }
+
+            booking.Status = "Active";
+            booking.CheckInTime = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new BookingDto
+            {
+                Id = booking.Id,
+                WalkRequestId = booking.WalkRequestId,
+                WalkerId = booking.WalkerId,
+                WalkerName = $"{booking.Walker.FirstName} {booking.Walker.LastName}",
+                OwnerId = booking.WalkRequest.OwnerId,
+                OwnerName = $"{booking.WalkRequest.Owner.FirstName} {booking.WalkRequest.Owner.LastName}",
+                DogName = booking.WalkRequest.Dog.Name,
+                ScheduledDate = booking.WalkRequest.RequestedDate,
+                DurationMinutes = booking.WalkRequest.DurationMinutes,
+                Location = booking.WalkRequest.Location,
+                Status = booking.Status,
+                CheckInTime = booking.CheckInTime,
+                CheckOutTime = booking.CheckOutTime,
+                CreatedAt = booking.CreatedAt,
+            });
+        }
     }
 }

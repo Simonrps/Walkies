@@ -205,6 +205,12 @@ namespace Walkies.Tests
             Assert.Equal("Confirmed", bookings[0].Status);
         }
 
+        /// <summary>
+        /// Verifies that checking in on a valid booking returns 200 Ok
+        /// with te updated booking status of Active.
+        /// Relates to US12 - Check In.
+        /// </summary>
+        /// <returns></returns>
         [Fact]
         public async Task CheckIn_ValidId_Returns200WithActiveStatus()
         {
