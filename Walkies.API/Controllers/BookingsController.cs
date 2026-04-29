@@ -1,0 +1,231 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Walkies.API.Data;
+using Walkies.API.DTOs;
+using Walkies.API.Models;
+
+namespace Walkies.API.Controllers
+{
+    /// <summary>
+    /// Handles booking management for the Walkies API. Provides endpoints
+    /// for creating, retrieveing and managing the booking lifecycle.
+    /// Relates to US09 - Accept Walk Request, US10 - View Booking,
+    /// US11 - View All Bookings, US12 - Check In, US13 - Check out
+    /// </summary>
+    [ApiController]
+    [Route("api/[controller]")]
+    public class BookingsController : ControllerBase
+    {
+        private readonly ApplicationDbContext _context;
+
+        /// <summary>
+        /// Initialises a new instance of the BookingsController
+        /// </summary>
+        /// <param name="context">The databse context</param>
+        public BookingsController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        /// <summary>
+        /// Creates a new walk booking when a walkeraccepts a walk request.
+        /// Relates to US09 - Accept Walk Request. 
+        /// </summary>
+        /// <param name="dto">The booking details</param>
+        /// <returns>201 Created with booking data n success.
+        /// 400 Bad Request if the request is invalid
+        /// 404 Not Found if the walk request or walker does not exist
+        /// </returns>
+        [HttpPost]
+        public async Task<IActionResult> CreateBooking([FromBody] CreateBookingDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var walkRequest = await _context.WalkRequests
+                .Include(wr => wr.Owner)
+                .Include(wr => wr.Dog)
+                .FirstOrDefaultAsync(wr => wr.Id == dto.WalkRequestId);
+
+            if (walkRequest == null)
+            {
+                return NotFound(new { message = "Walk Request Not Found" });
+            }
+
+            var walker = await _context.Users.FirstOrDefaultAsync(u => u.Id == dto.WalkerId);
+
+            if (walker == null)
+            {
+                return NotFound(new { message = "Walker Not Found" });
+            }
+
+            var booking = new WalkBooking
+            {
+                WalkRequestId = dto.WalkRequestId,
+                WalkerId = dto.WalkerId,
+                Status = "Confirmed",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            walkRequest.Status = "Accepted";
+
+            _context.WalkBookings.Add(booking);
+            await _context.SaveChangesAsync();
+
+            var createdBooking = await _context.WalkBookings
+                .Include(b => b.Walker)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Owner)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Dog)
+                .FirstOrDefaultAsync(b => b.Id == booking.Id);
+
+            if (createdBooking == null)
+            {
+                return NotFound(new { message = "Booking Not Found After Creation" });
+            }
+
+            return CreatedAtAction(nameof(GetBooking), new { id = createdBooking.Id }, MapToDto(createdBooking));
+        }
+
+        /// <summary>
+        /// Retrieves a booking bu its unique identifier
+        /// Related to US10 - View Booking
+        /// </summary>
+        /// <param name="id">The unique identifier of the booking</param>
+        /// <returns>
+        /// 200 OK with booking data on success
+        /// 400 not Found of the booking does not exist
+        /// </returns>
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBooking(int id)
+        {
+            var booking = await _context.WalkBookings
+                .Include(b => b.Walker)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Owner)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Dog)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (booking == null)
+            {
+                return NotFound(new { message = "Booking Not Found" });
+            }
+
+            return Ok(MapToDto(booking));
+        }
+
+        /// <summary>
+        /// Retrieves all Bookings. Relates to US11 - View All Bookings
+        /// </summary>
+        /// <returns>
+        /// 200 Ok with a list of bookings
+        /// </returns>
+        [HttpGet]
+        public async Task<IActionResult> GetBookings()
+        {
+            var bookings = await _context.WalkBookings
+                .Include(b => b.Walker)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Owner)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Dog)
+                .ToListAsync();
+
+            return Ok(bookings.Select(MapToDto).ToList());
+        }
+
+        /// <summary>
+        /// Records when the walker checks in for a walk.
+        /// Updates the booking status to "Active" and sets the check-in time.
+        /// Related to US12 - Check In
+        /// </summary>
+        /// <param name="id">The unique identifer of the booking</param>
+        /// <returns>
+        /// 200 Ok with updated booking data on success
+        /// 404 Not Found if the booking does not exist
+        /// </returns>
+        [HttpPut("{id}/checkin")]
+        public async Task<IActionResult> CheckIn(int id)
+        {
+            var booking = await _context.WalkBookings
+                .Include(b => b.Walker)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Owner)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Dog)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (booking == null)
+            {
+                return NotFound(new { message = "Booking Not Found" });
+            }
+
+            booking.Status = "Active";
+            booking.CheckInTime = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(MapToDto(booking));
+        }
+
+        /// <summary>
+        /// Records the walker checking out at the end of a walk
+        /// Updates the booking status to "Completed"
+        /// Related to US13 - Check Out
+        /// </summary>
+        /// <param name="id">The bookings unique identifer</param>
+        /// <returns>
+        /// 200 OK with updated booking data on success
+        /// 404 Not Found if the booking does not exist
+        /// </returns>
+        [HttpPut("{id}/checkout")]
+        public async Task<IActionResult> CheckOut(int id)
+        {
+            var booking = await _context.WalkBookings
+                .Include(b => b.Walker)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Owner)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Dog)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (booking == null)
+            {
+                return NotFound(new { message = "Booking Not Found" });
+            }
+
+            booking.Status = "Completed";
+            booking.CheckOutTime = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(MapToDto(booking));
+        }
+
+        /// <summary>
+        /// Maps a WalkBooking to a BookingDto
+        /// </summary>
+        private static BookingDto MapToDto(WalkBooking booking) => new BookingDto
+        {
+            Id = booking.Id,
+            WalkRequestId = booking.WalkRequestId,
+            WalkerId = booking.WalkerId,
+            WalkerName = $"{booking.Walker.FirstName} {booking.Walker.LastName}",
+            OwnerId = booking.WalkRequest.OwnerId,
+            OwnerName = $"{booking.WalkRequest.Owner.FirstName} {booking.WalkRequest.Owner.LastName}",
+            DogName = booking.WalkRequest.Dog.Name,
+            ScheduledDate = booking.WalkRequest.RequestedDate,
+            DurationMinutes = booking.WalkRequest.DurationMinutes,
+            Location = booking.WalkRequest.Location,
+            Status = booking.Status,
+            CheckInTime = booking.CheckInTime,
+            CheckOutTime = booking.CheckOutTime,
+            CreatedAt = booking.CreatedAt
+        };
+    }
+}
