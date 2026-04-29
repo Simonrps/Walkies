@@ -27,12 +27,28 @@ namespace Walkies.API.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Posts a new walk request for a dog owner
+        /// Validates that the requested date is in the future
+        /// Related ti US06 - Post Walk Request
+        /// </summary>
+        /// <param name="dto">The walk request details</param>
+        /// <returns>
+        /// 201 created with the walk request details on success
+        /// 400 Bad Request if the input is invalid or the requested date is in the past
+        /// 404 Not Found if the specified owner or dog does not exist
+        /// </returns>
         [HttpPost]
         public async Task<IActionResult> PostWalkRequest([FromBody] CreateWalkRequestDto dto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            if (dto.RequestedDate < DateTime.UtcNow)
+            {
+                return BadRequest(new { message = "Walk request date must be in the future" });
             }
 
             var owner = await _context.Users.FirstOrDefaultAsync(u => u.Id == dto.OwnerId);
