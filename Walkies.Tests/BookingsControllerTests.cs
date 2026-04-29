@@ -274,5 +274,28 @@ namespace Walkies.Tests
             Assert.Equal("Completed", bookingDto.Status);
             Assert.NotNull(bookingDto.CheckOutTime);
         }
+
+        [Fact]
+        public async Task DeclineBooking_ValidId_Returns200WithDeclinedStatus()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
+
+            var controller = CreateContext();
+            var dto = new CreateBookingDto
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id
+            };
+
+            // Act
+            var result = await controller.CreateBooking(dto);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var updatedRequest = Assert.IsType<WalkRequest>(okResult.Value);
+            Assert.Equal("Declined", updatedRequest.Status);
+        }
     }
 }
