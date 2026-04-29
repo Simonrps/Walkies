@@ -340,5 +340,35 @@ namespace Walkies.Tests
             // Assert
             Assert.IsType<BadRequestObjectResult>(result);
         }
+
+        /// <summary>
+        /// Verifies that cancelling a valid booking returns 200
+        /// and updates the booking status to Cancelled.
+        /// Relates to US11 - Cancellation
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task CancelBooking_ValidId_Returns200WithCancelledStatus()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
+            var booking = new WalkBooking
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id,
+                Status = "Confirmed",
+                CreatedAt = DateTime.UtcNow
+            };
+            context.WalkBookings.Add(booking);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+            var controller = CreateController(context);
+            // Act
+            var result = await controller.CancelBooking(booking.Id);
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var bookingDto = Assert.IsType<BookingDto>(okResult.Value);
+            Assert.Equal("Cancelled", bookingDto.Status);
+        }
     }
 }
