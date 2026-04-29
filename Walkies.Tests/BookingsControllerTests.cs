@@ -171,5 +171,38 @@ namespace Walkies.Tests
             // Assert
             Assert.IsType<NotFoundObjectResult>(result);
         }
+
+        /// <summary>
+        /// Verifies that requesting all bookings returns 200 with a list of bookings
+        /// Related to - US11 - View All Bookings
+        /// </summary>
+        [Fact]
+        public async Task GetBookings_Returns200WithList()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
+
+            var booking = new WalkBooking
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walkRequest.Id,
+                Status = "Confirmed",
+                CreatedAt = DateTime.UtcNow
+            };
+            context.WalkBookings.Add(booking);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetBookings();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var bookings = Assert.IsType<List<BookingDto>>(okResult.Value);
+            Assert.Single(bookings);
+            Assert.Equal("Confirmed", bookings[0].Id);
+        }
     }
 }
