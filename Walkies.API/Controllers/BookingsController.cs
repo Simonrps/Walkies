@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Walkies.API.Data;
 using Walkies.API.DTOs;
 using Walkies.API.Models;
@@ -19,7 +20,7 @@ namespace Walkies.API.Controllers
         private readonly ApplicationDbContext _context;
 
         /// <summary>
-        /// Initialises a new instance of the BookingsController with the provided
+        /// Initialises a new instance of the BookingsController
         /// </summary>
         /// <param name="context">The databse context</param>
         public BookingsController(ApplicationDbContext context)
@@ -74,24 +75,20 @@ namespace Walkies.API.Controllers
             _context.WalkBookings.Add(booking);
             await _context.SaveChangesAsync();
 
-            var bookingDto = new BookingDto
-            {
-                Id = booking.Id,
-                WalkRequestId = booking.WalkRequestId,
-                WalkerId = booking.WalkerId,
-                WalkerName = $"{walker.FirstName} {walker.LastName}",
-                OwnerId = walkRequest.OwnerId,
-                OwnerName = $"{walkRequest.Owner.FirstName} {walkRequest.Owner.LastName}",
-                DogName = walkRequest.Dog.Name,
-                ScheduledDate = walkRequest.CreatedAt,
-                DurationMinutes = walkRequest.DurationMinutes,
-                Status = booking.Status,
-                CheckInTime = booking.CheckInTime,
-                CheckOutTime = booking.CheckOutTime,
-                CreatedAt = booking.CreatedAt
-            };
+            var createdBooking = await _context.WalkBookings
+                .Include(b => b.Walker)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Owner)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Dog)
+                .FirstOrDefaultAsync(b => b.Id == booking.Id);
 
-            return CreatedAtAction(nameof(GetBooking), new { id = booking.Id }, bookingDto);
+            if (createdBooking == null)
+            {
+                return NotFound(new { message = "Booking Not Found After Creation" });
+            }
+
+            return CreatedAtAction(nameof(GetBooking), new { id = createdBooking.Id }, MapToDto(createdBooking));
         }
 
         /// <summary>
@@ -119,23 +116,7 @@ namespace Walkies.API.Controllers
                 return NotFound(new { message = "Booking Not Found" });
             }
 
-            return Ok(new BookingDto
-            {
-                Id = booking.Id,
-                WalkRequestId = booking.WalkRequestId,
-                WalkerId = booking.WalkerId,
-                WalkerName = $"{booking.Walker.FirstName} {booking.Walker.LastName}",
-                OwnerId = booking.WalkRequest.OwnerId,
-                OwnerName = $"{booking.WalkRequest.Owner.FirstName} {booking.WalkRequest.Owner.LastName}",
-                DogName = booking.WalkRequest.Dog.Name,
-                ScheduledDate = booking.WalkRequest.RequestedDate,
-                DurationMinutes = booking.WalkRequest.DurationMinutes,
-                Location = booking.WalkRequest.Location,
-                Status = booking.Status,
-                CheckInTime = booking.CheckInTime,
-                CheckOutTime = booking.CheckOutTime,
-                CreatedAt = booking.CreatedAt
-            });
+            return Ok(MapToDto(booking));
         }
 
         /// <summary>
@@ -155,25 +136,7 @@ namespace Walkies.API.Controllers
                 .ThenInclude(wr => wr.Dog)
                 .ToListAsync();
 
-            var dtos = bookings.Select(b => new BookingDto
-            {
-                Id = b.Id,
-                WalkRequestId = b.WalkRequestId,
-                WalkerId = b.WalkerId,
-                WalkerName = $"{b.Walker.FirstName} {b.Walker.LastName}",
-                OwnerId = b.WalkRequest.OwnerId,
-                OwnerName = $"{b.WalkRequest.Owner.FirstName} {b.WalkRequest.Owner.LastName}",
-                DogName = b.WalkRequest.Dog.Name,
-                ScheduledDate = b.WalkRequest.RequestedDate,
-                DurationMinutes = b.WalkRequest.DurationMinutes,
-                Location = b.WalkRequest.Location,
-                Status = b.Status,
-                CheckInTime = b.CheckInTime,
-                CheckOutTime = b.CheckOutTime,
-                CreatedAt = b.CreatedAt
-            }).ToList();
-
-            return Ok(dtos);
+            return Ok(bookings.Select(MapToDto).ToList());
         }
 
         /// <summary>
@@ -207,25 +170,19 @@ namespace Walkies.API.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(new BookingDto
-            {
-                Id = booking.Id,
-                WalkRequestId = booking.WalkRequestId,
-                WalkerId = booking.WalkerId,
-                WalkerName = $"{booking.Walker.FirstName} {booking.Walker.LastName}",
-                OwnerId = booking.WalkRequest.OwnerId,
-                OwnerName = $"{booking.WalkRequest.Owner.FirstName} {booking.WalkRequest.Owner.LastName}",
-                DogName = booking.WalkRequest.Dog.Name,
-                ScheduledDate = booking.WalkRequest.RequestedDate,
-                DurationMinutes = booking.WalkRequest.DurationMinutes,
-                Location = booking.WalkRequest.Location,
-                Status = booking.Status,
-                CheckInTime = booking.CheckInTime,
-                CheckOutTime = booking.CheckOutTime,
-                CreatedAt = booking.CreatedAt,
-            });
+            return Ok(MapToDto(booking));
         }
 
+        /// <summary>
+        /// Records the walker checking out at the end of a walk
+        /// Updates the booking status to "Completed"
+        /// Related to US13 - Check Out
+        /// </summary>
+        /// <param name="id">The bookings unique identifer</param>
+        /// <returns>
+        /// 200 OK with updated booking data on success
+        /// 404 Not Found if the booking does not exist
+        /// </returns>
         [HttpPut("{id}/checkout")]
         public async Task<IActionResult> CheckOut(int id)
         {
@@ -247,23 +204,28 @@ namespace Walkies.API.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(new BookingDto
-            {
-                Id = booking.Id,
-                WalkRequestId = booking.WalkRequestId,
-                WalkerId = booking.WalkerId,
-                WalkerName = $"{booking.Walker.FirstName} {booking.Walker.LastName}",
-                OwnerId = booking.WalkRequest.OwnerId,
-                OwnerName = $"{booking.WalkRequest.Owner.FirstName} {booking.WalkRequest.Owner.LastName}",
-                DogName = booking.WalkRequest.Dog.Name,
-                ScheduledDate = booking.WalkRequest.RequestedDate,
-                DurationMinutes = booking.WalkRequest.DurationMinutes,
-                Location = booking.WalkRequest.Location,
-                Status = booking.Status,
-                CheckInTime = booking.CheckInTime,
-                CheckOutTime = booking.CheckOutTime,
-                CreatedAt = booking.CreatedAt,
-            });
+            return Ok(MapToDto(booking));
         }
+
+        /// <summary>
+        /// Maps a WalkBooking to a BookingDto
+        /// </summary>
+        private static BookingDto MapToDto(WalkBooking booking) => new BookingDto
+        {
+            Id = booking.Id,
+            WalkRequestId = booking.WalkRequestId,
+            WalkerId = booking.WalkerId,
+            WalkerName = $"{booking.Walker.FirstName} {booking.Walker.LastName}",
+            OwnerId = booking.WalkRequest.OwnerId,
+            OwnerName = $"{booking.WalkRequest.Owner.FirstName} {booking.WalkRequest.Owner.LastName}",
+            DogName = booking.WalkRequest.Dog.Name,
+            ScheduledDate = booking.WalkRequest.RequestedDate,
+            DurationMinutes = booking.WalkRequest.DurationMinutes,
+            Location = booking.WalkRequest.Location,
+            Status = booking.Status,
+            CheckInTime = booking.CheckInTime,
+            CheckOutTime = booking.CheckOutTime,
+            CreatedAt = booking.CreatedAt
+        };
     }
 }
