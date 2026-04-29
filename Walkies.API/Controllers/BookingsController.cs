@@ -255,6 +255,41 @@ namespace Walkies.API.Controllers
         }
 
         /// <summary>
+        /// Cancels a confirmed booking for either an owner or walker.
+        /// Updates the booking status to "Cancelled" and returns the
+        /// walk request to Open status
+        /// Related to US11 - Cancellation
+        /// </summary>
+        /// <param name="id">Unique identifier for booking</param>
+        /// <returns>
+        /// 200 OK with updated booking data on success
+        /// 404 not found if the booking does not exist
+        /// </returns>
+        [HttpPut("{id}/cancel")]
+        public async Task<IActionResult> CancelBooking(int id)
+        {
+            var booking = await _context.WalkBookings
+                .Include(b => b.Walker)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Owner)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Dog)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (booking == null)
+            {
+                return NotFound(new { message = "Booking Not Found" });
+            }
+
+            booking.Status = "Cancelled";
+            booking.WalkRequest.Status = "Open";
+
+            await _context.SaveChangesAsync();
+
+            return Ok(MapToDto(booking));
+        }
+
+        /// <summary>
         /// Maps a WalkBooking to a BookingDto
         /// </summary>
         private static BookingDto MapToDto(WalkBooking booking) => new BookingDto
