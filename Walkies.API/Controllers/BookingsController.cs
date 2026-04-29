@@ -92,6 +92,48 @@ namespace Walkies.API.Controllers
         }
 
         /// <summary>
+        /// Declines a walk request on behalf of a walker
+        /// Updates the walk request to declined
+        /// Related to US09 - Accept or decline Request
+        /// </summary>
+        /// <param name="dto">booking details identifying the request to be declined</param>
+        /// <returns>
+        /// 200 Ok with updated walk request data on success
+        /// 4040 not found if the walk request does not exist
+        /// </returns>
+        [HttpPost("decline")]
+        public async Task<IActionResult> DeclineBooking([FromBody] CreateBookingDto dto)
+        {
+            var walkRequest = await _context.WalkRequests
+                .Include(wr => wr.Owner)
+                .Include(wr => wr.Dog)
+                .FirstOrDefaultAsync(wr => wr.Id == dto.WalkRequestId);
+
+            if (walkRequest == null)
+            {
+                return NotFound(new { message = "Walk Request Not Found" });
+            }
+
+            walkRequest.Status = "Declined";
+            await _context.SaveChangesAsync();
+
+            return Ok(new WalkRequestDto
+            {
+                Id = walkRequest.Id,
+                OwnerId = walkRequest.OwnerId,
+                OwnerName = $"{walkRequest.Owner.FirstName} {walkRequest.Owner.LastName}",
+                DogId = walkRequest.DogId,
+                DogName = walkRequest.Dog.Name,
+                RequestedDate = walkRequest.RequestedDate,
+                DurationMinutes = walkRequest.DurationMinutes,
+                Location = walkRequest.Location,
+                Latitude = walkRequest.Latitude,
+                Longitude = walkRequest.Longitude,
+                Status = walkRequest.Status
+            });
+        }
+        
+        /// <summary>
         /// Retrieves a booking bu its unique identifier
         /// Related to US10 - View Booking
         /// </summary>

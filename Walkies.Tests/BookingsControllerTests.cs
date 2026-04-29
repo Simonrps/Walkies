@@ -275,6 +275,12 @@ namespace Walkies.Tests
             Assert.NotNull(bookingDto.CheckOutTime);
         }
 
+        /// <summary>
+        /// Verifies that declining a valid walk request returns 200
+        /// and updates the walk request status to Declined.
+        /// Relates to US09 - Accept or Declined Request.
+        /// </summary>
+        /// <returns></returns>
         [Fact]
         public async Task DeclineBooking_ValidId_Returns200WithDeclinedStatus()
         {
@@ -290,7 +296,7 @@ namespace Walkies.Tests
             };
 
             // Act
-            var result = await controller.CreateBooking(dto);
+            var result = await controller.DeclineBooking(dto);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
