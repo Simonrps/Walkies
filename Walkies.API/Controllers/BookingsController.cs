@@ -94,6 +94,15 @@ namespace Walkies.API.Controllers
             return CreatedAtAction(nameof(GetBooking), new { id = booking.Id }, bookingDto);
         }
 
+        /// <summary>
+        /// Retrieves a booking bu its unique identifier
+        /// Related to US10 - View Booking
+        /// </summary>
+        /// <param name="id">The unique identifier of the booking</param>
+        /// <returns>
+        /// 200 OK with booking data on success
+        /// 400 not Found of the booking does not exist
+        /// </returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBooking(int id)
         {
@@ -127,6 +136,38 @@ namespace Walkies.API.Controllers
                 CheckOutTime = booking.CheckOutTime,
                 CreatedAt = booking.CreatedAt
             });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetBookings()
+        {
+            var bookings = await _context.WalkBookings
+                .Include(b => b.Walker)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Owner)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Dog)
+                .ToListAsync();
+
+            var dtos = bookings.Select(b => new BookingDto
+            {
+                Id = b.Id,
+                WalkRequestId = b.WalkRequestId,
+                WalkerId = b.WalkerId,
+                WalkerName = $"{b.Walker.FirstName} {b.Walker.LastName}",
+                OwnerId = b.WalkRequest.OwnerId,
+                OwnerName = $"{b.WalkRequest.Owner.FirstName} {b.WalkRequest.Owner.LastName}",
+                DogName = b.WalkRequest.Dog.Name,
+                ScheduledDate = b.WalkRequest.RequestedDate,
+                DurationMinutes = b.WalkRequest.DurationMinutes,
+                Location = b.WalkRequest.Location,
+                Status = b.Status,
+                CheckInTime = b.CheckInTime,
+                CheckOutTime = b.CheckOutTime,
+                CreatedAt = b.CreatedAt
+            }).ToList();
+
+            return Ok(dtos);
         }
     }
 }

@@ -202,7 +202,7 @@ namespace Walkies.Tests
             var okResult = Assert.IsType<OkObjectResult>(result);
             var bookings = Assert.IsType<List<BookingDto>>(okResult.Value);
             Assert.Single(bookings);
-            Assert.Equal("Confirmed", bookings[0].Id);
+            Assert.Equal("Confirmed", bookings[0].Status);
         }
     }
 }
