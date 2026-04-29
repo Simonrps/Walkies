@@ -176,6 +176,16 @@ namespace Walkies.API.Controllers
             return Ok(dtos);
         }
 
+        /// <summary>
+        /// Records when the walker checks in for a walk.
+        /// Updates the booking status to "Active" and sets the check-in time.
+        /// Related to US12 - Check In
+        /// </summary>
+        /// <param name="id">The unique identifer of the booking</param>
+        /// <returns>
+        /// 200 Ok with updated booking data on success
+        /// 404 Not Found if the booking does not exist
+        /// </returns>
         [HttpPut("{id}/checkin")]
         public async Task<IActionResult> CheckIn(int id)
         {

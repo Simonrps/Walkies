@@ -239,5 +239,35 @@ namespace Walkies.Tests
             Assert.Equal("Active", bookingDto.Status);
             Assert.NotNull(bookingDto.CheckInTime);
         }
+
+        [Fact]
+        public async Task CheckOut_ValidId_Returns200WithCompletedStatus()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
+
+            var booking = new WalkBooking
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id,
+                Status = "Active",
+                CreatedAt = DateTime.UtcNow.AddMinutes(-30),
+                CheckInTime = DateTime.UtcNow.AddMinutes(-30)
+            };
+            context.WalkBookings.Add(booking);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.CheckOut(booking.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var bookingDto = Assert.IsType<BookingDto>(okResult.Value);
+            Assert.Equal("Completed", bookingDto.Status);
+            Assert.NotNull(bookingDto.CheckOutTime);
+        }
     }
 }
