@@ -288,7 +288,7 @@ namespace Walkies.Tests
             using var context = CreateContext();
             var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
 
-            var controller = CreateContext();
+            var controller = CreateController(context);
             var dto = new CreateBookingDto
             {
                 WalkRequestId = walkRequest.Id,
@@ -300,7 +300,7 @@ namespace Walkies.Tests
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var updatedRequest = Assert.IsType<WalkRequest>(okResult.Value);
+            var updatedRequest = Assert.IsType<WalkRequestDto>(okResult.Value);
             Assert.Equal("Declined", updatedRequest.Status);
         }
     }
