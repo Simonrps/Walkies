@@ -51,14 +51,14 @@ namespace Walkies.API.Controllers
 
             if (walkRequest == null)
             {
-                return NotFound(new {message="Walk Request Not Found"});
+                return NotFound(new { message = "Walk Request Not Found" });
             }
 
             var walker = await _context.Users.FirstOrDefaultAsync(u => u.Id == dto.WalkerId);
 
             if (walker == null)
             {
-                return NotFound(new {message="Walker Not Found"});
+                return NotFound(new { message = "Walker Not Found" });
             }
 
             var booking = new WalkBooking
@@ -116,7 +116,7 @@ namespace Walkies.API.Controllers
 
             if (booking == null)
             {
-                return NotFound(new {message="Booking Not Found"});
+                return NotFound(new { message = "Booking Not Found" });
             }
 
             return Ok(new BookingDto
@@ -199,7 +199,7 @@ namespace Walkies.API.Controllers
 
             if (booking == null)
             {
-                return NotFound(new {message="Booking Not Found"});
+                return NotFound(new { message = "Booking Not Found" });
             }
 
             booking.Status = "Active";
@@ -239,7 +239,7 @@ namespace Walkies.API.Controllers
 
             if (booking == null)
             {
-                return NotFound(new {message="Booking Not Found"});
+                return NotFound(new { message = "Booking Not Found" });
             }
 
             booking.Status = "Completed";
