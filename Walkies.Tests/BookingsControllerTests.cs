@@ -304,6 +304,10 @@ namespace Walkies.Tests
             Assert.Equal("Declined", updatedRequest.Status);
         }
 
+        /// <summary>
+        /// Verifies that accepting a walk request that has already been accepted returns
+        /// a 400 bad request response. Related to US09 - Accept or Decline Request.
+        /// </summary>
         [Fact]
         public async Task CreateBooking_AlreadyAccepted_Returns400BadRequest()
         {

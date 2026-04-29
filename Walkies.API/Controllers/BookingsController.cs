@@ -62,6 +62,11 @@ namespace Walkies.API.Controllers
                 return NotFound(new { message = "Walker Not Found" });
             }
 
+            if (walkRequest.Status == "Accepted")
+            {
+                return BadRequest(new { message = "Walk Request Already Accepted" });
+            }
+
             var booking = new WalkBooking
             {
                 WalkRequestId = dto.WalkRequestId,
