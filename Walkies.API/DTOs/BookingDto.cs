@@ -78,6 +78,6 @@
         /// <summary>
         /// Gets or sets the date and time the booking was created.
         /// </summary>
-        public DateTime? CreatedDate { get; set; }
+        public DateTime? CreatedAt { get; set; }
     }
 }
