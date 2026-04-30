@@ -370,5 +370,56 @@ namespace Walkies.Tests
             var bookingDto = Assert.IsType<BookingDto>(okResult.Value);
             Assert.Equal("Cancelled", bookingDto.Status);
         }
+
+        [Fact]
+        public async Task GetBooking_ByOwner_ReturnsChronologicalOrder()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (owner, walker, _, walkRequest) = await SeedTestDataAsync(context);
+
+            var walkRequest2 = new WalkRequest
+            {
+                OwnerId = owner.Id,
+                DogId = walkRequest.DogId,
+                RequestedDate = DateTime.UtcNow.AddDays(3),
+                DurationMinutes = 30,
+                Location = "Letterkenny, Co. Donegal",
+                Latitude = 54.9966,
+                Longitude = -7.3086,
+                Status = "Open"
+            };
+            context.WalkRequests.Add(walkRequest2);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            context.WalkBookings.AddRange(
+                new WalkBooking
+                {
+                    WalkRequestId = walkRequest2.Id,
+                    WalkerId = walker.Id,
+                    Status = "Confirmed",
+                    CreatedAt = DateTime.UtcNow
+                },
+                new WalkBooking
+                { 
+                    WalkRequestId = walkRequest.Id,
+                    WalkerId = walker.Id,
+                    Status = "Confirmed",
+                    CreatedAt = DateTime.UtcNow
+                }
+            );
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetBookings(owner.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var bookings = Assert.IsType<List<BookingDto>>(okResult.Value);
+            Assert.Equal(2, bookings.Count);
+            Assert.True(bookings[0].ScheduledDate < bookings[1].ScheduledDate);
+        }
     }
 }
