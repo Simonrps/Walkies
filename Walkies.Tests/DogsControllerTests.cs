@@ -262,7 +262,7 @@ namespace Walkies.Tests
                     Age = 5,
                     OwnerId = owner.Id
                 },
-                new Dog 
+                new Dog
                 {
                     Name = "Penny",
                     Breed = "Boxer",
@@ -283,5 +283,31 @@ namespace Walkies.Tests
             Assert.Equal(2, dogs.Count);
         }
 
+        [Fact]
+        public async Task GetDogsByOwner_NoDogs_Returns200WithEmptyList()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var owner = new User
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                PasswordHash = "hashedPassword!##123",
+                Role = "Owner"
+            };
+            context.Users.Add(owner);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetDogsByOwner(owner.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var dogs = Assert.IsType<List<DogDto>>(okResult.Value);
+            Assert.Empty(dogs);
+        }
     }
 }
