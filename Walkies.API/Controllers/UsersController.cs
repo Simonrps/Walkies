@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Walkies.API.Data;
 using Walkies.API.DTOs;
+using Walkies.API.Services;
 
 namespace Walkies.API.Controllers
 {
@@ -146,7 +147,7 @@ namespace Walkies.API.Controllers
                 )
                 .ToListAsync();
             var nearbyWalkers = walkers
-                .Where(w => CalculateDistance(
+                .Where(w => DistanceCalculator.Calculate(
                     latitude, longitude,
                     w.Latitude!.Value, w.Longitude!.Value) <= distanceKm)
                 .Select(w => new UserProfileDto
@@ -165,34 +166,5 @@ namespace Walkies.API.Controllers
 
             return Ok(nearbyWalkers);
         }
-
-        /// <summary>
-        /// Calculates the great-circle distance between two geographic coordinates using the Haversine formula.
-        /// </summary>
-        /// <remarks>This method assumes the Earth is a perfect sphere and does not account for
-        /// ellipsoidal effects. The result is an approximation suitable for most general purposes.</remarks>
-        /// <param name="lat1">The latitude of the first point, in decimal degrees.</param>
-        /// <param name="lon1">The longitude of the first point, in decimal degrees.</param>
-        /// <param name="lat2">The latitude of the second point, in decimal degrees.</param>
-        /// <param name="lon2">The longitude of the second point, in decimal degrees.</param>
-        /// <returns>The distance between the two points, in kilometers.</returns>
-        private static double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
-        {
-            const double R = 6371; // Radius of the Earth in kilometers
-            var dLat = ToRadians(lat2 - lat1);
-            var dLon = ToRadians(lon2 - lon1);
-            var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
-                    Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2)) *
-                    Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
-            var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-            return R * c;
-        }
-
-        /// <summary>
-        /// Converts an angle from degrees to radians.
-        /// </summary>
-        /// <param name="degrees">The angle in degrees to convert.</param>
-        /// <returns>The equivalent angle measured in radians.</returns>
-        private static double ToRadians(double degrees) => degrees * (Math.PI / 180);
     }
 }

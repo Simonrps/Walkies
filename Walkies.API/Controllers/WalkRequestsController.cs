@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Walkies.API.Data;
 using Walkies.API.DTOs;
 using Walkies.API.Models;
+using Walkies.API.Services;
 
 namespace Walkies.API.Controllers
 {
@@ -141,20 +142,37 @@ namespace Walkies.API.Controllers
             });
         }
         /// <summary>
-        /// Retrieves a list of open walk requests, including owner and dog details.
+        /// Retrieves a list of open walk requests optionally filtered by 
+        /// distance from a specified locations using the haversine formula
+        /// Related to US07 - Walker Searches For Requests.
         /// </summary>
-        /// <remarks>Each walk request in the result includes information about the owner and dog
-        /// associated with the request. Only requests with a status of "Open" are returned.</remarks>
-        /// <returns>An <see cref="IActionResult"/> containing a collection of walk request DTOs for all open requests. The
-        /// result is an HTTP 200 response with the list, or an empty list if no open requests exist.</returns>
+        /// <param name="latitude">Optional latitude of the wlakers location</param>
+        /// <param name="longitude">Optional longitude of the walkers location</param>
+        /// <param name="distanceKm">Optional search radius in kilometres</param>
+        /// <returns>
+        /// 200 OK with a list of walk requests matching the search criteria
+        /// </returns>
         [HttpGet]
-        public async Task<IActionResult> GetWalkRequests()
+        public async Task<IActionResult> GetWalkRequests(
+            [FromQuery] double? latitude = null,
+            [FromQuery] double? longitude = null,
+            [FromQuery] double? distanceKm = null
+            )
         {
             var walkRequests = await _context.WalkRequests
                 .Include(wr => wr.Owner)
                 .Include(wr => wr.Dog)
                 .Where(wr => wr.Status == "Open")
                 .ToListAsync();
+
+            if (latitude.HasValue && longitude.HasValue && distanceKm.HasValue)
+            {
+                walkRequests = walkRequests
+                    .Where(wr => DistanceCalculator.Calculate(
+                        latitude.Value, longitude.Value,
+                        wr.Latitude, wr.Longitude) <= distanceKm.Value)
+                    .ToList();
+            }
 
             var dtos = walkRequests.Select(wr => new WalkRequestDto
             {

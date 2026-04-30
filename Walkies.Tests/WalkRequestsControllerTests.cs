@@ -311,6 +311,11 @@ namespace Walkies.Tests
             Assert.IsType<NotFoundObjectResult>(result);
         }
 
+        /// <summary>
+        /// Verifies that posting a walk request with a date in the past
+        /// returns a 400 Bad Request response.
+        /// Related to US06 - Post Walk Request
+        /// </summary>
         [Fact]
         public async Task PostWalkRequest_PastDate_Returns400BadRequest()
         {
@@ -356,6 +361,11 @@ namespace Walkies.Tests
             Assert.IsType<BadRequestObjectResult>(result);
         }
 
+        /// <summary>
+        /// Verifies that posting a walk request when the owner
+        /// has no dogs returns a 400 Bad Request response.
+        /// Related to US06 - Post Walk Request
+        /// </summary>
         [Fact]
         public async Task PostWalkRequest_OwnerHasNoDogs_Returns400BadRequest()
         {
@@ -389,6 +399,144 @@ namespace Walkies.Tests
 
             // Assert
             Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        /// <summary>
+        /// Verifies that searching for walk requests within a valid radius
+        /// returns a 200 with a list of requests within the radius.
+        /// Related to US07 - Walker Searches for Requests
+        /// </summary>
+        [Fact]
+        public async Task GetWalkRequest_WithinRadius_Returns200WithList()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var owner = new User
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                PasswordHash = "hashedPassword123!##",
+                Role = "Owner",
+                Latitude = 54.9966,
+                Longitude = -7.3086
+            };
+            context.Users.Add(owner);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var dog = new Dog
+            {
+                Name = "Dinah",
+                Breed = "Boxer",
+                Age = 5,
+                OwnerId = owner.Id
+            };
+            context.Dogs.Add(dog);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            context.WalkRequests.AddRange(
+                new WalkRequest
+                {
+                    OwnerId = owner.Id,
+                    DogId = dog.Id,
+                    RequestedDate = DateTime.UtcNow.AddDays(1),
+                    DurationMinutes = 30,
+                    Location = "Letterkenny, Co. Donegal",
+                    Latitude = 54.9966,
+                    Longitude = -7.3086,
+                    Status = "Open"
+                },
+                new WalkRequest
+                {
+                    OwnerId = owner.Id,
+                    DogId = dog.Id,
+                    RequestedDate = DateTime.UtcNow.AddDays(2),
+                    DurationMinutes = 45,
+                    Location = "Dublin, Ireland",
+                    Latitude = 53.3498,
+                    Longitude = -6.2603,
+                    Status = "Open"
+                }
+            );
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetWalkRequests(
+                latitude: 54.9966,
+                longitude: -7.3086,
+                distanceKm: 10
+            );
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var requests = Assert.IsType<List<WalkRequestDto>>(okResult.Value);
+            Assert.Single(requests);
+            Assert.Equal("Letterkenny, Co. Donegal", requests[0].Location);
+        }
+
+        /// <summary>
+        /// Verifies that searching for walk requests when none are 
+        /// within the specified radius returns a 200 with an empty list.
+        /// Relate to US07 - Walker Searches for Requests
+        /// </summary>
+        [Fact]
+        public async Task GetWalkRequest_NoneInRadius_Returns200WithEmptyList()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var owner = new User
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                PasswordHash = "hashedPassword123!##",
+                Role = "Owner",
+                Latitude = 54.9966,
+                Longitude = -7.3086
+            };
+            context.Users.Add(owner);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var dog = new Dog
+            {
+                Name = "Dinah",
+                Breed = "Boxer",
+                Age = 5,
+                OwnerId = owner.Id
+            };
+            context.Dogs.Add(dog);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            context.WalkRequests.Add(
+                new WalkRequest
+                {
+                    OwnerId = owner.Id,
+                    DogId = dog.Id,
+                    RequestedDate = DateTime.UtcNow.AddDays(1),
+                    DurationMinutes = 30,
+                    Location = "Dublin",
+                    Latitude = 53.3498,
+                    Longitude = -6.2603,
+                    Status = "Open"
+                }
+            );
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetWalkRequests(
+                latitude: 54.9966,
+                longitude: -7.3086,
+                distanceKm: 10
+            );
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var requests = Assert.IsType<List<WalkRequestDto>>(okResult.Value);
+            Assert.Empty(requests);
         }
     }
 }
