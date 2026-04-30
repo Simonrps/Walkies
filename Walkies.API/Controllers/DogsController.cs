@@ -109,6 +109,48 @@ namespace Walkies.API.Controllers
             });
         }
 
+        /// <summary>
+        /// Retrieves all dogs associated with a specific owner
+        ///  Returns an empty list of the owner has no dogs registered.
+        ///  Related to US04 -Add Dog
+        /// </summary>
+        /// <param name="ownerId">The unique identifier of the owner.</param>
+        /// <returns>
+        /// 200 OK with a list of dogs on success.
+        /// </returns>
+        [HttpGet]
+        public async Task<IActionResult> GetDogsByOwner([FromQuery] int ownerId)
+        {
+            var dogs = await _context.Dogs
+                .Include(d => d.Owner)
+                .Where(d => d.OwnerId == ownerId)
+                .ToListAsync();
+
+            var dtos = dogs.Select(d => new DogDto
+            {
+                Id = d.Id,
+                Name = d.Name,
+                Breed = d.Breed,
+                Age = d.Age,
+                Notes = d.Notes,
+                OwnerId = d.OwnerId,
+                OwnerName = $"{d.Owner.FirstName} {d.Owner.LastName}"
+            }).ToList();
+
+            return Ok(dtos);
+        }
+
+        /// <summary>
+        /// Updates an existing dog profile by its unique identifier.
+        /// Related to US05 - Edit Dog
+        /// </summary>
+        /// <param name="id">The unique identifier of the dog</param>
+        /// <param name="dto">The updated dog details</param>
+        /// <returns>
+        /// 200 OK with updated dog data on success
+        /// 400 bad request if the request is invalid
+        /// 404 not found if the dog doesnt exist
+        /// </returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateDog(int id, [FromBody] UpdateDogDto dto)
         {
@@ -144,6 +186,15 @@ namespace Walkies.API.Controllers
             });
         }
 
+        /// <summary>
+        /// Deletes a dog profile by its unique identifier.
+        /// Related to US05 - Edit Dog
+        /// </summary>
+        /// <param name="id">The unique identifier of the dog</param>
+        /// <returns>
+        /// 204 No Content on successful deletion
+        /// 404 Not Found if the dog does not exist
+        /// </returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDog(int id)
         {
