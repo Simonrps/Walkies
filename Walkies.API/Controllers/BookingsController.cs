@@ -176,20 +176,31 @@ namespace Walkies.API.Controllers
         }
 
         /// <summary>
-        /// Retrieves all Bookings. Relates to US11 - View All Bookings
+        /// Retrieves all Bookings optionally filtered by owner.
+        /// Results are returned in chronological order by scheduled date.
+        /// Relates to US11 - View All Bookings, US13 - View Confirmed Bookings
         /// </summary>
         /// <returns>
-        /// 200 Ok with a list of bookings
+        /// 200 Ok with a list of bookings in chronological order on success
         /// </returns>
         [HttpGet]
-        public async Task<IActionResult> GetBookings()
+        public async Task<IActionResult> GetBookings([FromQuery] int? ownerId = null)
         {
-            var bookings = await _context.WalkBookings
+            var query = _context.WalkBookings
                 .Include(b => b.Walker)
                 .Include(b => b.WalkRequest)
                 .ThenInclude(wr => wr.Owner)
                 .Include(b => b.WalkRequest)
                 .ThenInclude(wr => wr.Dog)
+                .AsQueryable();
+
+            if (ownerId.HasValue)
+            {
+                query = query.Where(b => b.WalkRequest.OwnerId == ownerId.Value);
+            }
+
+            var bookings = await query
+                .OrderBy(b => b.WalkRequest.RequestedDate)
                 .ToListAsync();
 
             return Ok(bookings.Select(MapToDto).ToList());

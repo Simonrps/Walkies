@@ -371,6 +371,11 @@ namespace Walkies.Tests
             Assert.Equal("Cancelled", bookingDto.Status);
         }
 
+        /// <summary>
+        /// Verifies that getting bookins filtered by owner returns 200
+        /// with bookings in chronological order.
+        /// Relates to US11 - View Confirmed Bookings.
+        /// </summary>
         [Fact]
         public async Task GetBooking_ByOwner_ReturnsChronologicalOrder()
         {
