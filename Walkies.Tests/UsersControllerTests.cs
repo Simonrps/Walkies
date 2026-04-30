@@ -264,7 +264,7 @@ namespace Walkies.Tests
             var result = await controller.GetWalkers(
                 latitude: 54.9966,
                 longitude: -7.3086,
-                distanceKm: 0, 
+                distanceKm: 0,
                 date: DateTime.UtcNow.AddDays(1).Date);
 
             // Assert
