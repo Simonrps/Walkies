@@ -20,6 +20,15 @@ namespace Walkies.API.Controllers
         private readonly ApplicationDbContext _context;
 
         /// <summary>
+        /// Defining constants for use in the controller
+        /// </summary>
+        private const string BookingNotFoundMessage = "Booking Not Found";
+        private const string WalkRequestNotFoundMessage = "Walk Request Not Found";
+        private const string WalkerNotFoundMessage = "Walker Not Found";
+        private const string WalkRequestAlreadyAcceptedMessage = "Walk Request Already Accepted";
+        private const string BookingNotFoundAfterCreationMessage = "Booking Not Found After Creation";
+
+        /// <summary>
         /// Initialises a new instance of the BookingsController
         /// </summary>
         /// <param name="context">The databse context</param>
@@ -52,19 +61,19 @@ namespace Walkies.API.Controllers
 
             if (walkRequest == null)
             {
-                return NotFound(new { message = "Walk Request Not Found" });
+                return NotFound(new { message = WalkRequestNotFoundMessage });
             }
 
             var walker = await _context.Users.FirstOrDefaultAsync(u => u.Id == dto.WalkerId);
 
             if (walker == null)
             {
-                return NotFound(new { message = "Walker Not Found" });
+                return NotFound(new { message = WalkerNotFoundMessage });
             }
 
             if (walkRequest.Status == "Accepted")
             {
-                return BadRequest(new { message = "Walk Request Already Accepted" });
+                return BadRequest(new { message = WalkRequestAlreadyAcceptedMessage });
             }
 
             var booking = new WalkBooking
@@ -90,7 +99,7 @@ namespace Walkies.API.Controllers
 
             if (createdBooking == null)
             {
-                return NotFound(new { message = "Booking Not Found After Creation" });
+                return NotFound(new { message = BookingNotFoundAfterCreationMessage });
             }
 
             return CreatedAtAction(nameof(GetBooking), new { id = createdBooking.Id }, MapToDto(createdBooking));
@@ -116,7 +125,7 @@ namespace Walkies.API.Controllers
 
             if (walkRequest == null)
             {
-                return NotFound(new { message = "Walk Request Not Found" });
+                return NotFound(new { message = WalkRequestNotFoundMessage });
             }
 
             walkRequest.Status = "Declined";
@@ -160,7 +169,7 @@ namespace Walkies.API.Controllers
 
             if (booking == null)
             {
-                return NotFound(new { message = "Booking Not Found" });
+                return NotFound(new { message = BookingNotFoundMessage });
             }
 
             return Ok(MapToDto(booking));
@@ -209,7 +218,7 @@ namespace Walkies.API.Controllers
 
             if (booking == null)
             {
-                return NotFound(new { message = "Booking Not Found" });
+                return NotFound(new { message = BookingNotFoundMessage });
             }
 
             booking.Status = "Active";
@@ -243,7 +252,7 @@ namespace Walkies.API.Controllers
 
             if (booking == null)
             {
-                return NotFound(new { message = "Booking Not Found" });
+                return NotFound(new { message = BookingNotFoundMessage });
             }
 
             booking.Status = "Completed";
@@ -278,7 +287,7 @@ namespace Walkies.API.Controllers
 
             if (booking == null)
             {
-                return NotFound(new { message = "Booking Not Found" });
+                return NotFound(new { message = BookingNotFoundMessage });
             }
 
             booking.Status = "Cancelled";
