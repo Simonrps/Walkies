@@ -199,5 +199,48 @@ namespace Walkies.Tests
             Assert.Single(walkers);
             Assert.Equal("Simone", walkers[0].FirstName);
         }
+
+        [Fact]
+        public async Task GetWalkers_NoWalkersInRadius_Returns200WithEmptyList()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var walker = new User
+            {
+                FirstName = "Simone",
+                LastName = "Mulrooney",
+                Email = "simone@email.com",
+                PasswordHash = "PasswordHash123!##",
+                Role = "Walker",
+                Latitude = 53.3498,
+                Longitude = -6.2603
+            };
+            context.Users.Add(walker);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var availability = new WalkerAvailability
+            {
+                WalkerId = walker.Id,
+                AvailableFrom = DateTime.UtcNow.AddDays(1).Date.AddHours(9),
+                AvailableTo = DateTime.UtcNow.AddDays(1).Date.AddHours(17),
+                IsAvailable = true
+            };
+            context.WalkerAvailabilities.Add(availability);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act - searching from Letterkenny with a 10km radius
+            var result = await controller.GetWalkers(
+                latitude: 54.9966,
+                longitude: -7.3086,
+                distanceKm: 10,
+                date: DateTime.UtcNow.AddDays(1).Date);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var walkers = Assert.IsType<List<UserProfileDto>>(okResult.Value);
+            Assert.Empty(walkers);
+        }
     }
 }
