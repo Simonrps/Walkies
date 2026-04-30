@@ -150,5 +150,125 @@ namespace Walkies.Tests
             // Assert
             Assert.IsType<NotFoundObjectResult>(result);
         }
+
+        /// <summary>
+        /// Verifies that searching for walkers within a valid radius
+        ///  returns a 200 wth a list of available walkers.
+        ///  Related to US03 - Owner Searches For Walkers
+        /// </summary>
+        [Fact]
+        public async Task GetWalkers_ValidSearch_Returns200WithList()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var walker = new User
+            {
+                FirstName = "Simone",
+                LastName = "Mulrooney",
+                Email = "simone@email.com",
+                PasswordHash = "PasswordHash123!##",
+                Role = "Walker",
+                Latitude = 54.9966,
+                Longitude = -7.3086
+            };
+            context.Users.Add(walker);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var availability = new WalkerAvailability
+            {
+                WalkerId = walker.Id,
+                AvailableFrom = DateTime.UtcNow.AddDays(1).Date.AddHours(9),
+                AvailableTo = DateTime.UtcNow.AddDays(1).Date.AddHours(17),
+                IsAvailable = true
+            };
+            context.WalkerAvailabilities.Add(availability);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetWalkers(
+                latitude: 54.9966,
+                longitude: -7.3086,
+                distanceKm: 10,
+                date: DateTime.UtcNow.AddDays(1).Date);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var walkers = Assert.IsType<List<UserProfileDto>>(okResult.Value);
+            Assert.Single(walkers);
+            Assert.Equal("Simone", walkers[0].FirstName);
+        }
+
+        /// <summary>
+        /// Verifies that searching for walkers when none are available
+        /// within the radius returns a 200 with an empty list.
+        /// Relates to US08 - Owner Searches For Walkers
+        /// </summary>
+        [Fact]
+        public async Task GetWalkers_NoWalkersInRadius_Returns200WithEmptyList()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var walker = new User
+            {
+                FirstName = "Simone",
+                LastName = "Mulrooney",
+                Email = "simone@email.com",
+                PasswordHash = "PasswordHash123!##",
+                Role = "Walker",
+                Latitude = 53.3498,
+                Longitude = -6.2603
+            };
+            context.Users.Add(walker);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var availability = new WalkerAvailability
+            {
+                WalkerId = walker.Id,
+                AvailableFrom = DateTime.UtcNow.AddDays(1).Date.AddHours(9),
+                AvailableTo = DateTime.UtcNow.AddDays(1).Date.AddHours(17),
+                IsAvailable = true
+            };
+            context.WalkerAvailabilities.Add(availability);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act - searching from Letterkenny with a 10km radius
+            var result = await controller.GetWalkers(
+                latitude: 54.9966,
+                longitude: -7.3086,
+                distanceKm: 10,
+                date: DateTime.UtcNow.AddDays(1).Date);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var walkers = Assert.IsType<List<UserProfileDto>>(okResult.Value);
+            Assert.Empty(walkers);
+        }
+
+        /// <summary>
+        /// Verifies that searching for walkers with an invalid distance
+        /// (negative or zero) returns a 400 Bad Request response.
+        /// Related to US08 - Owner Searches for Walkers
+        /// </summary>
+        [Fact]
+        public async Task GetWalkers_InvalidDistance_Returns400BadRequest()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetWalkers(
+                latitude: 54.9966,
+                longitude: -7.3086,
+                distanceKm: 0,
+                date: DateTime.UtcNow.AddDays(1).Date);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
     }
 }
