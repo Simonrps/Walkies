@@ -195,7 +195,7 @@ namespace Walkies.Tests
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var walkers = Assert.IsType<List<UserProfileDto>>(okResult);
+            var walkers = Assert.IsType<List<UserProfileDto>>(okResult.Value);
             Assert.Single(walkers);
             Assert.Equal("Simone", walkers[0].FirstName);
         }
