@@ -283,6 +283,10 @@ namespace Walkies.Tests
             Assert.Equal(2, dogs.Count);
         }
 
+        /// <summary>
+        /// Verifies that requesting dogs for an owner with no dogs
+        /// returns 200 with an empty list. Related to US04
+        /// </summary>
         [Fact]
         public async Task GetDogsByOwner_NoDogs_Returns200WithEmptyList()
         {
