@@ -146,7 +146,7 @@ namespace Walkies.API.Controllers
                 Status = walkRequest.Status
             });
         }
-        
+
         /// <summary>
         /// Retrieves a booking bu its unique identifier
         /// Related to US10 - View Booking

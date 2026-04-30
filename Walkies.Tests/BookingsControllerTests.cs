@@ -406,7 +406,7 @@ namespace Walkies.Tests
                     CreatedAt = DateTime.UtcNow
                 },
                 new WalkBooking
-                { 
+                {
                     WalkRequestId = walkRequest.Id,
                     WalkerId = walker.Id,
                     Status = "Confirmed",
