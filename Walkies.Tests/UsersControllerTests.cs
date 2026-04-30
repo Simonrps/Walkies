@@ -200,6 +200,11 @@ namespace Walkies.Tests
             Assert.Equal("Simone", walkers[0].FirstName);
         }
 
+        /// <summary>
+        /// Verifies that searching for walkers when none are available
+        /// within the radius returns a 200 with an empty list.
+        /// Relates to US08 - Owner Searches For Walkers
+        /// </summary>
         [Fact]
         public async Task GetWalkers_NoWalkersInRadius_Returns200WithEmptyList()
         {
@@ -241,6 +246,29 @@ namespace Walkies.Tests
             var okResult = Assert.IsType<OkObjectResult>(result);
             var walkers = Assert.IsType<List<UserProfileDto>>(okResult.Value);
             Assert.Empty(walkers);
+        }
+
+        /// <summary>
+        /// Verifies that searching for walkers with an invalid distance
+        /// (negative or zero) returns a 400 Bad Request response.
+        /// Related to US08 - Owner Searches for Walkers
+        /// </summary>
+        [Fact]
+        public async Task GetWalkers_InvalidDistance_Returns400BadRequest()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetWalkers(
+                latitude: 54.9966,
+                longitude: -7.3086,
+                distanceKm: 0, 
+                date: DateTime.UtcNow.AddDays(1).Date);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
         }
     }
 }
