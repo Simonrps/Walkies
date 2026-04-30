@@ -233,5 +233,85 @@ namespace Walkies.Tests
             // Assert
             Assert.IsType<NotFoundObjectResult>(result);
         }
+
+        /// <summary>
+        /// Verifies that adding a dog with valid data returns
+        /// a 201 Created response. Related to US04 - Add Dog
+        /// </summary>
+        [Fact]
+        public async Task GetDogsByOwner_ValidOwnerId_Returns200WithList()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var owner = new User
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                PasswordHash = "hashedPassword!##123",
+                Role = "Owner"
+            };
+            context.Users.Add(owner);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            context.Dogs.AddRange(
+                new Dog
+                {
+                    Name = "Dinah",
+                    Breed = "Boxer",
+                    Age = 5,
+                    OwnerId = owner.Id
+                },
+                new Dog
+                {
+                    Name = "Penny",
+                    Breed = "Boxer",
+                    Age = 11,
+                    OwnerId = owner.Id
+                }
+            );
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetDogsByOwner(owner.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var dogs = Assert.IsType<List<DogDto>>(okResult.Value);
+            Assert.Equal(2, dogs.Count);
+        }
+
+        /// <summary>
+        /// Verifies that requesting dogs for an owner with no dogs
+        /// returns 200 with an empty list. Related to US04
+        /// </summary>
+        [Fact]
+        public async Task GetDogsByOwner_NoDogs_Returns200WithEmptyList()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var owner = new User
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                PasswordHash = "hashedPassword!##123",
+                Role = "Owner"
+            };
+            context.Users.Add(owner);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetDogsByOwner(owner.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var dogs = Assert.IsType<List<DogDto>>(okResult.Value);
+            Assert.Empty(dogs);
+        }
     }
 }
