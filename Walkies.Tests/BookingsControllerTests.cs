@@ -274,5 +274,157 @@ namespace Walkies.Tests
             Assert.Equal("Completed", bookingDto.Status);
             Assert.NotNull(bookingDto.CheckOutTime);
         }
+
+        /// <summary>
+        /// Verifies that declining a valid walk request returns 200
+        /// and updates the walk request status to Declined.
+        /// Relates to US09 - Accept or Declined Request.
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task DeclineBooking_ValidId_Returns200WithDeclinedStatus()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
+
+            var controller = CreateController(context);
+            var dto = new CreateBookingDto
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id
+            };
+
+            // Act
+            var result = await controller.DeclineBooking(dto);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var updatedRequest = Assert.IsType<WalkRequestDto>(okResult.Value);
+            Assert.Equal("Declined", updatedRequest.Status);
+        }
+
+        /// <summary>
+        /// Verifies that accepting a walk request that has already been accepted returns
+        /// a 400 bad request response. Related to US09 - Accept or Decline Request.
+        /// </summary>
+        [Fact]
+        public async Task CreateBooking_AlreadyAccepted_Returns400BadRequest()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
+
+            // First Acceptance
+            var existingBooking = new WalkBooking
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id,
+                Status = "Confirmed",
+                CreatedAt = DateTime.UtcNow
+            };
+            walkRequest.Status = "Accepted";
+            context.WalkBookings.Add(existingBooking);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+            var dto = new CreateBookingDto
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id
+            };
+
+            // Act
+            var result = await controller.CreateBooking(dto);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        /// <summary>
+        /// Verifies that cancelling a valid booking returns 200
+        /// and updates the booking status to Cancelled.
+        /// Relates to US11 - Cancellation
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task CancelBooking_ValidId_Returns200WithCancelledStatus()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
+            var booking = new WalkBooking
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id,
+                Status = "Confirmed",
+                CreatedAt = DateTime.UtcNow
+            };
+            context.WalkBookings.Add(booking);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+            var controller = CreateController(context);
+            // Act
+            var result = await controller.CancelBooking(booking.Id);
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var bookingDto = Assert.IsType<BookingDto>(okResult.Value);
+            Assert.Equal("Cancelled", bookingDto.Status);
+        }
+
+        /// <summary>
+        /// Verifies that getting bookins filtered by owner returns 200
+        /// with bookings in chronological order.
+        /// Relates to US11 - View Confirmed Bookings.
+        /// </summary>
+        [Fact]
+        public async Task GetBooking_ByOwner_ReturnsChronologicalOrder()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (owner, walker, _, walkRequest) = await SeedTestDataAsync(context);
+
+            var walkRequest2 = new WalkRequest
+            {
+                OwnerId = owner.Id,
+                DogId = walkRequest.DogId,
+                RequestedDate = DateTime.UtcNow.AddDays(3),
+                DurationMinutes = 30,
+                Location = "Letterkenny, Co. Donegal",
+                Latitude = 54.9966,
+                Longitude = -7.3086,
+                Status = "Open"
+            };
+            context.WalkRequests.Add(walkRequest2);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            context.WalkBookings.AddRange(
+                new WalkBooking
+                {
+                    WalkRequestId = walkRequest2.Id,
+                    WalkerId = walker.Id,
+                    Status = "Confirmed",
+                    CreatedAt = DateTime.UtcNow
+                },
+                new WalkBooking
+                {
+                    WalkRequestId = walkRequest.Id,
+                    WalkerId = walker.Id,
+                    Status = "Confirmed",
+                    CreatedAt = DateTime.UtcNow
+                }
+            );
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetBookings(owner.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var bookings = Assert.IsType<List<BookingDto>>(okResult.Value);
+            Assert.Equal(2, bookings.Count);
+            Assert.True(bookings[0].ScheduledDate < bookings[1].ScheduledDate);
+        }
     }
 }

@@ -310,5 +310,85 @@ namespace Walkies.Tests
             // Assert
             Assert.IsType<NotFoundObjectResult>(result);
         }
+
+        [Fact]
+        public async Task PostWalkRequest_PastDate_Returns400BadRequest()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var owner = new User
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                PasswordHash = "hashedPassword123!##",
+                Role = "Owner"
+            };
+            context.Users.Add(owner);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var dog = new Dog
+            {
+                Name = "Dinah",
+                Breed = "Boxer",
+                Age = 5,
+                OwnerId = owner.Id
+            };
+            context.Dogs.Add(dog);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+            var dto = new CreateWalkRequestDto
+            {
+                OwnerId = owner.Id,
+                DogId = dog.Id,
+                RequestedDate = DateTime.UtcNow.AddDays(-1), // Past date
+                DurationMinutes = 30,
+                Location = "Letterkenny, Co. Donegal",
+                Latitude = 54.9966,
+                Longitude = -7.3086
+            };
+
+            // Act
+            var result = await controller.PostWalkRequest(dto);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task PostWalkRequest_OwnerHasNoDogs_Returns400BadRequest()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var owner = new User
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                PasswordHash = "hashedPassword123!##",
+                Role = "Owner"
+            };
+            context.Users.Add(owner);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+            var dto = new CreateWalkRequestDto
+            {
+                OwnerId = owner.Id,
+                DogId = 999, // Non-existent dog
+                RequestedDate = DateTime.UtcNow.AddDays(1),
+                DurationMinutes = 30,
+                Location = "Letterkenny, Co. Donegal",
+                Latitude = 54.9966,
+                Longitude = -7.3086
+            };
+
+            // Act
+            var result = await controller.PostWalkRequest(dto);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
     }
 }

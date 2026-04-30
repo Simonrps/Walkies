@@ -20,6 +20,15 @@ namespace Walkies.API.Controllers
         private readonly ApplicationDbContext _context;
 
         /// <summary>
+        /// Defining constants for use in the controller
+        /// </summary>
+        private const string BookingNotFoundMessage = "Booking Not Found";
+        private const string WalkRequestNotFoundMessage = "Walk Request Not Found";
+        private const string WalkerNotFoundMessage = "Walker Not Found";
+        private const string WalkRequestAlreadyAcceptedMessage = "Walk Request Already Accepted";
+        private const string BookingNotFoundAfterCreationMessage = "Booking Not Found After Creation";
+
+        /// <summary>
         /// Initialises a new instance of the BookingsController
         /// </summary>
         /// <param name="context">The databse context</param>
@@ -52,14 +61,19 @@ namespace Walkies.API.Controllers
 
             if (walkRequest == null)
             {
-                return NotFound(new { message = "Walk Request Not Found" });
+                return NotFound(new { message = WalkRequestNotFoundMessage });
             }
 
             var walker = await _context.Users.FirstOrDefaultAsync(u => u.Id == dto.WalkerId);
 
             if (walker == null)
             {
-                return NotFound(new { message = "Walker Not Found" });
+                return NotFound(new { message = WalkerNotFoundMessage });
+            }
+
+            if (walkRequest.Status == "Accepted")
+            {
+                return BadRequest(new { message = WalkRequestAlreadyAcceptedMessage });
             }
 
             var booking = new WalkBooking
@@ -85,10 +99,52 @@ namespace Walkies.API.Controllers
 
             if (createdBooking == null)
             {
-                return NotFound(new { message = "Booking Not Found After Creation" });
+                return NotFound(new { message = BookingNotFoundAfterCreationMessage });
             }
 
             return CreatedAtAction(nameof(GetBooking), new { id = createdBooking.Id }, MapToDto(createdBooking));
+        }
+
+        /// <summary>
+        /// Declines a walk request on behalf of a walker
+        /// Updates the walk request to declined
+        /// Related to US09 - Accept or decline Request
+        /// </summary>
+        /// <param name="dto">booking details identifying the request to be declined</param>
+        /// <returns>
+        /// 200 Ok with updated walk request data on success
+        /// 4040 not found if the walk request does not exist
+        /// </returns>
+        [HttpPost("decline")]
+        public async Task<IActionResult> DeclineBooking([FromBody] CreateBookingDto dto)
+        {
+            var walkRequest = await _context.WalkRequests
+                .Include(wr => wr.Owner)
+                .Include(wr => wr.Dog)
+                .FirstOrDefaultAsync(wr => wr.Id == dto.WalkRequestId);
+
+            if (walkRequest == null)
+            {
+                return NotFound(new { message = WalkRequestNotFoundMessage });
+            }
+
+            walkRequest.Status = "Declined";
+            await _context.SaveChangesAsync();
+
+            return Ok(new WalkRequestDto
+            {
+                Id = walkRequest.Id,
+                OwnerId = walkRequest.OwnerId,
+                OwnerName = $"{walkRequest.Owner.FirstName} {walkRequest.Owner.LastName}",
+                DogId = walkRequest.DogId,
+                DogName = walkRequest.Dog.Name,
+                RequestedDate = walkRequest.RequestedDate,
+                DurationMinutes = walkRequest.DurationMinutes,
+                Location = walkRequest.Location,
+                Latitude = walkRequest.Latitude,
+                Longitude = walkRequest.Longitude,
+                Status = walkRequest.Status
+            });
         }
 
         /// <summary>
@@ -113,27 +169,38 @@ namespace Walkies.API.Controllers
 
             if (booking == null)
             {
-                return NotFound(new { message = "Booking Not Found" });
+                return NotFound(new { message = BookingNotFoundMessage });
             }
 
             return Ok(MapToDto(booking));
         }
 
         /// <summary>
-        /// Retrieves all Bookings. Relates to US11 - View All Bookings
+        /// Retrieves all Bookings optionally filtered by owner.
+        /// Results are returned in chronological order by scheduled date.
+        /// Relates to US11 - View All Bookings, US13 - View Confirmed Bookings
         /// </summary>
         /// <returns>
-        /// 200 Ok with a list of bookings
+        /// 200 Ok with a list of bookings in chronological order on success
         /// </returns>
         [HttpGet]
-        public async Task<IActionResult> GetBookings()
+        public async Task<IActionResult> GetBookings([FromQuery] int? ownerId = null)
         {
-            var bookings = await _context.WalkBookings
+            var query = _context.WalkBookings
                 .Include(b => b.Walker)
                 .Include(b => b.WalkRequest)
                 .ThenInclude(wr => wr.Owner)
                 .Include(b => b.WalkRequest)
                 .ThenInclude(wr => wr.Dog)
+                .AsQueryable();
+
+            if (ownerId.HasValue)
+            {
+                query = query.Where(b => b.WalkRequest.OwnerId == ownerId.Value);
+            }
+
+            var bookings = await query
+                .OrderBy(b => b.WalkRequest.RequestedDate)
                 .ToListAsync();
 
             return Ok(bookings.Select(MapToDto).ToList());
@@ -162,7 +229,7 @@ namespace Walkies.API.Controllers
 
             if (booking == null)
             {
-                return NotFound(new { message = "Booking Not Found" });
+                return NotFound(new { message = BookingNotFoundMessage });
             }
 
             booking.Status = "Active";
@@ -196,11 +263,46 @@ namespace Walkies.API.Controllers
 
             if (booking == null)
             {
-                return NotFound(new { message = "Booking Not Found" });
+                return NotFound(new { message = BookingNotFoundMessage });
             }
 
             booking.Status = "Completed";
             booking.CheckOutTime = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(MapToDto(booking));
+        }
+
+        /// <summary>
+        /// Cancels a confirmed booking for either an owner or walker.
+        /// Updates the booking status to "Cancelled" and returns the
+        /// walk request to Open status
+        /// Related to US11 - Cancellation
+        /// </summary>
+        /// <param name="id">Unique identifier for booking</param>
+        /// <returns>
+        /// 200 OK with updated booking data on success
+        /// 404 not found if the booking does not exist
+        /// </returns>
+        [HttpPut("{id}/cancel")]
+        public async Task<IActionResult> CancelBooking(int id)
+        {
+            var booking = await _context.WalkBookings
+                .Include(b => b.Walker)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Owner)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Dog)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (booking == null)
+            {
+                return NotFound(new { message = BookingNotFoundMessage });
+            }
+
+            booking.Status = "Cancelled";
+            booking.WalkRequest.Status = "Open";
 
             await _context.SaveChangesAsync();
 
