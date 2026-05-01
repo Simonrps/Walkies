@@ -73,5 +73,47 @@ namespace Walkies.Tests
             Assert.True(availability.IsAvailable);
             Assert.Equal("Simone Mulrooney", availability.WalkerName);
         }
+
+        /// <summary>
+        /// Verifies that retrieving availability slots for a valid walker
+        /// Returns 200 OK with a list of availability slots
+        /// Relates to US12 - Walker Availability
+        /// </summary>
+        [Fact]
+        public async Task GetAvailability_ValidWalkerId_Returns200WithList()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var walker = new User
+            {
+                FirstName = "Simone",
+                LastName = "Mulrooney",
+                Email = "simone@email.com",
+                PasswordHash = "PasswordHashed123!!#",
+                Role = "Walker"
+            };
+            context.Users.Add(walker);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            context.WalkerAvailabilities.Add(new WalkerAvailability
+            {
+                WalkerId = walker.Id,
+                AvailableFrom = DateTime.UtcNow.AddDays(1).AddHours(9),
+                AvailableTo = DateTime.UtcNow.AddDays(1).AddHours(17),
+                IsAvailable = true
+            });
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetAvailability(walker.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var slots = Assert.IsType<List<AvailabilityDto>>(okResult.Value);
+            Assert.Single(slots);
+            Assert.Equal(walker.Id, slots[0].WalkerId);
+        }
     }
 }
