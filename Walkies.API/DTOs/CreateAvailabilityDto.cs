@@ -20,13 +20,13 @@ namespace Walkies.API.DTOs
         /// <summary>
         /// Gets or sets the date and time the walker is available
         /// </summary>
-        [Required]
+        [Required, JsonRequired]
         public DateTime AvailableFrom { get; set; }
 
         /// <summary>
         /// Gets or sets the date and time the walker is available until
         /// </summary>
-        [Required]
+        [Required, JsonRequired]
         public DateTime AvailableTo { get; set; }
     }
 }
