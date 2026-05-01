@@ -76,11 +76,34 @@ namespace Walkies.API.Controllers
             return CreatedAtAction(nameof(GetAvailability), new { walkerId = walker.Id }, availabilityDto);
         }
 
+        /// <summary>
+        /// Retrieves all availability slots for a specific walker.
+        /// Related to - US12 - Walker Availability
+        /// </summary>
+        /// <param name="walkerId">The unique id of the walker</param>
+        /// <returns>
+        /// 200 ok with a list of availability slots on success
+        /// </returns>
         [HttpGet("{walkerId}")]
         public async Task<IActionResult> GetAvailability(int walkerId)
         {
-            await Task.CompletedTask;
-            return StatusCode(501);
+            var slots = await _context.WalkerAvailabilities
+                .Include(wa => wa.Walker)
+                .Where(wa => wa.WalkerId == walkerId)
+                .ToListAsync();
+
+            var dtos = slots.Select(wa => new AvailabilityDto
+            {
+                Id = wa.Id,
+                WalkerId = wa.WalkerId,
+                WalkerName = $"{wa.Walker.FirstName} {wa.Walker.LastName}",
+                AvailableFrom = wa.AvailableFrom,
+                AvailableTo = wa.AvailableTo,
+                IsAvailable = wa.IsAvailable,
+                CreatedAt = wa.CreatedAt
+            }).ToList();
+
+            return Ok(dtos);
         }
     }
 }
