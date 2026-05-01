@@ -108,7 +108,7 @@ namespace Walkies.API.Controllers
 
         /// <summary>
         /// Deletes an availability slot by its unique id. Returns a warning
-        /// if the slot has an associated confirmed booking.
+        /// if the slot has an associated confirmed booking and makes user confirm deletion.
         /// Related to - US12 - Walker Availability
         /// </summary>
         /// <param name="id">The unique id of the availability slot</param>
@@ -118,7 +118,7 @@ namespace Walkies.API.Controllers
         /// 404 not found if the slot does not exist
         /// </returns>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAvailability(int id)
+        public async Task<IActionResult> DeleteAvailability(int id, [FromQuery] bool force = false)
         {
             var slot = await _context.WalkerAvailabilities
                 .FirstOrDefaultAsync(a => a.Id == id);
@@ -129,18 +129,18 @@ namespace Walkies.API.Controllers
             }
 
             var hasBooking = await _context.WalkBookings
-                .AnyAsync(wb => wb.WalkRequest.OwnerId != 0
+                .Include(wb => wb.WalkRequest)
+                .AnyAsync(wb => wb.WalkerId == slot.WalkerId
                 && wb.Status == "Confirmed"
                 && wb.WalkRequest.RequestedDate >= slot.AvailableFrom
-                && wb.WalkRequest.RequestedDate <= slot.AvailableTo
-                && wb.WalkerId == slot.WalkerId);
+                && wb.WalkRequest.RequestedDate <= slot.AvailableTo);
                         
-            if (hasBooking)
+            if (hasBooking && !force)
             {
-                return BadRequest(new 
+                return Ok(new 
                 { message = 
-                "Cannot delete availability slot with confirmed bookings. Please cancel the booking to remove thi slot",
-                    hasBooking = true 
+                "This availability slot has a confirmed booking. Pleas confirm you wish to remove it.",
+                    hasBooking = true
                 });
             }
             

@@ -162,5 +162,88 @@ namespace Walkies.Tests
                 TestContext.Current.CancellationToken);
             Assert.Null(deleted);
         }
+
+        /// <summary>
+        /// Verifies that deleting an availability slot with an associated
+        /// confirmed booking returns a 200 with a warning message.
+        /// Related to US12 - Walker Availability
+        /// </summary>
+        [Fact]
+        public async Task DeleteAvailability_WithBooking_Returns200WithWarning()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var owner = new User
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                PasswordHash = "PasswordHash123!#",
+                Role = "Owner"
+            };
+            var walker = new User
+            {
+                FirstName = "Simone",
+                LastName = "Mulrooney",
+                Email = "simone@email.com",
+                PasswordHash = "PasswordHashed123!!#",
+                Role = "Walker"
+            };
+            context.Users.AddRange(owner, walker);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var dog = new Dog
+            {
+                Name = "Dinag",
+                Breed = "Boxer",
+                Age = 5,
+                OwnerId = owner.Id
+            };
+            context.Dogs.Add(dog);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var slot = new WalkerAvailability
+            {
+                WalkerId = walker.Id,
+                AvailableFrom = DateTime.UtcNow.AddDays(1).AddHours(9),
+                AvailableTo = DateTime.UtcNow.AddDays(1).AddHours(17),
+                IsAvailable = true
+            };
+            context.WalkerAvailabilities.Add(slot);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var walkRequest = new WalkRequest
+            {
+                OwnerId = owner.Id,
+                DogId = dog.Id,
+                RequestedDate = DateTime.UtcNow.AddDays(1).AddHours(10),
+                DurationMinutes = 30,
+                Location = "Letterkenny, Co. Donegal",
+                Latitude = 54.9966,
+                Longitude = -7.3086,
+                Status = "Accepted"
+            };
+            context.WalkRequests.Add(walkRequest);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var booking = new WalkBooking
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id,
+                Status = "Confirmed",
+                CreatedAt = DateTime.UtcNow
+            };
+            context.WalkBookings.Add(booking);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.DeleteAvailability(slot.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.NotNull(okResult.Value);
+        }
     }
 }
