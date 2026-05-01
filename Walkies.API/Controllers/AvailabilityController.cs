@@ -105,5 +105,49 @@ namespace Walkies.API.Controllers
 
             return Ok(dtos);
         }
+
+        /// <summary>
+        /// Deletes an availability slot by its unique id. Returns a warning
+        /// if the slot has an associated confirmed booking.
+        /// Related to - US12 - Walker Availability
+        /// </summary>
+        /// <param name="id">The unique id of the availability slot</param>
+        /// <returns>
+        /// 204 no content on success
+        /// 200 ok with a warning if the slot has a confirmed booking
+        /// 404 not found if the slot does not exist
+        /// </returns>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAvailability(int id)
+        {
+            var slot = await _context.WalkerAvailabilities
+                .FirstOrDefaultAsync(a => a.Id == id);
+            
+            if (slot == null)
+            {
+                return NotFound(new { message = "Availability slot not found" });
+            }
+
+            var hasBooking = await _context.WalkBookings
+                .AnyAsync(wb => wb.WalkRequest.OwnerId != 0
+                && wb.Status == "Confirmed"
+                && wb.WalkRequest.RequestedDate >= slot.AvailableFrom
+                && wb.WalkRequest.RequestedDate <= slot.AvailableTo
+                && wb.WalkerId == slot.WalkerId);
+                        
+            if (hasBooking)
+            {
+                return BadRequest(new 
+                { message = 
+                "Cannot delete availability slot with confirmed bookings. Please cancel the booking to remove thi slot",
+                    hasBooking = true 
+                });
+            }
+            
+            _context.WalkerAvailabilities.Remove(slot);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
