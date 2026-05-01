@@ -43,11 +43,11 @@ namespace Walkies.API.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
+
             var walker = await _context.Users.FirstOrDefaultAsync(w => w.Id == dto.WalkerId);
             if (walker == null)
             {
-                return NotFound(new {message="Walker not found"});
+                return NotFound(new { message = "Walker not found" });
             }
 
             var availability = new WalkerAvailability
@@ -122,7 +122,7 @@ namespace Walkies.API.Controllers
         {
             var slot = await _context.WalkerAvailabilities
                 .FirstOrDefaultAsync(a => a.Id == id);
-            
+
             if (slot == null)
             {
                 return NotFound(new { message = "Availability slot not found" });
@@ -134,16 +134,17 @@ namespace Walkies.API.Controllers
                 && wb.Status == "Confirmed"
                 && wb.WalkRequest.RequestedDate >= slot.AvailableFrom
                 && wb.WalkRequest.RequestedDate <= slot.AvailableTo);
-                        
+
             if (hasBooking && !force)
             {
-                return Ok(new 
-                { message = 
+                return Ok(new
+                {
+                    message =
                 "This availability slot has a confirmed booking. Pleas confirm you wish to remove it.",
                     hasBooking = true
                 });
             }
-            
+
             _context.WalkerAvailabilities.Remove(slot);
             await _context.SaveChangesAsync();
 
