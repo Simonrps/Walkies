@@ -68,7 +68,7 @@ namespace Walkies.Tests
 
             // Assert
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            var availability = Assert.IsType<WalkerAvailability>(createdResult.Value);
+            var availability = Assert.IsType<AvailabilityDto>(createdResult.Value);
             Assert.Equal(dto.WalkerId, availability.WalkerId);
             Assert.True(availability.IsAvailable);
             Assert.Equal("Simone Mulrooney", availability.WalkerName);
