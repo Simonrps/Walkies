@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Walkies.API.Controllers;
 using Walkies.API.Data;
 using Walkies.API.DTOs;
