@@ -81,6 +81,11 @@ namespace Walkies.Tests
             Assert.Equal("Hi Simone, can you walk Dinah tomorrow?", message.Content);
         }
 
+        /// <summary>
+        /// Verifies that sending a message with empty content
+        /// returns a 400 Bad Request response.
+        /// Related to US17 - Owner Messaging
+        /// </summary>
         [Fact]
         public async Task SendMessage_EmptyContent_Returns400BadRequest()
         {
@@ -121,6 +126,58 @@ namespace Walkies.Tests
 
             // Assert
             Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        /// <summary>
+        /// Verifies that the getting messages for a valid user
+        /// returns 200 with a list of messages.
+        /// Related to US17 - Owner Messaging and US18 - Walker Messaging
+        /// </summary>
+        [Fact]
+        public async Task GetMessages_ValidUserId_Returns200WithList()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var owner = new User
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                PasswordHash = "PasswordHash123!#",
+                Role = "Owner"
+            };
+            var walker = new User
+            {
+                FirstName = "Simone",
+                LastName = "Mulrooney",
+                Email = "simone@email.com",
+                PasswordHash = "PasswordHashed123!##",
+                Role = "Walker"
+            };
+            context.Users.AddRange(owner, walker);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            context.Messages.Add(new Message
+            {
+                SenderId = owner.Id,
+                Sender = owner,
+                RecipientId = walker.Id,
+                Recipient = walker,
+                Content = "Hi Simone, can you walk Dinah tomorrow?",
+                SentAt = DateTime.UtcNow
+            });
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetMessages(owner.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var messages = Assert.IsType<List<MessageDto>>(okResult.Value);
+            Assert.Single(messages);
+            Assert.Equal("Simon Mulroy", messages[0].SenderName);
         }
     }
 }
