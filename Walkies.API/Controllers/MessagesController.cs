@@ -82,11 +82,36 @@ namespace Walkies.API.Controllers
             return CreatedAtAction(nameof(GetMessages), new { id = message.Id }, messageDto);
         }
 
+        /// <summary>
+        /// Retrieves all messages sent to or from a specific user.
+        /// Related to US17 - Owner Messaging and US18 - Walker Messaging
+        /// </summary>
+        /// <param name="userid">The ID of the user</param>
+        /// <returns>
+        /// 200 OK with a list of messages on success
+        /// </returns>
         [HttpGet("{userid}")]
         public async Task<IActionResult> GetMessages(int userid)
         {
-            await Task.CompletedTask;
-            return StatusCode(501);
+            var messages = await _context.Messages
+                .Include(m => m.Sender)
+                .Include(m => m.Recipient)
+                .Where(m => m.SenderId == userid || m.RecipientId == userid)
+                .OrderBy(m => m.SentAt)
+                .ToListAsync();
+
+            var dtos = messages.Select(m => new MessageDto
+            {
+                Id = m.Id,
+                SenderId = m.SenderId,
+                SenderName = $"{m.Sender.FirstName} {m.Sender.LastName}",
+                RecipientId = m.RecipientId,
+                RecipientName = $"{m.Recipient.FirstName} {m.Recipient.LastName}",
+                Content = m.Content,
+                SentAt = m.SentAt
+            }).ToList();
+
+            return Ok(dtos);
         }
     }
 }
