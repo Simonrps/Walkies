@@ -18,7 +18,7 @@ namespace Walkies.Tests
         /// Creates a in memory databse context for tests
         /// </summary>
         private static ApplicationDbContext CreateContext()
-        {    
+        {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
@@ -40,7 +40,7 @@ namespace Walkies.Tests
         /// <returns></returns>
         [Fact]
         public async Task SendMessage_ValidRequest_Returns201WithMessage()
-        { 
+        {
             // Arrange
             using var context = CreateContext();
             var owner = new User
@@ -63,8 +63,8 @@ namespace Walkies.Tests
             await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             var controller = CreateController(context);
-            var dto = new CreateMessageDto 
-            { 
+            var dto = new CreateMessageDto
+            {
                 SenderId = owner.Id,
                 RecipientId = walker.Id,
                 Content = "Hi Simone, can you walk Dinah tomorrow?"
@@ -79,6 +79,48 @@ namespace Walkies.Tests
             Assert.Equal("Simon Mulroy", message.SenderName);
             Assert.Equal("Simone Mulrooney", message.RecipientName);
             Assert.Equal("Hi Simone, can you walk Dinah tomorrow?", message.Content);
+        }
+
+        [Fact]
+        public async Task SendMessage_EmptyContent_Returns400BadRequest()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var owner = new User
+            {
+                FirstName = "Simon",
+                LastName = "Mulroy",
+                Email = "simon@email.com",
+                PasswordHash = "PasswordHash123!#",
+                Role = "Owner"
+            };
+            var walker = new User
+            {
+                FirstName = "Simone",
+                LastName = "Mulrooney",
+                Email = "simone@email.com",
+                PasswordHash = "PasswordHashed123!##",
+                Role = "Walker"
+            };
+            context.Users.AddRange(owner, walker);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+            var dto = new CreateMessageDto
+            {
+                SenderId = owner.Id,
+                RecipientId = walker.Id,
+                Content = string.Empty
+            };
+
+            // Simulate model validation failure
+            controller.ModelState.AddModelError("Content", "Cannot send a blank message.");
+
+            // Act
+            var result = await controller.SendMessage(dto);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
         }
     }
 }
