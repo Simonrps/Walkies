@@ -159,7 +159,7 @@ namespace Walkies.Tests
             var controller = CreateController(context);
 
             // Act
-            var result = await controller.GetPaymentByWalker(walker.Id);
+            var result = await controller.GetPaymentsByWalker(walker.Id);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);

@@ -21,7 +21,7 @@ namespace Walkies.API.Controllers
         private readonly ApplicationDbContext _context;
 
         /// <summary>
-        /// Initialises an instnace of paymentsController
+        /// Initialises an instance of paymentsController
         /// </summary>
         /// <param name="context"></param>
         public PaymentsController(ApplicationDbContext context)
@@ -58,6 +58,31 @@ namespace Walkies.API.Controllers
             }
 
             return Ok(MapToDto(payment));
+        }
+
+        /// <summary>
+        /// Retrieves all payment records associated with a specific walker
+        /// Relates to US20 - Payment Confirmation Walker
+        /// </summary>
+        /// <param name="walkerId">The unique id of the walker</param>
+        /// <returns>
+        /// 200 OK with a list of payment records on success
+        /// </returns>
+        [HttpGet("walker/{walkerId}")]
+        public async Task<IActionResult> GetPaymentsByWalker(int walkerId)
+        {
+            var payments = await _context.PaymentRecords
+                .Include(pr => pr.WalkBooking)
+                .ThenInclude(wb => wb.Walker)
+                .Include(pr => pr.WalkBooking)
+                .ThenInclude(wb => wb.WalkRequest)
+                .ThenInclude(wb => wb.Owner)
+                .Include(pr => pr.WalkBooking)
+                .ThenInclude(wb => wb.WalkRequest)
+                .ThenInclude(wb => wb.Dog)
+                .Where(pr => pr.WalkBooking.Walker.Id == walkerId)
+                .ToListAsync();
+            return Ok(payments.Select(MapToDto).ToList());
         }
 
         /// <summary>
