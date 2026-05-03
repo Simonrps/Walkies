@@ -133,5 +133,40 @@ namespace Walkies.Tests
             Assert.Equal("Simon Mulroy", paymentDto.OwnerName);
             Assert.Equal("Simone Mulrooney", paymentDto.WalkerName);
         }
+
+        /// <summary>
+        /// Verifies that retrieving payment recrods for a valid walker
+        /// returns 200 with a list of payment records.
+        /// Related to US20 - Payment Confirmation Walker
+        /// </summary>
+        [Fact]
+        public async Task GetPaymentByWalker_ValidWalkerId_Returns200WithList()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, booking) = await SeedCompletedBookingAsync(context);
+
+            var payment = new PaymentRecord
+            {
+                WalkBookingId = booking.Id,
+                Amount = 15.00m,
+                Status = "Confirmed",
+                CreatedAt = DateTime.UtcNow
+            };
+            context.PaymentRecords.Add(payment);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetPaymentByWalker(walker.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var payments = Assert.IsType<List<PaymentRecordDto>>(okResult.Value);
+            Assert.Single(payments);
+            Assert.Equal("Confirmed", payments[0].Status);
+            Assert.Equal("Simone Mulrooney", payments[0].WalkerName);
+        }
     }
 }
