@@ -483,7 +483,7 @@ namespace Walkies.Tests
                 Status = "Confirmed",
                 CreatedAt = DateTime.UtcNow
             };
-            context.WalkBookings.Add(booking) ;
+            context.WalkBookings.Add(booking);
             await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
             var controller = CreateController(context);
@@ -530,6 +530,27 @@ namespace Walkies.Tests
                 .FirstOrDefaultAsync(wr => wr.Id == walkRequest.Id,
                 TestContext.Current.CancellationToken);
             Assert.Equal("Declined", updatedRequest!.Status);
+        }
+
+        /// <summary>
+        /// Verifies that retrieving bookings for an owner with
+        /// no bookings returns an empty list with a 200 OK response.
+        /// </summary>
+        [Fact]
+        public async Task GetBookings_NoBookings_Returns200WithEmptyList()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (owner, _, _, _) = await SeedTestDataAsync(context);
+            var contoller = CreateController(context);
+
+            // Act
+            var result = await contoller.GetBookings(owner.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var bookings = Assert.IsType<List<BookingDto>>(okResult.Value);
+            Assert.Empty(bookings);
         }
     }
 }
