@@ -568,5 +568,28 @@ namespace Walkies.Tests
             // Assert
             Assert.IsType<BadRequestObjectResult>(result);
         }
+
+        /// <summary>
+        /// Verifies that searching for walk requests with location parameters
+        /// but no distance parameter returns a 400 Bad Request response.
+        /// Rrelated to US07 - Walker Searches for Requests
+        /// </summary>
+        [Fact]
+        public async Task GetWalkRequest_LocationWithoutDistance_Returns400BadRequest()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetWalkRequests(
+                latitude: 54.9966,
+                longitude: -7.3086,
+                distanceKm: null
+            );
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
     }
 }
