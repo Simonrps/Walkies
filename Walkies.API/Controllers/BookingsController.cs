@@ -231,6 +231,11 @@ namespace Walkies.API.Controllers
                 return NotFound(new { message = BookingNotFoundMessage });
             }
 
+            if (booking.Status != "Confirmed")
+            {
+                return BadRequest(new { message = "Only confirmed bookings can be checked in." });
+            }
+
             booking.Status = "Active";
             booking.CheckInTime = DateTime.UtcNow;
 

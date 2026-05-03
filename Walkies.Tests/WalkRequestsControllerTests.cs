@@ -538,5 +538,58 @@ namespace Walkies.Tests
             var requests = Assert.IsType<List<WalkRequestDto>>(okResult.Value);
             Assert.Empty(requests);
         }
+
+        /// <summary>
+        /// Verifies that posting a walk request with missing required
+        /// fields reurns a 400 Bad Request response.
+        /// Related to US06 - Post Walk Request
+        /// </summary>
+        [Fact]
+        public async Task PostWalkRequest_MissingRequiredFields_Returns400BadRequest()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var controller = CreateController(context);
+            var dto = new CreateWalkRequestDto
+            {
+                OwnerId = 1,
+                DogId = 1,
+                RequestedDate = DateTime.UtcNow.AddDays(1),
+                DurationMinutes = 30,
+                Location = string.Empty,
+                Latitude = 54.9966,
+                Longitude = -7.3086
+            };
+            controller.ModelState.AddModelError("Location", "The Location field is required.");
+
+            // Act
+            var result = await controller.PostWalkRequest(dto);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        /// <summary>
+        /// Verifies that searching for walk requests with location parameters
+        /// but no distance parameter returns a 400 Bad Request response.
+        /// Rrelated to US07 - Walker Searches for Requests
+        /// </summary>
+        [Fact]
+        public async Task GetWalkRequest_LocationWithoutDistance_Returns400BadRequest()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.GetWalkRequests(
+                latitude: 54.9966,
+                longitude: -7.3086,
+                distanceKm: null
+            );
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
     }
 }

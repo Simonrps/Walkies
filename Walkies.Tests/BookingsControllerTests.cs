@@ -463,5 +463,124 @@ namespace Walkies.Tests
             Assert.Equal("Confirmed", payment.Status);
             Assert.True(payment.Amount > 0);
         }
+
+        /// <summary>
+        /// Verifies that a walker cancelling a confirmed booking
+        /// returns 200 and updates the booking status to Cancelled
+        /// Related to US11 - Cancellation.
+        /// </summary>
+        [Fact]
+        public async Task CancelBooking_Walker_Returns200WithCancelledStatus()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
+
+            var booking = new WalkBooking
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id,
+                Status = "Confirmed",
+                CreatedAt = DateTime.UtcNow
+            };
+            context.WalkBookings.Add(booking);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.CancelBooking(booking.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var bookingDto = Assert.IsType<BookingDto>(okResult.Value);
+            Assert.Equal("Cancelled", bookingDto.Status);
+
+            // Verify twalk request returned to Open
+            var walkRequestUpdated = await context.WalkRequests
+                .FirstOrDefaultAsync(wr => wr.Id == walkRequest.Id,
+                TestContext.Current.CancellationToken);
+            Assert.Equal("Open", walkRequestUpdated!.Status);
+        }
+
+        /// <summary>
+        /// Verifies that when a walker declines a walk request the walk
+        /// request status updates to Declined visible to owner.
+        /// Related to US10 - Booking Status Update
+        /// </summary>
+        [Fact]
+        public async Task DeclineBooking_WalkRequestShowsDeclinedStatus()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
+
+            var controller = CreateController(context);
+            var dto = new CreateBookingDto
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id
+            };
+
+            // Act
+            await controller.DeclineBooking(dto);
+
+            // Assert - verify that walk request is declined
+            var updatedRequest = await context.WalkRequests
+                .FirstOrDefaultAsync(wr => wr.Id == walkRequest.Id,
+                TestContext.Current.CancellationToken);
+            Assert.Equal("Declined", updatedRequest!.Status);
+        }
+
+        /// <summary>
+        /// Verifies that retrieving bookings for an owner with
+        /// no bookings returns an empty list with a 200 OK response.
+        /// </summary>
+        [Fact]
+        public async Task GetBookings_NoBookings_Returns200WithEmptyList()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (owner, _, _, _) = await SeedTestDataAsync(context);
+            var contoller = CreateController(context);
+
+            // Act
+            var result = await contoller.GetBookings(owner.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var bookings = Assert.IsType<List<BookingDto>>(okResult.Value);
+            Assert.Empty(bookings);
+        }
+
+        /// <summary>
+        /// Verifies that checking in on a booking that is not yet accepted returns
+        /// a 400 Bad Request response. Related to US16 - Check in / Check out
+        /// </summary>
+        [Fact]
+        public async Task CheckIn_UnacceptedBooking_Returns400BadRequest()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
+
+            var booking = new WalkBooking
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id,
+                Status = "Open",
+                CreatedAt = DateTime.UtcNow
+            };
+            context.WalkBookings.Add(booking);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.CheckIn(booking.Id);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
     }
 }

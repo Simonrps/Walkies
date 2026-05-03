@@ -141,6 +141,7 @@ namespace Walkies.API.Controllers
                 Status = walkRequest.Status
             });
         }
+
         /// <summary>
         /// Retrieves a list of open walk requests optionally filtered by 
         /// distance from a specified locations using the haversine formula
@@ -159,6 +160,11 @@ namespace Walkies.API.Controllers
             [FromQuery] double? distanceKm = null
             )
         {
+            if ((latitude.HasValue && longitude.HasValue) && (!distanceKm.HasValue || distanceKm <= 0))
+            {
+                return BadRequest(new { message = "Distance must be provided and greater than 0 when filtering by location" });
+            }
+
             var walkRequests = await _context.WalkRequests
                 .Include(wr => wr.Owner)
                 .Include(wr => wr.Dog)
