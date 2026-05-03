@@ -19,7 +19,7 @@ namespace Walkies.Tests
         /// Creates an in memory database context for testing
         /// </summary>
         private static ApplicationDbContext CreateContext()
-        { 
+        {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(databaseName: "TestDatabase")
                 .Options;

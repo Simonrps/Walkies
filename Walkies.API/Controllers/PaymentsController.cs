@@ -54,7 +54,7 @@ namespace Walkies.API.Controllers
 
             if (payment == null)
             {
-                return NotFound(new {message="Payment record not found"});
+                return NotFound(new { message = "Payment record not found" });
             }
 
             return Ok(MapToDto(payment));
@@ -97,7 +97,7 @@ namespace Walkies.API.Controllers
         {
             Id = payment.Id,
             WalkBookingId = payment.WalkBookingId,
-            OwnerName = $"{payment.WalkBooking.WalkRequest.Owner.FirstName } {payment.WalkBooking.WalkRequest.Owner.LastName}",
+            OwnerName = $"{payment.WalkBooking.WalkRequest.Owner.FirstName} {payment.WalkBooking.WalkRequest.Owner.LastName}",
             WalkerName = $"{payment.WalkBooking.Walker.FirstName} {payment.WalkBooking.Walker.LastName}",
             DogName = payment.WalkBooking.WalkRequest.Dog.Name,
             WalkDate = payment.WalkBooking.WalkRequest.RequestedDate,
