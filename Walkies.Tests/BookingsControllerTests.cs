@@ -426,5 +426,42 @@ namespace Walkies.Tests
             Assert.Equal(2, bookings.Count);
             Assert.True(bookings[0].ScheduledDate < bookings[1].ScheduledDate);
         }
+
+        /// <summary>
+        /// Verifies that checking out a booking automatically creates
+        /// a payment record in the database.
+        /// Related to US20 - Payment Confirmation Walker
+        /// </summary>
+        [Fact]
+        public async Task CheckOut_CreatesPaymentRecord()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
+
+            var booking = new WalkBooking
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id,
+                Status = "Active",
+                CheckInTime = DateTime.UtcNow.AddMinutes(-30),
+                CreatedAt = DateTime.UtcNow.AddMinutes(-30)
+            };
+            context.WalkBookings.Add(booking);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act 
+            await controller.CheckOut(booking.Id);
+
+            // Assert
+            var payment = await context.PaymentRecords
+                .FirstOrDefaultAsync(p => p.WalkBookingId == booking.Id,
+                    TestContext.Current.CancellationToken);
+            Assert.NotNull(payment);
+            Assert.Equal("Confirmed", payment.Status);
+            Assert.True(payment.Amount > 0);
+        }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Walkies.API.Data;
 using Walkies.API.DTOs;
 using Walkies.API.Models;
@@ -269,6 +268,19 @@ namespace Walkies.API.Controllers
             booking.Status = "Completed";
             booking.CheckOutTime = DateTime.UtcNow;
 
+            // Calculate payment amount based on walk duration and fixed rate
+            const decimal ratePerMinute = 0.50m;
+            var amount = booking.WalkRequest.DurationMinutes * ratePerMinute;
+
+            var payment = new PaymentRecord
+            {
+                WalkBookingId = booking.Id,
+                Amount = amount,
+                Status = "Confirmed",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.PaymentRecords.Add(payment);
             await _context.SaveChangesAsync();
 
             return Ok(MapToDto(booking));
