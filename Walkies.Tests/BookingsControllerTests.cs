@@ -502,5 +502,34 @@ namespace Walkies.Tests
                 TestContext.Current.CancellationToken);
             Assert.Equal("Open", walkRequestUpdated!.Status);
         }
+
+        /// <summary>
+        /// Verifies that when a walker declines a walk request the walk
+        /// request status updates to Declined visible to owner.
+        /// Related to US10 - Booking Status Update
+        /// </summary>
+        [Fact]
+        public async Task DeclineBooking_WalkRequestShowsDeclinedStatus()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
+
+            var controller = CreateController(context);
+            var dto = new CreateBookingDto
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id
+            };
+
+            // Act
+            await controller.DeclineBooking(dto);
+
+            // Assert - verify that walk request is declined
+            var updatedRequest = await context.WalkRequests
+                .FirstOrDefaultAsync(wr => wr.Id == walkRequest.Id,
+                TestContext.Current.CancellationToken);
+            Assert.Equal("Declined", updatedRequest!.Status);
+        }
     }
 }
