@@ -552,5 +552,35 @@ namespace Walkies.Tests
             var bookings = Assert.IsType<List<BookingDto>>(okResult.Value);
             Assert.Empty(bookings);
         }
+
+        /// <summary>
+        /// Verifies that checking in on a booking that is not yet accepted returns
+        /// a 400 Bad Request response. Related to US16 - Check in / Check out
+        /// </summary>
+        [Fact]
+        public async Task CheckIn_UnacceptedBooking_Returns400BadRequest()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
+
+            var booking = new WalkBooking
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id,
+                Status = "Open",
+                CreatedAt = DateTime.UtcNow
+            };
+            context.WalkBookings.Add(booking);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.CheckIn(booking.Id);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
     }
 }
