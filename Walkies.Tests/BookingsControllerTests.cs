@@ -463,5 +463,44 @@ namespace Walkies.Tests
             Assert.Equal("Confirmed", payment.Status);
             Assert.True(payment.Amount > 0);
         }
+
+        /// <summary>
+        /// Verifies that a walker cancelling a confirmed booking
+        /// returns 200 and updates the booking status to Cancelled
+        /// Related to US11 - Cancellation.
+        /// </summary>
+        [Fact]
+        public async Task CancelBooking_Walker_Returns200WithCancelledStatus()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
+
+            var booking = new WalkBooking
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id,
+                Status = "Confirmed",
+                CreatedAt = DateTime.UtcNow
+            };
+            context.WalkBookings.Add(booking) ;
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+
+            // Act
+            var result = await controller.CancelBooking(booking.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var bookingDto = Assert.IsType<BookingDto>(okResult.Value);
+            Assert.Equal("Cancelled", bookingDto.Status);
+
+            // Verify twalk request returned to Open
+            var walkRequestUpdated = await context.WalkRequests
+                .FirstOrDefaultAsync(wr => wr.Id == walkRequest.Id,
+                TestContext.Current.CancellationToken);
+            Assert.Equal("Open", walkRequestUpdated!.Status);
+        }
     }
 }
