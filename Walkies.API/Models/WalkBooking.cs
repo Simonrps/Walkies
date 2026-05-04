@@ -50,6 +50,20 @@ namespace Walkies.API.Models
         public DateTime? CheckOutTime { get; set; }
 
         /// <summary>
+        /// Gets or sets the current latitude of the walker during an active walk.
+        /// Updated at regular intervals by the walker’s device during GPS tracking
+        /// Related to US15 - GPS Tracking During Walks
+        /// </summary>
+        public double? CurrentLatitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the current longitude of the walker during an active walk.
+        /// Updated at regular intervals by the walker’s device during GPS tracking
+        /// Related to US15 - GPS Tracking During Walks
+        /// </summary>
+        public double? CurrentLongitude { get; set; }
+
+        /// <summary>
         /// Gets or sets the date and time when the booking was created.
         /// </summary>
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

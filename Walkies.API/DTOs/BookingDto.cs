@@ -76,6 +76,16 @@
         public DateTime? CheckOutTime { get; set; }
 
         /// <summary>
+        /// Gets or sets the current latitude of the walker during a walk.
+        /// </summary>
+        public double? CurrentLatitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the current longitude of the walker during a walk.
+        /// </summary>
+        public double? CurrentLongitude { get; set; }
+
+        /// <summary>
         /// Gets or sets the date and time the booking was created.
         /// </summary>
         public DateTime? CreatedAt { get; set; }
