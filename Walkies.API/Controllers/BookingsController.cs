@@ -88,12 +88,7 @@ namespace Walkies.API.Controllers
             _context.WalkBookings.Add(booking);
             await _context.SaveChangesAsync();
 
-            var createdBooking = await _context.WalkBookings
-                .Include(b => b.Walker)
-                .Include(b => b.WalkRequest)
-                .ThenInclude(wr => wr.Owner)
-                .Include(b => b.WalkRequest)
-                .ThenInclude(wr => wr.Dog)
+            var createdBooking = await BookingsWithIncludes()
                 .FirstOrDefaultAsync(b => b.Id == booking.Id);
 
             if (createdBooking == null)
@@ -158,12 +153,7 @@ namespace Walkies.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBooking(int id)
         {
-            var booking = await _context.WalkBookings
-                .Include(b => b.Walker)
-                .Include(b => b.WalkRequest)
-                .ThenInclude(wr => wr.Owner)
-                .Include(b => b.WalkRequest)
-                .ThenInclude(wr => wr.Dog)
+            var booking = await BookingsWithIncludes()
                 .FirstOrDefaultAsync(b => b.Id == id);
 
             if (booking == null)
@@ -185,12 +175,7 @@ namespace Walkies.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetBookings([FromQuery] int? ownerId = null)
         {
-            var query = _context.WalkBookings
-                .Include(b => b.Walker)
-                .Include(b => b.WalkRequest)
-                .ThenInclude(wr => wr.Owner)
-                .Include(b => b.WalkRequest)
-                .ThenInclude(wr => wr.Dog)
+            var query = BookingsWithIncludes()
                 .AsQueryable();
 
             if (ownerId.HasValue)
@@ -218,12 +203,7 @@ namespace Walkies.API.Controllers
         [HttpPut("{id}/checkin")]
         public async Task<IActionResult> CheckIn(int id)
         {
-            var booking = await _context.WalkBookings
-                .Include(b => b.Walker)
-                .Include(b => b.WalkRequest)
-                .ThenInclude(wr => wr.Owner)
-                .Include(b => b.WalkRequest)
-                .ThenInclude(wr => wr.Dog)
+            var booking = await BookingsWithIncludes()
                 .FirstOrDefaultAsync(b => b.Id == id);
 
             if (booking == null)
@@ -257,12 +237,7 @@ namespace Walkies.API.Controllers
         [HttpPut("{id}/checkout")]
         public async Task<IActionResult> CheckOut(int id)
         {
-            var booking = await _context.WalkBookings
-                .Include(b => b.Walker)
-                .Include(b => b.WalkRequest)
-                .ThenInclude(wr => wr.Owner)
-                .Include(b => b.WalkRequest)
-                .ThenInclude(wr => wr.Dog)
+            var booking = await BookingsWithIncludes()
                 .FirstOrDefaultAsync(b => b.Id == id);
 
             if (booking == null)
@@ -305,12 +280,7 @@ namespace Walkies.API.Controllers
         [HttpPut("{id}/cancel")]
         public async Task<IActionResult> CancelBooking(int id)
         {
-            var booking = await _context.WalkBookings
-                .Include(b => b.Walker)
-                .Include(b => b.WalkRequest)
-                .ThenInclude(wr => wr.Owner)
-                .Include(b => b.WalkRequest)
-                .ThenInclude(wr => wr.Dog)
+            var booking = await BookingsWithIncludes()
                 .FirstOrDefaultAsync(b => b.Id == id);
 
             if (booking == null)
@@ -342,12 +312,7 @@ namespace Walkies.API.Controllers
         [HttpPut("{id}/location")]
         public async Task<IActionResult> UpdateLocation(int id, [FromBody] UpdateLocationDto dto)
         {
-            var booking = await _context.WalkBookings
-                .Include(b => b.Walker)
-                .Include(b => b.WalkRequest)
-                .ThenInclude(wr => wr.Owner)
-                .Include(b => b.WalkRequest)
-                .ThenInclude(wr => wr.Dog)
+            var booking = await BookingsWithIncludes()
                 .FirstOrDefaultAsync(b => b.Id == id);
 
             if (booking == null)
@@ -390,5 +355,18 @@ namespace Walkies.API.Controllers
             CurrentLongitude = booking.CurrentLongitude,
             CreatedAt = booking.CreatedAt
         };
+
+        /// <summary>
+        /// Returns a base query for WalkBookings with all required
+        /// navigation properties included. This ccentralises the 
+        /// include logic to avoid duplication across endpoints
+        /// </summary>
+        private IQueryable<WalkBooking> BookingsWithIncludes() =>
+            _context.WalkBookings
+                .Include(b => b.Walker)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Owner)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Dog);
     }
 }

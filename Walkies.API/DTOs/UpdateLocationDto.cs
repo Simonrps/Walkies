@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Walkies.API.DTOs
 {
@@ -13,13 +14,13 @@ namespace Walkies.API.DTOs
         /// <summary>
         /// Gets or sets the current latitude of the walker.
         /// </summary>
-        [Required]
+        [Required, JsonRequired]
         public double Latitude { get; set; }
 
         /// <summary>
         /// Gets or sets the current longitude of the walker.
         /// </summary>
-        [Required]
+        [Required, JsonRequired]
         public double Longitude { get; set; }
 
     }
