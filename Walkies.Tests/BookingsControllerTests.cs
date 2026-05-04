@@ -622,5 +622,41 @@ namespace Walkies.Tests
             Assert.Equal(54.9970, bookingDto.CurrentLatitude);
             Assert.Equal(-7.3090, bookingDto.CurrentLongitude);
         }
+
+        /// <summary>
+        /// Verifies that updating the walker location on a booking
+        /// that is not active returns a 400 Bad Request response.
+        /// Related to US15 - GPS Tracking During Walk
+        /// </summary>
+        [Fact]
+        public async Task UpdateLocation_InactiveBooking_Returns400BadRequest()
+        {
+            // Arrange
+            using var context = CreateContext();
+            var (_, walker, _, walkRequest) = await SeedTestDataAsync(context);
+
+            var booking = new WalkBooking
+            {
+                WalkRequestId = walkRequest.Id,
+                WalkerId = walker.Id,
+                Status = "Confirmed",
+                CreatedAt = DateTime.UtcNow
+            };
+            context.WalkBookings.Add(booking);
+            await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+            var controller = CreateController(context);
+            var dto = new UpdateLocationDto
+            {
+                Latitude = 54.9970,
+                Longitude = -7.3090
+            };
+
+            // Act
+            var result = await controller.UpdateLocation(booking.Id, dto);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
     }
 }
