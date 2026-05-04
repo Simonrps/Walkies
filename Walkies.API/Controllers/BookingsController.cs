@@ -327,6 +327,48 @@ namespace Walkies.API.Controllers
         }
 
         /// <summary>
+        /// Updates a walkers current location during an active walk.
+        /// Called at regular intervals by the MAUI frontend to track
+        /// the walkers location in real time.
+        /// Related to US15 - GPS Tracking
+        /// </summary>
+        /// <param name="id">Unique identifier for booking</param>
+        /// <param name="dto">The unique location coordinates</param>
+        /// <returns>
+        /// 200 OK with updated booking data on success
+        /// 400 Bad Request if the booking is not active
+        /// 404 not found if the booking does not exist
+        /// </returns>
+        [HttpPut("{id}/location")]
+        public async Task<IActionResult> UpdateLocation(int id, [FromBody] UpdateLocationDto dto)
+        {
+            var booking = await _context.WalkBookings
+                .Include(b => b.Walker)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Owner)
+                .Include(b => b.WalkRequest)
+                .ThenInclude(wr => wr.Dog)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (booking == null)
+            {
+                return NotFound(new { message = BookingNotFoundMessage });
+            }
+
+            if (booking.Status != "Active")
+            {
+                return BadRequest(new { message = "Location can only be updated for active bookings." });
+            }
+
+            booking.CurrentLatitude = dto.Latitude;
+            booking.CurrentLongitude = dto.Longitude;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(MapToDto(booking));
+        }
+
+        /// <summary>
         /// Maps a WalkBooking to a BookingDto
         /// </summary>
         private static BookingDto MapToDto(WalkBooking booking) => new BookingDto
@@ -344,6 +386,8 @@ namespace Walkies.API.Controllers
             Status = booking.Status,
             CheckInTime = booking.CheckInTime,
             CheckOutTime = booking.CheckOutTime,
+            CurrentLatitude = booking.CurrentLatitude,
+            CurrentLongitude = booking.CurrentLongitude,
             CreatedAt = booking.CreatedAt
         };
     }
