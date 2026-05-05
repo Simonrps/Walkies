@@ -1,9 +1,12 @@
+using Walkies.MAUI.ViewModels;
+
 namespace Walkies.MAUI.Views;
 
 public partial class RegisterPage : ContentPage
 {
-    public RegisterPage()
+    public RegisterPage(RegisterViewModel viewModel)
     {
         InitializeComponent();
+        BindingContext = viewModel;
     }
 }

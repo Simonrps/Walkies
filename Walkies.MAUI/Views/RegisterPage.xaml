@@ -2,5 +2,39 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Walkies.MAUI.Views.RegisterPage"
-             Title="RegisterPage">
+             xmlns:vm="clr-namespace:Walkies.MAUI.ViewModels"
+             Title="RegisterPage"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="16">
+            <Label Text="Walkies" FontSize="36" FontAttributes="Bold"
+                   HorizontalOptions="Center" TextColor="{StaticResource Primary}" />
+            <Label Text="Create your account" FontSize="16" HorizontalOptions="Center"
+                   Margin="0,0,0,16" />
+            <Entry Placeholder="First Name" Text="{Binding FirstName}" ReturnType="Next"/>
+            <Entry Placeholder="Last Name" Text="{Binding LastName}" ReturnType="Next"/>
+            <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email" ReturnType="Next"/>
+            <Entry Placeholder="Password" Text="{Binding Password}" IsPassword="True" ReturnType="Done"/>
+
+            <Label Text="I am a:" FontSize="14" />
+
+            <Picker Title="Select Role" ItemsSource="{Binding Roles}" SelectedItem="{Binding SelectedRole}" />
+            
+            <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding HasError}" FontSize="13" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+
+            <Button Text="Register" Command="{Binding RegisterCommand}" IsEnabled="{Binding IsNotBusy}" Margin="0,8,0,0" />
+
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="4">
+                <Label Text="Already have an account?" VerticalOptions="Center" />
+                <Label Text="Login" TextColor="{StaticResource Primary}" VerticalOptions="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToLoginCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
