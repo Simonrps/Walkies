@@ -5,4 +5,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Shell.FlyoutBehavior="Disabled">
 
+    <Shell.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Shell" ApplyToDerivedTypes="True">
+                <Setter Property="Shell.NavBarIsVisible" Value="False" />
+            </Style>
+        </ResourceDictionary>
+    </Shell.Resources>
+
 </Shell>
