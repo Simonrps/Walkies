@@ -1,5 +1,5 @@
-﻿using System.Net.Http.Json;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using Walkies.MAUI.Models;
 using Walkies.MAUI.Utilities;
 
@@ -90,7 +90,7 @@ namespace Walkies.MAUI.Services
         }
 
         /// Bookings
-        
+
         public async Task<BookingModel?> CreateBookingAsync(object request) =>
             await _httpClient.PostAsJsonAsync($"bookings", request)
             .ContinueWith(t => t.Result.Content.ReadFromJsonAsync<BookingModel>().Result);
@@ -125,7 +125,7 @@ namespace Walkies.MAUI.Services
             .ContinueWith(t => t.Result.Content.ReadFromJsonAsync<BookingModel>().Result);
 
         /// Availability
-        
+
         public async Task<List<AvailabilityModel>?> GetAvailabilityAsync(int walkerId) =>
             await _httpClient.GetFromJsonAsync<List<AvailabilityModel>>($"availability/{walkerId}");
 
@@ -140,7 +140,7 @@ namespace Walkies.MAUI.Services
         }
 
         /// Messages
-        
+
         public async Task<List<MessageModel>?> GetMessagesAsync(int userId) =>
             await _httpClient.GetFromJsonAsync<List<MessageModel>>($"messages/{userId}");
 

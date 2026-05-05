@@ -15,7 +15,7 @@ namespace Walkies.MAUI.ViewModels
         /// </summary>
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsNotBusy))]
-        private bool _isBusy;
+        public partial bool IsBusy { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether the ViewModel is not busy
@@ -26,19 +26,19 @@ namespace Walkies.MAUI.ViewModels
         /// Gets or sets the surrent status message displayed to the user
         /// </summary>
         [ObservableProperty]
-        private string _statusMessage = string.Empty;
+        public partial string StatusMessage { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets a value indicating whether an error has occurred
         /// </summary>
         [ObservableProperty]
-        private bool _hasError;
+        public partial bool HasError { get; set; }
 
         /// <summary>
         /// Gets or sets the error message to display to the user
         /// </summary>
         [ObservableProperty]
-        private string _errorMessage = string.Empty;
+        public partial string ErrorMessage { get; set; } = string.Empty;
 
         /// <summary>
         /// Sets the error state with the provided message
