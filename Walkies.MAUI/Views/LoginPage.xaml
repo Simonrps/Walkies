@@ -2,5 +2,34 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Walkies.MAUI.Views.LoginPage"
+             xmlns:vm="clr-namespace:Walkies.MAUI.ViewModels"
+             x:DataType="vm:LoginViewModel"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}"
              Title="LoginPage">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="16">
+            <Label Text="Walkies" FontSize="36" FontAttributes="Bold"
+                   HorizontalOptions="Center" TextColor="{StaticResource Primary}" />
+            <Label Text="Welcome back! Please login to your account." FontSize="16" HorizontalOptions="Center"
+                   Margin="0,0,0,16" />
+
+            <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email" ReturnType="Next"/>
+            <Entry Placeholder="Password" Text="{Binding Password}" IsPassword="True" ReturnType="Done" />
+
+            <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding HasError}" FontSize="13" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               HorizontalOptions="Center" />
+            <Button Text="Login" Command="{Binding LoginCommand}" IsEnabled="{Binding IsNotBusy}" Margin="0,8,0,0" />
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="4">
+                <Label Text="Don't have an account?" VerticalOptions="Center" />
+                <Label Text="Register" TextColor="{StaticResource Primary}" VerticalOptions="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToRegisterCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+         </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

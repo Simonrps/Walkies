@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace Walkies.MAUI
+﻿namespace Walkies.MAUI
 {
     public partial class App : Application
     {

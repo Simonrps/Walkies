@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using Walkies.MAUI.Services;
+using Walkies.MAUI.ViewModels;
+using Walkies.MAUI.Views;
 
 namespace Walkies.MAUI;
 
@@ -12,7 +14,9 @@ public static class MauiProgram
         builder
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
+#if ANDROID || IOS || MACCATALYST
             .UseMauiMaps()
+#endif
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -24,6 +28,14 @@ public static class MauiProgram
         builder.Services.AddSingleton<ISecureStorageService, SecureStorageService>();
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<ApiService>();
+
+        // ViewModels
+        builder.Services.AddTransient<RegisterViewModel>();
+        builder.Services.AddTransient<LoginViewModel>();
+
+        // Views
+        builder.Services.AddTransient<RegisterPage>();
+        builder.Services.AddTransient<LoginPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();
