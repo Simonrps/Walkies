@@ -33,12 +33,14 @@ public static class MauiProgram
         builder.Services.AddTransient<RegisterViewModel>();
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<ProfileViewModel>();
-        builder.Services.AddTransient<WalkerProfilePage>();
-        builder.Services.AddTransient<OwnerProfilePage>();
+        builder.Services.AddTransient<DogViewModel>();
 
         // Views
         builder.Services.AddTransient<RegisterPage>();
         builder.Services.AddTransient<LoginPage>();
+        builder.Services.AddTransient<WalkerProfilePage>();
+        builder.Services.AddTransient<OwnerDogsPage>();
+        builder.Services.AddTransient<OwnerAddDogPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

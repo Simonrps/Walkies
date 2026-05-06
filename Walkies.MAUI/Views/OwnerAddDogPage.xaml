@@ -7,8 +7,8 @@
              Title="OwnerAddDogPage">
     <ScrollView>
     <VerticalStackLayout Padding="32" Spacing="16">
-        <Label Text="{Binding IsEditMode, Converter={StaticResource BoolToStringConverter}}, ConverterParameter='Edit Dog|Add a Dog'}"
-               FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="{StaticResource Primary}" />
+        <Label Text="Add / Edit a Dog'}" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center"
+               TextColor="{StaticResource Primary}" />
         <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
         <Label Text="Name" FontAttributes="Bold" />
         <Entry Text="{Binding Name}" Placeholder="Dog Name"/>

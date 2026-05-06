@@ -76,7 +76,7 @@ namespace Walkies.MAUI.ViewModels
             try
             {
                 var ownerId = await _authService.GetUserIdAsync();
-                var dogs = await _apiService.GetDogsByOwnerIdAsync(ownerId);
+                var dogs = await _apiService.GetDogsByOwnerAsync(ownerId);
 
                 Dogs.Clear();
                 if (dogs is not null)
@@ -158,10 +158,14 @@ namespace Walkies.MAUI.ViewModels
                         return;
                     }
                 }
+
+                IsSaved = true;
+                ResetForm();
+                await LoadDogsAsync();
             }
             catch (Exception ex)
             {
-                SetError("An error occurred while saving the dog: " + ex.Message);
+                SetError($"An error occurred while saving the dog: {ex.Message}");
             }
             finally
             {
@@ -177,7 +181,7 @@ namespace Walkies.MAUI.ViewModels
         [RelayCommand]
         private async Task RemoveDogAsync(DogModel dog)
         {
-            var confirmed = await Shell.Current.DisplayAlert(
+            var confirmed = await Shell.Current.DisplayAlertAsync(
                 "Remove Dog",
                 $"Are you sure you want to remove {dog.Name} from your profile?",
                 "Remove",
@@ -191,16 +195,29 @@ namespace Walkies.MAUI.ViewModels
 
             try
             {
-                var success = await _apiService.DeleteDogAsync(dog.Id);
+                if (!await _apiService.DeleteDogAsync(dog.Id))
+                {
+                    SetError("Failed to remove the dog. Please try again.");
+                    return;
+                }
             }
             catch (Exception ex)
             {
-                SetError("An error occurred while removing the dog: " + ex.Message);
+                SetError($"An error occurred while removing the dog: {ex.Message}");
             }
             finally
             {
                 IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// Navigates to the add dog page.  Related to US04 - Add Dog
+        /// </summary>
+        [RelayCommand]
+        private static async Task NavigateToAddDogAsync()
+        {
+            await Shell.Current.GoToAsync("//owner/dogs/add");
         }
 
         /// <summary>
