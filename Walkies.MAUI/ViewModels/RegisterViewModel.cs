@@ -14,21 +14,39 @@ namespace Walkies.MAUI.ViewModels
     {
         private readonly AuthService _authService;
 
+        /// <summary>
+        /// gets or sets the users first name
+        /// </summary>
         [ObservableProperty]
         public partial string FirstName { get; set; } = string.Empty;
 
+        /// <summary>
+        /// gets or sets the users last name
+        /// </summary>
         [ObservableProperty]
         public partial string LastName { get; set; } = string.Empty;
 
+        /// <summary>
+        /// gets or sets the users email
+        /// </summary>
         [ObservableProperty]
         public partial string Email { get; set; } = string.Empty;
 
+        /// <summary>
+        /// gets or sets the users password
+        /// </summary>
         [ObservableProperty]
         public partial string Password { get; set; } = string.Empty;
-
+        
+        /// <summary>
+        /// gets or sets the selected role
+        /// </summary>
         [ObservableProperty]
         public partial string SelectedRole { get; set; } = "Owner";
 
+        /// <summary>
+        /// gets the list of available roles for selection
+        /// </summary>
         public List<string> Roles { get; set; } = ["Owner", "Walker"];
 
         public RegisterViewModel(AuthService authService)
@@ -36,6 +54,11 @@ namespace Walkies.MAUI.ViewModels
             _authService = authService;
         }
 
+        /// <summary>
+        /// Validates user input and submits a registration request
+        /// vai AuthService. On success, navigates to the appropriate
+        /// dashboard based on the users role.
+        /// </summary>
         [RelayCommand]
         private async Task RegisterAsync()
         {
@@ -89,6 +112,9 @@ namespace Walkies.MAUI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Navigates the user to the login page
+        /// </summary>
         [RelayCommand]
         private static async Task GoToLoginAsync()
         {

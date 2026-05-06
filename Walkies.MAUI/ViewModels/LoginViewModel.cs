@@ -14,14 +14,24 @@ namespace Walkies.MAUI.ViewModels
     {
         private readonly AuthService _authService;
 
+        /// <summary>
+        /// gets or sets the users email
+        /// </summary>
         [ObservableProperty]
         public partial string Email { get; set; } = string.Empty;
-        
+
+        /// <summary>
+        /// gets or sets the users password
+        /// </summary>
         [ObservableProperty]
         public partial string Password { get; set; } = string.Empty;
 
         public LoginViewModel(AuthService authService) => _authService = authService;
 
+        /// <summary>
+        /// Validates user credentials and submits a login request via AuthService.
+        /// On success navigates to the appropriate dashboard based on user role.
+        /// </summary>
         [RelayCommand]
         private async Task LoginAsync()
         {
@@ -69,6 +79,9 @@ namespace Walkies.MAUI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Navigates the user to the registration page
+        /// </summary>
         [RelayCommand]
         private static async Task NavigateToRegisterAsync()
         {
