@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Walkies.MAUI.ViewModels"
              x:Class="Walkies.MAUI.Views.OwnerProfilePage"
+             x:DataType="vm:ProfileViewModel"
              Title="OwnerProfilePage">
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="8">
+            <Label Text="My Profile" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="{StaticResource Primary} "/>
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+            <Label Text="First Name" FontAttributes="Bold" />
+            <Entry Text="{Binding FirstName}" Placeholder="First Name" />
+            <Label Text="Last Name" FontAttributes="Bold" />
+            <Entry Text="{Binding LastName}" Placeholder="Last Name" />
+            <Label Text="Email" FontAttributes="Bold" />
+            <Entry Text="{Binding Email}" IsReadOnly="True" TextColor="Gray" />
+            <Label Text="Phone" FontAttributes="Bold" />
+            <Entry Text="{Binding Phone}" Placeholder="Phone" Keyboard="Telephone"/>
+            <Label Text="Address" FontAttributes="Bold" />
+            <Entry Text="{Binding Address}" Placeholder="Address" />
+            <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding HasError}" FontSize="13" />
+            <Label Text="Profile saved successfully!" TextColor="Green" IsVisible="{Binding IsSaved}" FontSize="13" />
+            <Button Text="Save Profile" Command="{Binding SaveProfileCommand}" IsEnabled="{Binding IsNotBusy}" Margin="0,8,0,0" />
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
