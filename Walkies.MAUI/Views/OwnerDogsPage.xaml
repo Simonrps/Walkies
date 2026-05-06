@@ -1,6 +1,36 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Walkies.MAUI.ViewModels"
+             xmlns:models="clr-namespace:Walkies.MAUI.Models"
              x:Class="Walkies.MAUI.Views.OwnerDogsPage"
              Title="OwnerDogsPage">
+    <VerticalStackLayout Padding="32" Spacing="16">
+        <Label Text="My Dogs" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="{StaticResource PrimaryColor}" />
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+        <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding HasError}" FontSize="13" />
+        <CollectionView ItemsSource="{Binding Dogs}">
+            <CollectionView.EmptyView>
+                <Label Text="You have not added any dogs yet." HorizontalOptions="Center" TextColor="Gray" />
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:DogModel">
+                    <Border Stroke="{StaticResource Primary}" StrokeThickness="1" Padding="12" Margin="0,4">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding Name}" FontSize="16" FontAttributes="Bold" />
+                            <Label Text="{Binding Breed}" TextColor="Gray" />
+                            <Label Text="{Binding Age, StringFormat='Age: {0}'}" TextColor="Gray" />
+                            <HorizontalStackLayout Spacing="8" Margin="0,8,0,0">
+                                <Button Text="Edit" FontSize="12" Command="{Binding Source={RelativeSource 
+                                    AncestorType={x:Type vm:DogViewModel}}, Path=EditDogCommand}" CommandParameter="{Binding}"/>
+                                <Button Text="Delete" FontSize="12" BackgroundColor="Red" Command="{Binding Source={RelativeSource 
+                                    AncestorType={x:Type vm:DogViewModel}}, Path=RemoveDogCommand}" CommandParameter="{Binding}"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <Button Text="Add a Dog" Command="{Binding NavigateToAddDogCommand}" Margin="0,8,0,0"/>
+    </VerticalStackLayout>
 </ContentPage>
