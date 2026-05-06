@@ -232,5 +232,10 @@ namespace Walkies.MAUI.ViewModels
             EditingDogId = null;
             IsEditMode = false;
         }
+
+        /// <summary>
+        /// Exposes the LoadDogsAsync method as the BasePage LoadCommand
+        /// </summary>
+        public override IAsyncRelayCommand? LoadCommand => LoadDogsCommand;
     }
 }

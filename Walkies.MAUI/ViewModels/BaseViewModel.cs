@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace Walkies.MAUI.ViewModels
 {
@@ -39,6 +40,13 @@ namespace Walkies.MAUI.ViewModels
         /// </summary>
         [ObservableProperty]
         public partial string ErrorMessage { get; set; } = string.Empty;
+
+
+        /// <summary>
+        /// Load command executed automatically by BasePage on appearance.
+        /// Override in derived ViewModels  that require data loading on page load.
+        /// </summary>
+        public virtual IAsyncRelayCommand? LoadCommand => null;
 
         /// <summary>
         /// Sets the error state with the provided message
