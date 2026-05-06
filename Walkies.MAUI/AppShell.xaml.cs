@@ -10,10 +10,6 @@ public partial class AppShell : Shell
 
     private static void RegisterRoutes()
     {
-        // Auth
-        Routing.RegisterRoute("login", typeof(Views.LoginPage));
-        Routing.RegisterRoute("register", typeof(Views.RegisterPage));
-
         // Owner routes
         Routing.RegisterRoute("owner/dashboard", typeof(Views.OwnerDashboardPage));
         Routing.RegisterRoute("owner/profile", typeof(Views.OwnerProfilePage));

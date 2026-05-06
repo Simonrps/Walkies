@@ -18,8 +18,4 @@
                   Route="register" />
     <ShellContent Title="Login" ContentTemplate="{DataTemplate views:LoginPage}"
                   Route="login" />
-    <ShellContent Title="My Dogs" ContentTemplate="{DataTemplate views:OwnerDogsPage}"
-              Route="register" />
-    <ShellContent Title="Add Dog" ContentTemplate="{DataTemplate views:OwnerAddDogPage}"
-              Route="login" />
 </Shell>
