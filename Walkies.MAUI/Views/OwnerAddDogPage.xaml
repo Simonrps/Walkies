@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Walkies.MAUI.ViewModels"
              x:Class="Walkies.MAUI.Views.OwnerAddDogPage"
+             x:DataType="vm:DogViewModel"
              Title="OwnerAddDogPage">
+    <ScrollView>
+    <VerticalStackLayout Padding="32" Spacing="16">
+        <Label Text="{Binding IsEditMode, Converter={StaticResource BoolToStringConverter}}, ConverterParameter='Edit Dog|Add a Dog'}"
+               FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="{StaticResource Primary}" />
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+        <Label Text="Name" FontAttributes="Bold" />
+        <Entry Text="{Binding Name}" Placeholder="Dog Name"/>
+        <Label Text="Breed" FontAttributes="Bold" />
+        <Entry Text="{Binding Breed}" Placeholder="Dog Breed"/>
+            <Label Text="Age" FontAttributes="Bold" />
+            <Entry Text="{Binding Age}" Placeholder="Dog Age"/>
+            <Label Text="Notes" FontAttributes="Bold" />
+            <Entry Text="{Binding Notes}" Placeholder="Any special information (optional)"/>
+            <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding HasError}" FontSize="13"/>
+            <Label Text="Dog saved successfully!" TextColor="Green" IsVisible="{Binding IsSaved}"
+                   HorizontalOptions="Center" FontSize="13"/>
+            <Button Text="Save" Command="{Binding SaveDogCommand}" Margin="0,8,0,0"/>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

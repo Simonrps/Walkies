@@ -6,7 +6,7 @@
              x:Class="Walkies.MAUI.Views.OwnerDogsPage"
              Title="OwnerDogsPage">
     <VerticalStackLayout Padding="32" Spacing="16">
-        <Label Text="My Dogs" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="{StaticResource PrimaryColor}" />
+        <Label Text="My Dogs" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="{StaticResource Primary}" />
         <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
         <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding HasError}" FontSize="13" />
         <CollectionView ItemsSource="{Binding Dogs}">
