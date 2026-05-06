@@ -20,7 +20,7 @@
             <Label Text="Address" FontAttributes="Bold" />
             <Entry Text="{Binding Address}" Placeholder="Address" />
             <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding HasError}" FontSize="13" />
-            <Label Text="Profile saved successfully!" TextColor="Green" IsVisible="{Binding IsProfileSaved}" FontSize="13" />
+            <Label Text="Profile saved successfully!" TextColor="Green" IsVisible="{Binding IsSaved}" FontSize="13" />
             <Button Text="Save Profile" Command="{Binding SaveProfileCommand}" IsEnabled="{Binding IsNotBusy}" Margin="0,8,0,0" />
         </VerticalStackLayout>
     </ScrollView>
