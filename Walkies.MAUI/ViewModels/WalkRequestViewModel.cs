@@ -139,7 +139,7 @@ namespace Walkies.MAUI.ViewModels
                     OwnerId = ownerId,
                     DogId = SelectedDog.Id,
                     RequestedDate,
-                    Duration,
+                    DurationMinutes = Duration,
                     Location,
                     Latitude = 54.9966,
                     Longitude = -7.3086
@@ -197,6 +197,8 @@ namespace Walkies.MAUI.ViewModels
                     SetError("Failed to cancel walk request. Please try again.");
                     return;
                 }
+
+                WalkRequests.Remove(request);
             }
             catch (Exception ex)
             {
