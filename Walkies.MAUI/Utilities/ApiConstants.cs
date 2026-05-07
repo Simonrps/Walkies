@@ -10,9 +10,9 @@
         /// </summary>
         public static Uri BaseUrl =>
 #if ANDROID
-    new("https://10.0.2.2:7001/api");
+    new("http://10.0.2.2:5007/api/");
 #else
-    new("https://localhost:7001/api");
+    new("http://localhost:5007/api/");
 #endif
     }
 }

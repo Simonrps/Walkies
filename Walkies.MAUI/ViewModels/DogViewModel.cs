@@ -217,7 +217,7 @@ namespace Walkies.MAUI.ViewModels
         [RelayCommand]
         private static async Task NavigateToAddDogAsync()
         {
-            await Shell.Current.GoToAsync("//owner/dogs/add");
+            await Shell.Current.GoToAsync("owner/dogs/add");
         }
 
         /// <summary>
@@ -232,5 +232,10 @@ namespace Walkies.MAUI.ViewModels
             EditingDogId = null;
             IsEditMode = false;
         }
+
+        /// <summary>
+        /// Exposes the LoadDogsAsync method as the BasePage LoadCommand
+        /// </summary>
+        public override IAsyncRelayCommand? LoadCommand => LoadDogsCommand;
     }
 }

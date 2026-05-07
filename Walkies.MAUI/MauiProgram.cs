@@ -27,13 +27,14 @@ public static class MauiProgram
         builder.Services.AddHttpClient<ApiService>();
         builder.Services.AddSingleton<ISecureStorageService, SecureStorageService>();
         builder.Services.AddSingleton<AuthService>();
-        builder.Services.AddSingleton<ApiService>();
 
         // ViewModels
         builder.Services.AddTransient<RegisterViewModel>();
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<ProfileViewModel>();
         builder.Services.AddTransient<DogViewModel>();
+        builder.Services.AddTransient<OwnerDashboardViewModel>();
+        builder.Services.AddTransient<WalkerDashboardViewModel>();
 
         // Views
         builder.Services.AddTransient<RegisterPage>();
@@ -41,6 +42,9 @@ public static class MauiProgram
         builder.Services.AddTransient<WalkerProfilePage>();
         builder.Services.AddTransient<OwnerDogsPage>();
         builder.Services.AddTransient<OwnerAddDogPage>();
+        builder.Services.AddTransient<OwnerDashboardPage>();
+        builder.Services.AddTransient<WalkerDashboardPage>();
+        builder.Services.AddTransient<OwnerProfilePage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

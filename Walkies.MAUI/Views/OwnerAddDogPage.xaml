@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Walkies.MAUI.ViewModels"
+             xmlns:views="clr-namespace:Walkies.MAUI.Views"
              x:Class="Walkies.MAUI.Views.OwnerAddDogPage"
              x:DataType="vm:DogViewModel"
              Title="OwnerAddDogPage">
@@ -24,4 +25,4 @@
             <Button Text="Save" Command="{Binding SaveDogCommand}" Margin="0,8,0,0"/>
         </VerticalStackLayout>
     </ScrollView>
-</ContentPage>
+</views:BasePage>

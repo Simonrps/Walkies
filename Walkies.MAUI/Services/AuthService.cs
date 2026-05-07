@@ -7,22 +7,16 @@ namespace Walkies.MAUI.Services
     /// and JWT token storage using SecureStorgae.
     /// Related to US01 - Registration and US02 - Login.
     /// </summary>
-    public class AuthService
+    public class AuthService(ApiService apiService, ISecureStorageService secureStorage)
     {
-        private readonly ApiService _apiService;
-        private readonly ISecureStorageService _secureStorage;
-        private const string TokenKey = "auth_token";
-        private const string UserIdKey = "user_id";
-        private const string UserRoleKey = "user_role";
-        private const string UserFirstNameKey = "user_first_name";
-        private const string UserLastNameKey = "user_last_name";
-        private const string UserEmailKey = "user_email";
-
-        public AuthService(ApiService apiService, ISecureStorageService secureStorage)
-        {
-            _apiService = apiService;
-            _secureStorage = secureStorage;
-        }
+        private readonly ApiService _apiService = apiService;
+        private readonly ISecureStorageService _secureStorage = secureStorage;
+        private const string TokenKey = "auth-token";
+        private const string UserIdKey = "user-id";
+        private const string UserRoleKey = "user-role";
+        private const string UserFirstNameKey = "user-first-name";
+        private const string UserLastNameKey = "user-last-name";
+        private const string UserEmailKey = "user-email";
 
         /// <summary>
         /// Registers a new user and stores the returned JWT token

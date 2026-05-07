@@ -141,5 +141,10 @@ namespace Walkies.MAUI.ViewModels
                 IsBusy = false;
             }
         }
+
+        /// <summary>
+        /// Exposes the LoadProfileAsync method as the BasePage LoadCommand
+        /// </summary>
+        public override IAsyncRelayCommand? LoadCommand => LoadProfileCommand;
     }
 }
