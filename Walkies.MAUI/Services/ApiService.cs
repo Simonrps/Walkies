@@ -128,21 +128,29 @@ namespace Walkies.MAUI.Services
         public async Task<List<WalkRequestModel>?> GetWalkRequestsAsync(double? latitude = null, double? longitude = null,
             double? distanceKm = null)
         {
-            var url = $"walkrequests?";
+            var url = $"walkrequests";
             if (latitude.HasValue && longitude.HasValue && distanceKm.HasValue)
             {
                 url += $"latitude={latitude.Value}&longitude={longitude.Value}&distanceKm={distanceKm.Value}";
             }
-            return await _httpClient.GetFromJsonAsync<List<WalkRequestModel>>(url);
+            var response = await _httpClient.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+                return null;
+            return await response.Content.ReadFromJsonAsync<List<WalkRequestModel>>();
         }
 
         /// <summary>
         /// Sends a new walk request to the API.
         /// Related to US06 - Post walk Request
         /// </summary>
-        public async Task<WalkRequestModel?> PostWalkRequestAsync(object request) =>
-            await _httpClient.PostAsJsonAsync($"walkrequests", request)
-                .ContinueWith(t => t.Result.Content.ReadFromJsonAsync<WalkRequestModel>().Result);
+        public async Task<WalkRequestModel?> PostWalkRequestAsync(object request)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"walkrequests", request);
+            if (!response.IsSuccessStatusCode)
+                return null;
+            return await response.Content.ReadFromJsonAsync<WalkRequestModel>();
+        }
+
         /// <summary>
         /// Sends a request to cancel a specified walk request.
         /// Related to US11 - Cancellation

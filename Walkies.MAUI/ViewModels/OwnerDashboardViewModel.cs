@@ -59,5 +59,14 @@ namespace Walkies.MAUI.ViewModels
         {
             await Shell.Current.GoToAsync("owner/dogs");
         }
+
+        /// <summary>
+        /// Navigates to walk request page.
+        /// </summary>
+        [RelayCommand]
+        private static async Task NavigateToPostWalkRequestAsync()
+        {
+            await Shell.Current.GoToAsync("owner/walkrequest");
+        }
     }
 }

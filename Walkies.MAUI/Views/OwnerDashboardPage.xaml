@@ -27,6 +27,7 @@
             <Button Text="My Profile" Command="{Binding NavigateToProfileCommand}" />
             <Button Text="My Dogs" Command="{Binding NavigateToMyDogsCommand}" />
             <Button Text="Logout" Command="{Binding LogoutCommand}" BackgroundColor="Red" Margin="0,16,0,0" />
+            <Button Text="Post Walk Request" Command="{Binding NavigateToPostWalkRequestCommand}" />
         </VerticalStackLayout>
     </ScrollView>
 </views:BasePage>

@@ -1,6 +1,78 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Walkies.MAUI.Views.OwnerWalkRequestPage"
-             Title="OwnerWalkRequestPage">
-</ContentPage>
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:vm="clr-namespace:Walkies.MAUI.ViewModels"
+                xmlns:models="clr-namespace:Walkies.MAUI.Models"
+                xmlns:views="clr-namespace:Walkies.MAUI.Views"
+                xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                x:Class="Walkies.MAUI.Views.OwnerWalkRequestPage"
+                x:DataType="vm:WalkRequestViewModel"
+                Title="Post Walk Request">
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="16">
+            <Label Text="Post Walk Request" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center"
+                   TextColor="{StaticResource Primary}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+            <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding HasError}" FontSize="13" />
+            <Label Text="Walk request posted successfully!" FontSize="13" IsVisible="{Binding IsPosted}" TextColor="Green" />
+            
+            <!-- Post walk request form -->
+            <Label Text="Select Dog(s)" FontAttributes="Bold" />
+            <Picker ItemsSource="{Binding Dogs}" ItemDisplayBinding="{Binding Name}" SelectedItem="{Binding SelectedDog}" />
+            <Label Text="Date" FontAttributes="Bold" />
+            <DatePicker Date="{Binding RequestedDate}" MinimumDate="{x:Static sys:DateTime.Today}" />
+
+            <Label Text="Duration" FontAttributes="Bold" />
+            <Picker ItemsSource="{Binding DurationOptions}" SelectedItem="{Binding Duration}" />
+
+            <Label Text="Location" FontAttributes="Bold" />
+            <Entry Placeholder="Enter walk location" Text="{Binding Location}" />
+
+            <Button Text="Post Walk Request" Command="{Binding PostWalkRequestCommand}" />
+
+            <BoxView HeightRequest="1" BackgroundColor="LightGray" Margin="0,8" />
+            
+            <!-- Existing Open Requests -->
+            <Label Text="Open Requests" FontSize="18" FontAttributes="Bold" />
+            <Label Text="No open requests." TextColor="Gray" FontSize="13" />
+            <CollectionView ItemsSource="{Binding WalkRequests}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:WalkRequestModel">
+                        <Border Stroke="LightGray" StrokeThickness="1" Padding="12" Margin="0,4">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding DogName}" FontAttributes="Bold" FontSize="16"/>
+                                <Label FontSize="13">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Date: " FontAttributes="Bold"/>
+                                            <Span Text="{Binding RequestedDate, StringFormat='{0:dd MMM yyyy}'}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label FontSize="13">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Duration: " FontAttributes="Bold"/>
+                                            <Span Text="{Binding DurationMinutes, StringFormat='{0} minutes'}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label FontSize="13">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Location: " FontAttributes="Bold"/>
+                                            <Span Text="{Binding Location}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Button Text="Cancel Request" BackgroundColor="Red" FontSize="12"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WalkRequestViewModel}},
+                                        Path=CancelWalkRequestCommand}" CommandParameter="{Binding .}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+</views:BasePage>
