@@ -4,6 +4,7 @@
                 xmlns:vm="clr-namespace:Walkies.MAUI.ViewModels"
                 xmlns:models="clr-namespace:Walkies.MAUI.Models"
                 xmlns:views="clr-namespace:Walkies.MAUI.Views"
+                xmlns:sys="clr-namespace:System;assembly=mscorlib"
                 x:Class="Walkies.MAUI.Views.OwnerWalkRequestPage"
                 x:DataType="vm:WalkRequestViewModel"
                 Title="Post Walk Request">
@@ -19,8 +20,7 @@
             <Label Text="Select Dog(s)" FontAttributes="Bold" />
             <Picker ItemsSource="{Binding Dogs}" ItemDisplayBinding="{Binding Name}" SelectedItem="{Binding SelectedDog}" />
             <Label Text="Date" FontAttributes="Bold" />
-            <DatePicker Date="{Binding RequestedDate}" MinimumDate="{Static sys:DateTime.Today}"
-                        xmlns:sys="clr-namespace:System;assembly=mscorlib"/>
+            <DatePicker Date="{Binding RequestedDate}" MinimumDate="{x:Static sys:DateTime.Today}" />
 
             <Label Text="Duration" FontAttributes="Bold" />
             <Picker ItemsSource="{Binding DurationOptions}" SelectedItem="{Binding Duration}" />
@@ -34,8 +34,7 @@
             
             <!-- Existing Open Requests -->
             <Label Text="Open Requests" FontSize="18" FontAttributes="Bold" />
-            <Label Text="No open requests." TextColor="Gray" FontSize="13" IsVisible="{Binding WalkRequests.Count,
-                Converter={StaticResource IntToBoolConverter}}" />
+            <Label Text="No open requests." TextColor="Gray" FontSize="13" />
             <CollectionView ItemsSource="{Binding WalkRequests}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:WalkRequestModel">
