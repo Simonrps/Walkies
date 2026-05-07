@@ -41,5 +41,14 @@ namespace Walkies.MAUI.ViewModels
             _authService.Logout();
             await base.LogoutAsync();
         }
+
+        /// <summary>
+        /// Navigates to the walker profile page
+        /// </summary>
+        [RelayCommand]
+        private static async Task NavigateToProfileAsync()
+        { 
+            await Shell.Current.GoToAsync("walker/profile");
+        }
     }
 }
