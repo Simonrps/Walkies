@@ -37,17 +37,25 @@ namespace Walkies.MAUI.Services
         /// Sends a registration request to the API and returns the auth response.
         /// Related to US01 - Registration
         /// </summary>
-        public async Task<AuthResponse?> RegisterAsync(RegisterRequest request) =>
-            await _httpClient.PostAsJsonAsync($"auth/register", request)
-                .ContinueWith(t => t.Result.Content.ReadFromJsonAsync<AuthResponse>().Result);
+        public async Task<AuthResponse?> RegisterAsync(RegisterRequest request)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"auth/register", request);
+            if (!response.IsSuccessStatusCode)
+                return null;
+            return await response.Content.ReadFromJsonAsync<AuthResponse>();
+        }
 
         /// <summary>
         /// Sends a login request to the API and returns the auth response.
         /// Related to US02 - Login
         /// </summary>
-        public async Task<AuthResponse?> LoginAsync(LoginRequest request) =>
-            await _httpClient.PostAsJsonAsync($"auth/login", request)
-                .ContinueWith(t => t.Result.Content.ReadFromJsonAsync<AuthResponse>().Result);
+        public async Task<AuthResponse?> LoginAsync(LoginRequest request)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"auth/login", request);
+            if (!response.IsSuccessStatusCode)
+                return null;
+            return await response.Content.ReadFromJsonAsync<AuthResponse>();
+        }
 
         /// Users
 

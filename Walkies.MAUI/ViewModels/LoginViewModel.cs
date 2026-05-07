@@ -62,11 +62,11 @@ namespace Walkies.MAUI.ViewModels
 
                 if (response.Role == "Owner")
                 {
-                    await Shell.Current.GoToAsync("//owner/dashboard");
+                    await Shell.Current.GoToAsync("owner/dashboard");
                 }
                 else
                 {
-                    await Shell.Current.GoToAsync("//walker/dashboard");
+                    await Shell.Current.GoToAsync("walker/dashboard");
                 }
             }
             catch (Exception ex)
@@ -85,7 +85,7 @@ namespace Walkies.MAUI.ViewModels
         [RelayCommand]
         private static async Task NavigateToRegisterAsync()
         {
-            await Shell.Current.GoToAsync("//register");
+            await Shell.Current.GoToAsync("///register");
         }
     }
 }

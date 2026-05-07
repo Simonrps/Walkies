@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Walkies.MAUI.Services;
 
 namespace Walkies.MAUI.ViewModels
 {
@@ -47,6 +48,16 @@ namespace Walkies.MAUI.ViewModels
         /// Override in derived ViewModels  that require data loading on page load.
         /// </summary>
         public virtual IAsyncRelayCommand? LoadCommand => null;
+
+        /// <summary>
+        /// Logs the current user out and navigates back to the registration page.
+        /// Override in derived ViewModels to add token clearing before navigation
+        /// </summary>
+        [RelayCommand]
+        protected virtual async Task LogoutAsync()
+        {
+            await Shell.Current.GoToAsync("///register");
+        }
 
         /// <summary>
         /// Sets the error state with the provided message

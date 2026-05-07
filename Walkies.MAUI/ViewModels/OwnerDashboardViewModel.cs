@@ -32,5 +32,14 @@ namespace Walkies.MAUI.ViewModels
             var firstName = await _authService.GetUserFirstNameAsync();
             FirstName = firstName ?? "Owner";
         }
+
+        /// <summary>
+        /// Clears stored credentials and navigates back to registration page
+        /// </summary>
+        protected override async Task LogoutAsync()
+        {
+            _authService.Logout();
+            await base.LogoutAsync();
+        }
     }
 }

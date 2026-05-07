@@ -217,7 +217,7 @@ namespace Walkies.MAUI.ViewModels
         [RelayCommand]
         private static async Task NavigateToAddDogAsync()
         {
-            await Shell.Current.GoToAsync("//owner/dogs/add");
+            await Shell.Current.GoToAsync("owner/dogs/add");
         }
 
         /// <summary>

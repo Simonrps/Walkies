@@ -95,11 +95,11 @@ namespace Walkies.MAUI.ViewModels
 
                 if (response.Role == "Owner")
                 {
-                    await Shell.Current.GoToAsync("//owner/dashboard");
+                    await Shell.Current.GoToAsync("owner/dashboard");
                 }
                 else
                 {
-                    await Shell.Current.GoToAsync("//walker/dashboard");
+                    await Shell.Current.GoToAsync("walker/dashboard");
                 }
             }
             catch (Exception ex)
@@ -118,7 +118,8 @@ namespace Walkies.MAUI.ViewModels
         [RelayCommand]
         private static async Task GoToLoginAsync()
         {
-            await Shell.Current.GoToAsync("//login");
+            // Absolute navigation is required when targeting a Shell element route (ShellContent Route="login").
+            await Shell.Current.GoToAsync("///login");
         }
     }
 }
