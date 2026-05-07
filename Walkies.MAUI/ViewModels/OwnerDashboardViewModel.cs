@@ -41,5 +41,23 @@ namespace Walkies.MAUI.ViewModels
             _authService.Logout();
             await base.LogoutAsync();
         }
+
+        /// <summary>
+        /// Navigates to the owner's profile page.
+        /// </summary>
+        [RelayCommand]
+        private static async Task NavigateToProfileAsync() 
+        {
+            await Shell.Current.GoToAsync("owner/profile");
+        }
+
+        /// <summary>
+        /// Navigates to the owner's dog page.
+        /// </summary>
+        [RelayCommand]
+        private static async Task NavigateToMyDogsAsync()
+        {
+            await Shell.Current.GoToAsync("owner/dogs");
+        }
     }
 }
