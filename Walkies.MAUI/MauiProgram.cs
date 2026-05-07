@@ -35,6 +35,7 @@ public static class MauiProgram
         builder.Services.AddTransient<DogViewModel>();
         builder.Services.AddTransient<OwnerDashboardViewModel>();
         builder.Services.AddTransient<WalkerDashboardViewModel>();
+        builder.Services.AddTransient<WalkRequestViewModel>();
 
         // Views
         builder.Services.AddTransient<RegisterPage>();
@@ -45,6 +46,7 @@ public static class MauiProgram
         builder.Services.AddTransient<OwnerDashboardPage>();
         builder.Services.AddTransient<WalkerDashboardPage>();
         builder.Services.AddTransient<OwnerProfilePage>();
+        builder.Services.AddTransient<OwnerWalkRequestPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();
