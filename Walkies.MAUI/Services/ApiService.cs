@@ -79,9 +79,13 @@ namespace Walkies.MAUI.Services
         /// Sends updated profile data to the API for the specified user.
         /// Related to US03 - Profile Management
         /// </summary>
-        public async Task<UserModel?> UpdateUserAsync(int userId, object request) =>
-            await _httpClient.PutAsJsonAsync($"users/{userId}", request)
-                .ContinueWith(t => t.Result.Content.ReadFromJsonAsync<UserModel>().Result);
+        public async Task<UserModel?> UpdateUserAsync(int userId, object request)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"users/{userId}", request);
+            if (!response.IsSuccessStatusCode)
+                return null;
+            return await response.Content.ReadFromJsonAsync<UserModel>();
+        }
 
         /// Dogs
 
@@ -96,17 +100,25 @@ namespace Walkies.MAUI.Services
         /// Sends a request to add a new dog to the owners profile.
         /// Related to US04 - Add Dog
         /// </summary>
-        public async Task<DogModel?> AddDogAsync(object request) =>
-            await _httpClient.PostAsJsonAsync($"dogs", request)
-                .ContinueWith(t => t.Result.Content.ReadFromJsonAsync<DogModel>().Result);
+        public async Task<DogModel?> AddDogAsync(object request)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"dogs", request);
+            if (!response.IsSuccessStatusCode)
+                return null;
+            return await response.Content.ReadFromJsonAsync<DogModel>();
+        }
 
         /// <summary>
         /// Sends updated dog details to the API for the specified dog.
         /// Related to US05 - Edit/Remove Dog
         /// </summary>
-        public async Task<DogModel?> UpdateDogAsync(int dogId, object request) =>
-            await _httpClient.PutAsJsonAsync($"dogs/{dogId}", request)
-                .ContinueWith(t => t.Result.Content.ReadFromJsonAsync<DogModel>().Result);
+        public async Task<DogModel?> UpdateDogAsync(int dogId, object request)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"dogs/{dogId}", request);
+            if (!response.IsSuccessStatusCode)
+                return null;
+            return await response.Content.ReadFromJsonAsync<DogModel>();
+        }
 
         /// <summary>
         /// Sends to delete the specified dog from the owners profile.
@@ -131,7 +143,7 @@ namespace Walkies.MAUI.Services
             var url = $"walkrequests";
             if (latitude.HasValue && longitude.HasValue && distanceKm.HasValue)
             {
-                url += $"latitude={latitude.Value}&longitude={longitude.Value}&distanceKm={distanceKm.Value}";
+                url += $"?latitude={latitude.Value}&longitude={longitude.Value}&distanceKm={distanceKm.Value}";
             }
             var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
@@ -168,9 +180,13 @@ namespace Walkies.MAUI.Services
         /// Sends a request for a walker to accept a walk request which creates a booking.
         /// Related to US09 - Accept of Decline Request
         /// </summary>
-        public async Task<BookingModel?> CreateBookingAsync(object request) =>
-            await _httpClient.PostAsJsonAsync($"bookings", request)
-            .ContinueWith(t => t.Result.Content.ReadFromJsonAsync<BookingModel>().Result);
+        public async Task<BookingModel?> CreateBookingAsync(object request)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"bookings/accept", request);
+            if (!response.IsSuccessStatusCode)
+                return null;
+            return await response.Content.ReadFromJsonAsync<BookingModel>();
+        }
 
         /// <summary>
         /// Sends a request for a walker to decline a walk request.
@@ -198,34 +214,54 @@ namespace Walkies.MAUI.Services
         /// and activates the GPS tracking.
         /// Related to US16 - Check In / Check Out
         /// </summary>
-        public async Task<BookingModel?> CheckInAsync(int bookingId) =>
-            await _httpClient.PutAsJsonAsync($"bookings/{bookingId}/checkin", new { })
-            .ContinueWith(t => t.Result.Content.ReadFromJsonAsync<BookingModel>().Result);
+        public async Task<BookingModel?> CheckInAsync(int bookingId)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"bookings/{bookingId}/checkin", new { });
+            if (!response.IsSuccessStatusCode)
+                return null;
+            return await response.Content.ReadFromJsonAsync<BookingModel>();
+        }
 
         /// <summary>
         /// Sends a check-out request for the specified booking. Records end time
         /// and triggers payment confirmation.
         /// Related to US16 - Check In / Check Out
         /// </summary>
-        public async Task<BookingModel?> CheckOutAsync(int bookingId) =>
-            await _httpClient.PutAsJsonAsync($"bookings/{bookingId}/checkout", new { })
-            .ContinueWith(t => t.Result.Content.ReadFromJsonAsync<BookingModel>().Result);
+        public async Task<BookingModel?> CheckOutAsync(int bookingId)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"bookings/{bookingId}/checkout", new { });
+            if (!response.IsSuccessStatusCode)
+                return null;
+            return await response.Content.ReadFromJsonAsync<BookingModel>();
+        }
 
         /// <summary>
         /// Sends a cancellation request for the specified booking.
         /// Related to US11 - Cancellation
         /// </summary>
-        public async Task<BookingModel?> CancelBookingAsync(int bookingId) =>
-            await _httpClient.PutAsJsonAsync($"bookings/{bookingId}/cancel", new { })
-            .ContinueWith(t => t.Result.Content.ReadFromJsonAsync<BookingModel>().Result);
+        public async Task<BookingModel?> CancelBookingAsync(int bookingId)
+        {
+            var response = await _httpClient.DeleteAsync($"bookings/{bookingId}");
+            if (!response.IsSuccessStatusCode)
+                return null;
+            return await response.Content.ReadFromJsonAsync<BookingModel>();
+        }
 
         /// <summary>
         /// Sends an updated walker location to the API during active walk.
         /// Related to US15 - GPS Tracking During Walk
         /// </summary>
-        public async Task<BookingModel?> UpdateLocationAsync(int bookingId, double latitude, double longitude) =>
-            await _httpClient.PutAsJsonAsync($"bookings/{bookingId}/location", new { Latitude = latitude, Longitude = longitude })
-            .ContinueWith(t => t.Result.Content.ReadFromJsonAsync<BookingModel>().Result);
+        public async Task<BookingModel?> UpdateLocationAsync(int bookingId, double latitude, double longitude)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"bookings/{bookingId}/location", new
+            {
+                Latitude = latitude,
+                Longitude = longitude
+            });
+            if (!response.IsSuccessStatusCode)
+                return null;
+            return await response.Content.ReadFromJsonAsync<BookingModel>();
+        }
 
         /// Availability
 
@@ -240,9 +276,13 @@ namespace Walkies.MAUI.Services
         /// Sends a new availability slot to the API for the specified walker.
         /// Related to US12 - Walker Availability
         /// </summary>
-        public async Task<AvailabilityModel?> SetAvailabilityAsync(object request) =>
-            await _httpClient.PostAsJsonAsync($"availability", request)
-            .ContinueWith(t => t.Result.Content.ReadFromJsonAsync<AvailabilityModel>().Result);
+        public async Task<AvailabilityModel?> SetAvailabilityAsync(object request)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"availability", request);
+            if (!response.IsSuccessStatusCode)
+                return null;
+            return await response.Content.ReadFromJsonAsync<AvailabilityModel>();
+        }
 
         /// <summary>
         /// Sends a request to delete the specified availability slot
@@ -268,9 +308,13 @@ namespace Walkies.MAUI.Services
         /// Sends a new message to the API.
         /// Related to US17 - Owner Messaging and US18 - Walker Messaging
         /// </summary>
-        public async Task<MessageModel?> SendMessageAsync(object request) =>
-            await _httpClient.PostAsJsonAsync($"messages", request)
-            .ContinueWith(t => t.Result.Content.ReadFromJsonAsync<MessageModel>().Result);
+        public async Task<MessageModel?> SendMessageAsync(object request)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"messages", request);
+            if (!response.IsSuccessStatusCode)
+                return null;
+            return await response.Content.ReadFromJsonAsync<MessageModel>();
+        }
 
         /// Payments
 
