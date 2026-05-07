@@ -200,6 +200,7 @@ namespace Walkies.MAUI.ViewModels
                     SetError("Failed to remove the dog. Please try again.");
                     return;
                 }
+                Dogs.Remove(dog);
             }
             catch (Exception ex)
             {
@@ -217,7 +218,7 @@ namespace Walkies.MAUI.ViewModels
         [RelayCommand]
         private static async Task NavigateToAddDogAsync()
         {
-            await Shell.Current.GoToAsync("owner/dogs/add");
+            await Shell.Current.GoToAsync("owner/adddog");
         }
 
         /// <summary>

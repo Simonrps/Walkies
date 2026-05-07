@@ -22,6 +22,7 @@
             <BoxView HeightRequest="1" BackgroundColor="LightGray" Margin="0,8" />
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
             <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding HasError}" FontSize="13" />
+            <Button Text="My Profile" Command="{Binding NavigateToProfileCommand}" />
             <Button Text="Logout" Command="{Binding LogoutCommand}" BackgroundColor="Red" Margin="0,16,0,0" />
         </VerticalStackLayout>
     </ScrollView>

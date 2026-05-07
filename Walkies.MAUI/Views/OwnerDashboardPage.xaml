@@ -5,7 +5,7 @@
              xmlns:views="clr-namespace:Walkies.MAUI.Views"
              x:Class="Walkies.MAUI.Views.OwnerDashboardPage"
              x:DataType="vm:OwnerDashboardViewModel"
-             Title="OwnerDashboardPage">
+             Title="Dashboard">
     <ScrollView>
         <VerticalStackLayout Padding="32" Spacing="16">
             <Label Text="Walkies" FontSize="36" FontAttributes="Bold" HorizontalOptions="Center"
@@ -22,6 +22,10 @@
             <BoxView HeightRequest="1" BackgroundColor="LightGray" Margin="0,8" />
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
             <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding HasError}" FontSize="13" />
+            
+            <!-- Navigation -->
+            <Button Text="My Profile" Command="{Binding NavigateToProfileCommand}" />
+            <Button Text="My Dogs" Command="{Binding NavigateToMyDogsCommand}" />
             <Button Text="Logout" Command="{Binding LogoutCommand}" BackgroundColor="Red" Margin="0,16,0,0" />
         </VerticalStackLayout>
     </ScrollView>
