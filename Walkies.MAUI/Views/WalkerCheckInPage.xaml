@@ -58,9 +58,9 @@
                                 <Button Text="Check Out" FontSize="12"
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:BookingViewModel}},
                                     Path=CheckOutCommand}" CommandParameter="{Binding .}" />
-                                <Button Text="Check Out" FontSize="12" 
+                                <Button Text="Cancel Booking" FontSize="12" 
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:BookingViewModel}}, 
-                                    Path=CheckOutCommand}" CommandParameter="{Binding .}" />
+                                    Path=CancelBookingCommand}" CommandParameter="{Binding .}" />
                             </VerticalStackLayout>
                         </Border>
                     </DataTemplate>

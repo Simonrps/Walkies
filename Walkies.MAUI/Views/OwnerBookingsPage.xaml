@@ -62,7 +62,7 @@
                                 </Label>
                                 <Button Text="Cancel Booking" BackgroundColor="Red" FontSize="12"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:BookingViewModel}},
-                                        Path=BindingContext.CancelBookingCommand}"
+                                        Path=CancelBookingCommand}"
                                         CommandParameter="{Binding .}" />
                             </VerticalStackLayout>
                         </Border>

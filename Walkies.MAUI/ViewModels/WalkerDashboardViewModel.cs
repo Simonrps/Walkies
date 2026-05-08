@@ -77,5 +77,14 @@ namespace Walkies.MAUI.ViewModels
         {
             await Shell.Current.GoToAsync("walker/availability");
         }
+
+        /// <summary>
+        /// Navigates to walker bookings page
+        /// </summary>
+        [RelayCommand]
+        private static async Task NavigateToMyWalksAsync()
+        {
+            await Shell.Current.GoToAsync("walker/checkin");
+        }
     }
 }
