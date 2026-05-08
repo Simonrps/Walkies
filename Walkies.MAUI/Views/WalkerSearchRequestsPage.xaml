@@ -1,6 +1,72 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Walkies.MAUI.ViewModels" 
+             xmlns:models="clr-namespace:Walkies.MAUI.Models" 
+             xmlns:views="clr-namespace:Walkies.MAUI.Views"
              x:Class="Walkies.MAUI.Views.WalkerSearchRequestsPage"
-             Title="WalkerSearchRequestsPage">
-</ContentPage>
+             x:DataType="vm:WalkerSearchViewModel"
+             Title="Find Walk Requests">
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="16">
+            <Label Text="Find Walk Requests" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center"
+                   TextColor="{StaticResource Primary}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+            <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding HasError}" FontSize="13" />
+            
+            <!-- Search contents -->
+            <Label Text="Search Radius (km)" FontAttributes="Bold" />
+            <Picker ItemsSource="{Binding DistanceOptions}" SelectedItem="{Binding DistanceKm}" Title="Select distance (km)" />
+            <Button Text="Search" Command="{Binding SearchCommand}" />
+
+            <Label Text="No open walk requests found in the search area" FontSize="13" TextColor="Gray" IsVisible="{Binding NoResults}" />
+            
+            <!-- Results -->
+            <CollectionView ItemsSource="{Binding WalkRequests}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:WalkRequestModel">
+                        <Border Stroke="LightGray" StrokeThickness="1" Padding="12" Margin="0,4">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding DogName}" FontAttributes="Bold" FontSize="16"/>
+                                <Label FontSize="13">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Owner: " FontAttributes="Bold"/>
+                                            <Span Text="{Binding OwnerName}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label FontSize="13">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Date: " FontAttributes="Bold"/>
+                                            <Span Text="{Binding RequestedDate, StringFormat='{0:dd MMM yyyy}'}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label FontSize="13">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Duration: " FontAttributes="Bold"/>
+                                            <Span Text="{Binding DurationMinutes, StringFormat='{0} minutes'}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label FontSize="13">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Location: " FontAttributes="Bold"/>
+                                            <Span Text="{Binding Location}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Button Text="Accept Request" Command="{Binding Source={RelativeSource 
+                                    AncestorType={x:Type vm:WalkerSearchViewModel}}, Path=AcceptRequestCommand}" CommandParameter="{Binding .}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+</views:BasePage>
