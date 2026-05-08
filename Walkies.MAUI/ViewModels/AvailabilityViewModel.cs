@@ -156,8 +156,8 @@ namespace Walkies.MAUI.ViewModels
 
             try
             {
-                var success = await _apiService.DeleteAvailabilityAsync(slot.Id);
-                if (!success)
+                var (success, hasBooking) = await _apiService.DeleteAvailabilityAsync(slot.Id);
+                if (hasBooking)
                 {
                     var forcedConfirmed = await Shell.Current.DisplayAlertAsync(
                         "Confirmed Booking Exists",
@@ -166,13 +166,19 @@ namespace Walkies.MAUI.ViewModels
                         "Keep");
                     if (!forcedConfirmed)
                         return;
-                    success = await _apiService.DeleteAvailabilityAsync(slot.Id, forcedConfirmed);
+                    (success, _) = await _apiService.DeleteAvailabilityAsync(slot.Id, force: true);
                     if (!success)
                     {
                         SetError("Failed to remove availability slot. Please try again.");
                         return;
                     }
                 }
+                else if (!success)
+                {
+                    SetError("Failed to remove availability slot. Please try again.");
+                    return;
+                }
+                Slots.Remove(slot);
             }
             catch (Exception ex)
             {
@@ -182,7 +188,6 @@ namespace Walkies.MAUI.ViewModels
             {
                 IsBusy = false;
             }
-            Slots.Remove(slot);
         }
 
         /// <summary>

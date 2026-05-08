@@ -29,7 +29,7 @@
             <Label Text="Your Availability Slots" FontSize="18" FontAttributes="Bold" />
             <Label Text="No Availability slots set" TextColor="Gray" FontSize="13" IsVisible="{Binding NoSlots}" />
             
-            <CollectionView ItemsSource="{Binding NoSlots}">
+            <CollectionView ItemsSource="{Binding Slots}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:AvailabilityModel">
                         <Border Stroke="LightGray" StrokeThickness="1" Padding="12" Margin="0,4">
