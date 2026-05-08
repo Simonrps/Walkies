@@ -54,6 +54,7 @@ namespace Walkies.MAUI.ViewModels
         /// <summary>
         /// Navigates to the search requests page
         /// </summary>
+        [RelayCommand]
         private static async Task NavigateToSearchRequestsAsync()
         {
             await Shell.Current.GoToAsync("walker/searchrequests");

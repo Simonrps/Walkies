@@ -72,6 +72,7 @@ namespace Walkies.MAUI.ViewModels
         /// <summary>
         /// Navigates to the search walkers page
         /// </summary>
+        [RelayCommand]
         private static async Task NavigateToSearchWalkersAsync()
         {
             await Shell.Current.GoToAsync("owner/searchwalkers");

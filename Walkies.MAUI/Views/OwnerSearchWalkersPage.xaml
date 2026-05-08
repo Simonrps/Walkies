@@ -28,7 +28,6 @@
                     <DataTemplate x:DataType="models:UserModel">
                         <Border Stroke="LightGray" StrokeThickness="1" Padding="12" Margin="0,4">
                             <VerticalStackLayout Spacing="4">
-                                <Label Text="{Binding DogName}" FontAttributes="Bold" FontSize="16"/>
                                 <Label FontSize="16" FontAttributes="Bold">
                                     <Label.FormattedText>
                                         <FormattedString>
@@ -43,14 +42,6 @@
                                         <FormattedString>
                                             <Span Text="Location: " FontAttributes="Bold"/>
                                             <Span Text="{Binding Address}" />
-                                        </FormattedString>
-                                    </Label.FormattedText>
-                                </Label>
-                                <Label FontSize="13">
-                                    <Label.FormattedText>
-                                        <FormattedString>
-                                            <Span Text="Duration: " FontAttributes="Bold"/>
-                                            <Span Text="{Binding DurationMinutes, StringFormat='{0} minutes'}" />
                                         </FormattedString>
                                     </Label.FormattedText>
                                 </Label>

@@ -25,7 +25,8 @@ namespace Walkies.MAUI.ViewModels
         /// <summary>
         /// Gets or sets the search radius in kilometres
         /// </summary>
-        public partial double DistanceKm { get; set; } = 10;
+        [ObservableProperty]
+        public partial double DistanceKm { get; set; }
 
         /// <summary>
         /// Gets or sets whether the seach has been run with no results
