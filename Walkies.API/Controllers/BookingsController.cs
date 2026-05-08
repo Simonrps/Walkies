@@ -12,11 +12,15 @@ namespace Walkies.API.Controllers
     /// Relates to US09 - Accept Walk Request, US10 - View Booking,
     /// US11 - View All Bookings, US12 - Check In, US13 - Check out
     /// </summary>
+    /// <remarks>
+    /// Initialises a new instance of the BookingsController
+    /// </remarks>
+    /// <param name="context">The databse context</param>
     [ApiController]
     [Route("api/[controller]")]
-    public class BookingsController : ControllerBase
+    public class BookingsController(ApplicationDbContext context) : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context = context;
 
         /// <summary>
         /// Defining constants for use in the controller
@@ -26,15 +30,6 @@ namespace Walkies.API.Controllers
         private const string WalkerNotFoundMessage = "Walker Not Found";
         private const string WalkRequestAlreadyAcceptedMessage = "Walk Request Already Accepted";
         private const string BookingNotFoundAfterCreationMessage = "Booking Not Found After Creation";
-
-        /// <summary>
-        /// Initialises a new instance of the BookingsController
-        /// </summary>
-        /// <param name="context">The databse context</param>
-        public BookingsController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
 
         /// <summary>
         /// Creates a new walk booking when a walkeraccepts a walk request.
@@ -336,7 +331,7 @@ namespace Walkies.API.Controllers
         /// <summary>
         /// Maps a WalkBooking to a BookingDto
         /// </summary>
-        private static BookingDto MapToDto(WalkBooking booking) => new BookingDto
+        private static BookingDto MapToDto(WalkBooking booking) => new()
         {
             Id = booking.Id,
             WalkRequestId = booking.WalkRequestId,
