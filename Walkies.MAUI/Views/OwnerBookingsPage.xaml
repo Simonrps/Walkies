@@ -32,7 +32,7 @@
                                     <Label.FormattedText>
                                         <FormattedString>
                                             <Span Text="Date: " FontAttributes="Bold"/>
-                                            <Span Text="{Binding WalkDate, StringFormat='{0:dd MMM yyyy}'}" />
+                                            <Span Text="{Binding ScheduledDate, StringFormat='{0:dd MMM yyyy}'}" />
                                         </FormattedString>
                                     </Label.FormattedText>
                                 </Label>
@@ -61,7 +61,7 @@
                                     </Label.FormattedText>
                                 </Label>
                                 <Button Text="Cancel Booking" BackgroundColor="Red" FontSize="12"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:BookingViewPage}},
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:BookingViewModel}},
                                         Path=BindingContext.CancelBookingCommand}"
                                         CommandParameter="{Binding .}" />
                             </VerticalStackLayout>
