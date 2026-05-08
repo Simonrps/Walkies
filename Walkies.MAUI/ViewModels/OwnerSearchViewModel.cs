@@ -19,7 +19,7 @@ namespace Walkies.MAUI.ViewModels
         /// <summary>
         /// Gets the list of walker returned by the search
         /// </summary>
-        public  ObservableCollection<UserModel> Walkers { get; } = [];
+        public ObservableCollection<UserModel> Walkers { get; } = [];
 
         /// <summary>
         /// Gets or sets the search radius in kilometers

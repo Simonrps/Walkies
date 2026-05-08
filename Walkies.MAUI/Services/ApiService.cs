@@ -289,10 +289,14 @@ namespace Walkies.MAUI.Services
         /// If force is true the slot is deleted even if a booking exists
         /// Related to US12 - Walker Availability
         /// </summary>
-        public async Task<bool> DeleteAvailabilityAsync(int slotId, bool force = false)
+        public async Task<(bool success, bool hasBooking)> DeleteAvailabilityAsync(int slotId, bool force = false)
         {
             var response = await _httpClient.DeleteAsync($"availability/{slotId}?force={force}");
-            return response.IsSuccessStatusCode;
+            if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                return (true, false);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                return (false, true);
+            return (false, false);
         }
 
         /// Messages

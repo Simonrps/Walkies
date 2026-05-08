@@ -147,8 +147,8 @@ namespace Walkies.MAUI.ViewModels
                         return;
                     }
                 }
-                else 
-                { 
+                else
+                {
                     var request = new { Name, Breed, Age, Notes, OwnerId = ownerId };
                     var response = await _apiService.AddDogAsync(request);
 

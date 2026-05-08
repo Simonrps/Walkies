@@ -39,6 +39,7 @@ public static class MauiProgram
         builder.Services.AddTransient<WalkerSearchViewModel>();
         builder.Services.AddTransient<OwnerSearchViewModel>();
         builder.Services.AddTransient<BookingViewModel>();
+        builder.Services.AddTransient<AvailabilityViewModel>();
 
         // Views
         builder.Services.AddTransient<RegisterPage>();
@@ -54,6 +55,7 @@ public static class MauiProgram
         builder.Services.AddTransient<OwnerSearchWalkersPage>();
         builder.Services.AddTransient<OwnerBookingsPage>();
         builder.Services.AddTransient<WalkerCheckInPage>();
+        builder.Services.AddTransient<WalkerAvailabilityPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

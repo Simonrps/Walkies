@@ -1,6 +1,63 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Walkies.MAUI.ViewModels"
+             xmlns:models="clr-namespace:Walkies.MAUI.Models"
+             xmlns:views="clr-namespace:Walkies.MAUI.Views"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              x:Class="Walkies.MAUI.Views.WalkerAvailabilityPage"
-             Title="WalkerAvailabilityPage">
-</ContentPage>
+             x:DataType="vm:AvailabilityViewModel"
+             Title="My Availability">
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="16">
+            <Label Text="My Availability" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center"
+               TextColor="{StaticResource Primary}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+            <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding HasError}" FontSize="13" />
+            <Label Text="Availability slot added successfully" FontSize="13" TextColor="Green" IsVisible="{Binding IsAdded}" />
+            
+            <!-- Add slot form -->
+            <Label Text="Add Availability Slot" FontSize="18" FontAttributes="Bold" />
+            <Label Text="Available From" FontAttributes="Bold" />
+            <DatePicker Date="{Binding AvailableFrom}" FontAttributes="Bold" MinimumDate="{x:Static sys:DateTime.Today}" />
+            <Label Text="Available To" FontAttributes="Bold" />
+            <DatePicker Date="{Binding AvailableTo}" FontAttributes="Bold" MinimumDate="{x:Static sys:DateTime.Today}" />
+            <Button Text="Add Availability Slot" Command="{Binding AddSlotCommand}" />
+            <BoxView HeightRequest="1" BackgroundColor="LightGray" Margin="0,8" />
+            
+            <!-- Existing Slots -->
+            <Label Text="Your Availability Slots" FontSize="18" FontAttributes="Bold" />
+            <Label Text="No Availability slots set" TextColor="Gray" FontSize="13" IsVisible="{Binding NoSlots}" />
+            
+            <CollectionView ItemsSource="{Binding Slots}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:AvailabilityModel">
+                        <Border Stroke="LightGray" StrokeThickness="1" Padding="12" Margin="0,4">
+                            <VerticalStackLayout Spacing="4">
+                                <Label FontSize="14">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="From: " FontAttributes="Bold"/>
+                                            <Span Text="{Binding AvailableFrom, StringFormat='{0:dd MMM yyyy}'}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label FontSize="13">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="To: " FontAttributes="Bold"/>
+                                            <Span Text="{Binding AvailableTo, StringFormat='{0:dd MMM yyyy}'}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Button Text="Remove Slot" FontSize="12"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AvailabilityViewModel}},
+                                    Path=RemoveSlotCommand}" CommandParameter="{Binding .}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+</views:BasePage>

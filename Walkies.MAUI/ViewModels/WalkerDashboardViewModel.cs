@@ -47,7 +47,7 @@ namespace Walkies.MAUI.ViewModels
         /// </summary>
         [RelayCommand]
         private static async Task NavigateToProfileAsync()
-        { 
+        {
             await Shell.Current.GoToAsync("walker/profile");
         }
 
@@ -67,6 +67,15 @@ namespace Walkies.MAUI.ViewModels
         private static async Task NavigateToCheckInAsync()
         {
             await Shell.Current.GoToAsync("walker/checkin");
+        }
+
+        /// <summary>
+        /// Navigates to the Availability page
+        /// </summary>
+        [RelayCommand]
+        private static async Task NavigateToAvailabilityAsync()
+        {
+            await Shell.Current.GoToAsync("walker/availability");
         }
     }
 }

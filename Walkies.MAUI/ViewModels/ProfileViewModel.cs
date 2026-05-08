@@ -45,6 +45,18 @@ namespace Walkies.MAUI.ViewModels
         public partial string? Address { get; set; } = string.Empty;
 
         /// <summary>
+        /// gets or sets the users latitude
+        /// </summary>
+        [ObservableProperty]
+        public partial string? LatitudeText { get; set; }
+
+        /// <summary>
+        /// gets or sets the users Longitude
+        /// </summary>
+        [ObservableProperty]
+        public partial string? LongitudeText { get; set; }
+
+        /// <summary>
         /// gets or sets the users role (Walker or Owner)
         /// </summary>
         [ObservableProperty]
@@ -83,7 +95,8 @@ namespace Walkies.MAUI.ViewModels
                 Email = profile.Email;
                 Phone = profile.Phone;
                 Address = profile.Address;
-                Role = profile.Role;
+                LatitudeText = profile.Latitude?.ToString();
+                LongitudeText = profile.Longitude?.ToString();
             }
             catch (Exception ex)
             {
@@ -115,12 +128,16 @@ namespace Walkies.MAUI.ViewModels
             try
             {
                 var userId = await _authService.GetUserIdAsync();
+                var (latitude, longitude) = await ResolveLocationAsync();
+
                 var request = new
                 {
                     FirstName,
                     LastName,
                     Phone,
-                    Address
+                    Address,
+                    Latitude = latitude,
+                    Longitude = longitude
                 };
 
                 var response = await _apiService.UpdateUserAsync(userId, request);
@@ -140,6 +157,55 @@ namespace Walkies.MAUI.ViewModels
             {
                 IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// Resolves the users location from manual entry or gps fallback
+        /// Manual entry takes priority for testing purposes, but in production
+        /// the gps location would be the primary source and manual entry would be a fallback
+        /// </summary>
+        private async Task<(double? Latitude, double? Longitude)> ResolveLocationAsync()
+        {
+            double? latitude = null;
+            double? longitude = null;
+
+            if (double.TryParse(LatitudeText,
+                System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture,
+                out var parsedLat))
+                latitude = parsedLat;
+
+            if (double.TryParse(LongitudeText,
+                System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture,
+                out var parsedLong))
+                longitude = parsedLong;
+
+            if (latitude != null && longitude != null)
+                return (latitude, longitude);
+            try
+            {
+                var location = await Geolocation.Default.GetLastKnownLocationAsync();
+                if (location != null)
+                {
+                    latitude ??= location.Latitude;
+                    longitude ??= location.Longitude;
+                }
+            }
+            catch (FeatureNotSupportedException)
+            {
+                // GPS not supported on this platform
+            }
+            catch (PermissionException)
+            {
+                // location permissions not granted
+            }
+            catch (Exception)
+            {
+                // GPS unavilable
+            }
+
+            return (latitude, longitude);
         }
 
         /// <summary>
