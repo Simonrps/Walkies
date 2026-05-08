@@ -52,10 +52,9 @@ namespace Walkies.MAUI.ViewModels
         [RelayCommand]
         public async Task LoadAvailabilityAsync()
         {
-            IsBusy = false;
+            IsBusy = true;
             ClearError();
             NoSlots = false;
-            IsAdded = false;
             Slots.Clear();
 
             try
@@ -183,6 +182,7 @@ namespace Walkies.MAUI.ViewModels
             {
                 IsBusy = false;
             }
+            Slots.Remove(slot);
         }
 
         /// <summary>
