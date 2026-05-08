@@ -28,6 +28,7 @@
             <Button Text="My Dogs" Command="{Binding NavigateToMyDogsCommand}" />
             <Button Text="Post Walk Request" Command="{Binding NavigateToPostWalkRequestCommand}" />
             <Button Text="Find Walkers" Command="{Binding NavigateToSearchWalkersCommand}" />
+            <Button Text="My Bookings" Command="{Binding NavigateToBookingsCommand}" />
             <Button Text="Logout" Command="{Binding LogoutCommand}" BackgroundColor="Red" Margin="0,16,0,0" />
         </VerticalStackLayout>
     </ScrollView>

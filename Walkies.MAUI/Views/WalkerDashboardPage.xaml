@@ -25,6 +25,7 @@
             <Button Text="My Profile" Command="{Binding NavigateToProfileCommand}" />
             <Button Text="My Availability" Command="{Binding NavigateToAvailabilityCommand}" />
             <Button Text="Find Walk Requests" Command="{Binding NavigateToSearchRequestsCommand}" />
+            <Button Text="My Bookings" Command="{Binding NavigateToMyWalksCommand}" />
             <Button Text="Logout" Command="{Binding LogoutCommand}" BackgroundColor="Red" Margin="0,16,0,0" />
         </VerticalStackLayout>
     </ScrollView>
