@@ -120,7 +120,7 @@ namespace Walkies.MAUI.ViewModels
                 SetError("Please enter a location for the walk request.");
                 return;
             }
-            if(RequestedDate <= DateTime.UtcNow)
+            if (RequestedDate <= DateTime.UtcNow)
             {
                 SetError("Walk date must be in the future.");
                 return;

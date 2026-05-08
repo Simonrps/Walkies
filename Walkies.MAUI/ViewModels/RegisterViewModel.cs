@@ -37,7 +37,7 @@ namespace Walkies.MAUI.ViewModels
         /// </summary>
         [ObservableProperty]
         public partial string Password { get; set; } = string.Empty;
-        
+
         /// <summary>
         /// gets or sets the selected role
         /// </summary>

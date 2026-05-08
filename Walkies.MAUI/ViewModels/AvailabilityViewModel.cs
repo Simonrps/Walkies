@@ -95,7 +95,7 @@ namespace Walkies.MAUI.ViewModels
                 SetError("Available From date must be before Available To date.");
                 return;
             }
-            if(AvailableFrom < DateTime.Today)
+            if (AvailableFrom < DateTime.Today)
             {
                 SetError("Available From date cannot be in the past.");
                 return;
@@ -149,7 +149,7 @@ namespace Walkies.MAUI.ViewModels
                 $"Remove availability from {slot.AvailableFrom:dd MMM yyyy} to {slot.AvailableTo:dd MMM yyyy}?",
                 "Remove",
                 "Cancel");
-            if(!confirmed)
+            if (!confirmed)
                 return;
 
             IsBusy = true;

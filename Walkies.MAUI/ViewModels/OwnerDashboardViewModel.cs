@@ -46,7 +46,7 @@ namespace Walkies.MAUI.ViewModels
         /// Navigates to the owner's profile page.
         /// </summary>
         [RelayCommand]
-        private static async Task NavigateToProfileAsync() 
+        private static async Task NavigateToProfileAsync()
         {
             await Shell.Current.GoToAsync("owner/profile");
         }

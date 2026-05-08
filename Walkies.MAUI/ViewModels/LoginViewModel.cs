@@ -44,8 +44,8 @@ namespace Walkies.MAUI.ViewModels
             IsBusy = true;
             ClearError();
 
-            try 
-            { 
+            try
+            {
                 var request = new LoginRequest
                 {
                     Email = Email,
