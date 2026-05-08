@@ -7,7 +7,7 @@ using Walkies.MAUI.Services;
 namespace Walkies.MAUI.ViewModels
 {
     /// <summary>
-    /// ViewModel fo the dog management pages. Handles loading, adding,
+    /// ViewModel for the dog management pages. Handles loading, adding,
     /// editing and removing dogs from the owners profile.
     /// Related to US04 - Add Dog and US05 - Edit/Remove Dog
     /// </summary>

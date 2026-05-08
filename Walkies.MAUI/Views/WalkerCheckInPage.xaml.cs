@@ -1,9 +1,16 @@
+using Walkies.MAUI.ViewModels;
+
 namespace Walkies.MAUI.Views;
 
-public partial class WalkerCheckInPage : ContentPage
+/// <summary>
+/// Page for walkers to manage their bookings and checkin/out
+/// Related to US16 - Check In / Check Out
+/// </summary>
+public partial class WalkerCheckInPage : BasePage
 {
-    public WalkerCheckInPage()
+    public WalkerCheckInPage(BookingViewModel viewModel)
     {
         InitializeComponent();
+        BindingContext = viewModel;
     }
 }

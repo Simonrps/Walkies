@@ -20,6 +20,6 @@
         public DateTime? CheckOutTime { get; set; }
         public double? CurrentLatitude { get; set; }
         public double? CurrentLongitude { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
     }
 }

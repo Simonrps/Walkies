@@ -182,7 +182,7 @@ namespace Walkies.MAUI.Services
         /// </summary>
         public async Task<BookingModel?> CreateBookingAsync(object request)
         {
-            var response = await _httpClient.PostAsJsonAsync($"bookings/accept", request);
+            var response = await _httpClient.PostAsJsonAsync($"bookings", request);
             if (!response.IsSuccessStatusCode)
                 return null;
             return await response.Content.ReadFromJsonAsync<BookingModel>();
@@ -241,7 +241,7 @@ namespace Walkies.MAUI.Services
         /// </summary>
         public async Task<BookingModel?> CancelBookingAsync(int bookingId)
         {
-            var response = await _httpClient.DeleteAsync($"bookings/{bookingId}");
+            var response = await _httpClient.PutAsJsonAsync($"bookings/{bookingId}/cancel", new { });
             if (!response.IsSuccessStatusCode)
                 return null;
             return await response.Content.ReadFromJsonAsync<BookingModel>();
