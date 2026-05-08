@@ -104,7 +104,7 @@ namespace Walkies.MAUI.ViewModels
         }
 
         /// <summary>
-        /// Validates inpt and posts a new walk request to the API
+        /// Validates input and posts a new walk request to the API
         /// Related to US06 - Post Walk Request
         /// </summary>
         [RelayCommand]
@@ -133,6 +133,7 @@ namespace Walkies.MAUI.ViewModels
             try
             {
                 var ownerId = await _authService.GetUserIdAsync();
+                var owner = await _apiService.GetUserAsync(ownerId);
 
                 var request = new
                 {
@@ -141,8 +142,8 @@ namespace Walkies.MAUI.ViewModels
                     RequestedDate,
                     DurationMinutes = Duration,
                     Location,
-                    Latitude = 54.9966,
-                    Longitude = -7.3086
+                    Latitude = owner?.Latitude ?? 0.0,
+                    Longitude = owner?.Longitude ?? 0.0
                 };
 
                 var response = await _apiService.PostWalkRequestAsync(request);
