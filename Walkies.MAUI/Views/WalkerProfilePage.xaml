@@ -20,6 +20,10 @@
             <Entry Text="{Binding Phone}" Placeholder="Phone" Keyboard="Telephone"/>
             <Label Text="Address" FontAttributes="Bold" />
             <Entry Text="{Binding Address}" Placeholder="Address" />
+            <Label Text="Latitude" FontAttributes="Bold" />
+            <Entry Text="{Binding Latitude}" Placeholder="eg 54.9966" Keyboard="Numeric"/>
+            <Label Text="Longitude" FontAttributes="Bold" />
+            <Entry Text="{Binding Longitude}" Placeholder="eg -7.3086" Keyboard="Numeric"/>
             <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding HasError}" FontSize="13" />
             <Label Text="Profile saved successfully!" TextColor="Green" IsVisible="{Binding IsSaved}" FontSize="13" />
             <Button Text="Save Profile" Command="{Binding SaveProfileCommand}" IsEnabled="{Binding IsNotBusy}" Margin="0,8,0,0" />

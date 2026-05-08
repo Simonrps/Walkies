@@ -45,6 +45,18 @@ namespace Walkies.MAUI.ViewModels
         public partial string? Address { get; set; } = string.Empty;
 
         /// <summary>
+        /// gets or sets the users latitude
+        /// </summary>
+        [ObservableProperty]
+        public partial double? Latitude { get; set; }
+
+        /// <summary>
+        /// gets or sets the users Longitude
+        /// </summary>
+        [ObservableProperty]
+        public partial double? Longitude { get; set; }
+
+        /// <summary>
         /// gets or sets the users role (Walker or Owner)
         /// </summary>
         [ObservableProperty]
@@ -83,7 +95,8 @@ namespace Walkies.MAUI.ViewModels
                 Email = profile.Email;
                 Phone = profile.Phone;
                 Address = profile.Address;
-                Role = profile.Role;
+                Latitude = profile.Latitude;
+                Longitude = profile.Longitude;
             }
             catch (Exception ex)
             {
@@ -115,12 +128,31 @@ namespace Walkies.MAUI.ViewModels
             try
             {
                 var userId = await _authService.GetUserIdAsync();
+                double? latitude = null;
+                double? longitude = null;
+
+                try
+                {
+                    var location = await Geolocation.Default.GetLastKnownLocationAsync();
+                    if (location != null)
+                    {
+                        latitude = location.Latitude;
+                        longitude = location.Longitude;
+                    }
+                }
+                catch
+                {
+                    // GPS not available - location will remain as previously stored
+                }
+
                 var request = new
                 {
                     FirstName,
                     LastName,
                     Phone,
-                    Address
+                    Address,
+                    Latitude = latitude ?? Latitude,
+                    Longitude = longitude ?? Longitude
                 };
 
                 var response = await _apiService.UpdateUserAsync(userId, request);
