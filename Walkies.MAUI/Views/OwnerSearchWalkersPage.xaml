@@ -10,7 +10,7 @@
              Title="Find Walkers">
     <ScrollView>
         <VerticalStackLayout Padding="32" Spacing="16">
-            <Label Text="Find Walk Requests" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center"
+            <Label Text="Find Walkers" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center"
                    TextColor="{StaticResource Primary}" />
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
             <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding HasError}" FontSize="13" />
@@ -18,9 +18,11 @@
             <!-- Search controls -->
             <Label Text="Search Radius (km)" FontAttributes="Bold" />
             <Picker ItemsSource="{Binding DistanceOptions}" SelectedItem="{Binding DistanceKm}" Title="Select distance (km)" />
+            <Label Text="Date" FontAttributes="Bold" />
+            <DatePicker Date="{Binding SearchDate}" MinimumDate="{x:Static sys:DateTime.Today}" />
             <Button Text="Search" Command="{Binding SearchCommand}" />
 
-            <Label Text="Open walk requests found in the search area" FontSize="13" TextColor="Gray" IsVisible="{Binding NoResults}" />
+            <Label Text="No walkers found in the search area or matching the date" FontSize="13" TextColor="Gray" IsVisible="{Binding NoResults}" />
 
             <!-- Results -->
             <CollectionView ItemsSource="{Binding Walkers}">
