@@ -48,13 +48,13 @@ namespace Walkies.MAUI.ViewModels
         /// gets or sets the users latitude
         /// </summary>
         [ObservableProperty]
-        public partial double? Latitude { get; set; }
+        public partial string? LatitudeText { get; set; }
 
         /// <summary>
         /// gets or sets the users Longitude
         /// </summary>
         [ObservableProperty]
-        public partial double? Longitude { get; set; }
+        public partial string? LongitudeText { get; set; }
 
         /// <summary>
         /// gets or sets the users role (Walker or Owner)
@@ -95,8 +95,8 @@ namespace Walkies.MAUI.ViewModels
                 Email = profile.Email;
                 Phone = profile.Phone;
                 Address = profile.Address;
-                Latitude = profile.Latitude;
-                Longitude = profile.Longitude;
+                LatitudeText = profile.Latitude?.ToString();
+                LongitudeText = profile.Longitude?.ToString();
             }
             catch (Exception ex)
             {
@@ -128,22 +128,7 @@ namespace Walkies.MAUI.ViewModels
             try
             {
                 var userId = await _authService.GetUserIdAsync();
-                double? latitude = null;
-                double? longitude = null;
-
-                try
-                {
-                    var location = await Geolocation.Default.GetLastKnownLocationAsync();
-                    if (location != null)
-                    {
-                        latitude = location.Latitude;
-                        longitude = location.Longitude;
-                    }
-                }
-                catch
-                {
-                    // GPS not available - location will remain as previously stored
-                }
+                var (latitude, longitude) = await ResolveLocationAsync();
 
                 var request = new
                 {
@@ -151,8 +136,8 @@ namespace Walkies.MAUI.ViewModels
                     LastName,
                     Phone,
                     Address,
-                    Latitude = latitude ?? Latitude,
-                    Longitude = longitude ?? Longitude
+                    Latitude = latitude,
+                    Longitude = longitude
                 };
 
                 var response = await _apiService.UpdateUserAsync(userId, request);
@@ -172,6 +157,55 @@ namespace Walkies.MAUI.ViewModels
             {
                 IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// Resolves the users location from manual entry or gps fallback
+        /// Manual entry takes priority for testing purposes, but in production
+        /// the gps location would be the primary source and manual entry would be a fallback
+        /// </summary>
+        private async Task<(double? Latitude, double? Longitude)> ResolveLocationAsync()
+        {
+            double? latitude = null;
+            double? longitude = null;
+
+            if (double.TryParse(LatitudeText,
+                System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture,
+                out var parsedLat))
+                latitude = parsedLat;
+
+            if (double.TryParse(LongitudeText,
+                System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture,
+                out var parsedLong))
+                longitude = parsedLong;
+
+            if (latitude != null && longitude != null)
+                return (latitude, longitude);
+            try
+            {
+                var location = await Geolocation.Default.GetLastKnownLocationAsync();
+                if (location != null)
+                {
+                    latitude ??= location.Latitude;
+                    longitude ??= location.Longitude;
+                }
+            }
+            catch (FeatureNotSupportedException)
+            {
+                // GPS not supported on this platform
+            }
+            catch (PermissionException)
+            {
+                // location permissions not granted
+            }
+            catch (Exception)
+            {
+                // GPS unavilable
+            }
+
+            return (latitude, longitude);
         }
 
         /// <summary>
