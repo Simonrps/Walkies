@@ -65,6 +65,13 @@ namespace Walkies.MAUI.ViewModels
                 var ownerId = await _authService.GetUserIdAsync();
                 var owner = await _apiService.GetUserAsync(ownerId);
 
+                var status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
+                if (status != PermissionStatus.Granted)
+                {
+                    SetError("Location permission is required to load the map.");
+                    return;
+                }
+
                 if (owner?.Latitude == null || owner?.Longitude == null)
                 {
                     SetError("Please turn on your GPS settings or set your " +
