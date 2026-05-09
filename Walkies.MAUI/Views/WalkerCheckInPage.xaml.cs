@@ -8,9 +8,17 @@ namespace Walkies.MAUI.Views;
 /// </summary>
 public partial class WalkerCheckInPage : BasePage
 {
+    private readonly BookingViewModel _viewModel;
     public WalkerCheckInPage(BookingViewModel viewModel)
     {
         InitializeComponent();
+        _viewModel = viewModel;
         BindingContext = viewModel;
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        _viewModel.StopLocationUpdates();
     }
 }
