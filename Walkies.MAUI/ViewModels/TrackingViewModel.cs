@@ -113,7 +113,7 @@ namespace Walkies.MAUI.ViewModels
             {
                 var updated = await _apiService.GetBookingAsync(booking.Id);
                 if (updated == null)
-                { 
+                {
                     return;
                 }
 

@@ -223,7 +223,7 @@ namespace Walkies.MAUI.ViewModels
             {
                 while (!token.IsCancellationRequested)
                 {
-                    try 
+                    try
                     {
                         var location = await Geolocation.Default.GetLastKnownLocationAsync();
                         if (location != null)
