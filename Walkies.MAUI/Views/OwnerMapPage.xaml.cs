@@ -1,9 +1,16 @@
+using Walkies.MAUI.ViewModels;
+
 namespace Walkies.MAUI.Views;
 
-public partial class OwnerMapPage : ContentPage
+/// <summary>
+/// Page displaying available dog walkers on a map
+/// Relates to US14 - Map Display of walkers
+/// </summary>
+public partial class OwnerMapPage : BasePage
 {
-    public OwnerMapPage()
+    public OwnerMapPage(MapViewModel viewModel)
     {
         InitializeComponent();
+        BindingContext = viewModel;
     }
 }

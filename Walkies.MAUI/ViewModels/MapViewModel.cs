@@ -115,10 +115,10 @@ namespace Walkies.MAUI.ViewModels
 
             foreach (var walker in walkers.Where(w => w.Latitude.HasValue && w.Longitude.HasValue))
             {
-                var point = SphericalMercator.FromLonLat(
+                var (x, y) = SphericalMercator.FromLonLat(
                     walker.Longitude!.Value, walker.Latitude!.Value);
 
-                var feature = new PointFeature(point);
+                var feature = new PointFeature(new MPoint(x, y));
                 feature["name"] = $"{walker.FirstName} {walker.LastName}";
                 feature.Styles.Add(new SymbolStyle
                 {

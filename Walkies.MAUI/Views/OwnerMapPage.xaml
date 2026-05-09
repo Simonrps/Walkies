@@ -1,6 +1,34 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Walkies.MAUI.ViewModels"
+             xmlns:views="clr-namespace:Walkies.MAUI.Views"
+             xmlns:mapsui="clr-namespace:Mapsui.UI.Maui;assembly=Mapsui.UI.Maui"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              x:Class="Walkies.MAUI.Views.OwnerMapPage"
-             Title="OwnerMapPage">
-</ContentPage>
+             x:DataType="vm:MapViewModel"
+             Title="Walker Map">
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="16">
+            <Label Text="Find Walkers on Map" FontSize="24" FontAttributes="Bold"
+                   HorizontalOptions="Center" TextColor="{StaticResource Primary}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               HorizontalOptions="Center" />
+            <Label Text="{Binding ErrorMessage}" TextColor="Red"
+                   IsVisible="{Binding HasError}" FontSize="13" />
+            
+            <!-- Search Controls -->
+            <Label Text="Search Radius (km):" FontSize="16" FontAttributes="Bold" />
+            <Picker ItemsSource="{Binding DistanceOptions}" SelectedItem="{Binding DistanceKm}"
+                    Title="Select distance (km)" />
+            <Label Text="Date" FontAttributes="Bold" />
+            <DatePicker Date="{Binding SearchDate}" MinimumDate="{x:Static sys:DateTime.Today}" />
+            <Button Text="Search" Command="{Binding LoadMapCommand}" />
+            <Label Text="No walkers available within the search radius" TextColor="Gray"
+                   FontSize="13" IsVisible="{Binding NoWalkers}" />
+            
+            <!-- Map -->
+            <mapsui:MapControl x:Name="MapControl" Map="{Binding MapInstance}" HeightRequest="400" />
+        </VerticalStackLayout>
+    </ScrollView>
+</views:BasePage>
