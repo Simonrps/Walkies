@@ -18,6 +18,8 @@ namespace Walkies.MAUI.ViewModels
         private readonly ApiService _apiService = apiService;
         private readonly AuthService _authService = authService;
         private const string ErrorPrefix = "An error occurred: ";
+        private CancellationTokenSource? _locationCts;
+        private const int LocationIntervalSeconds = 10;
 
         /// <summary>
         /// Gets the list of bookings for the current user
@@ -158,6 +160,7 @@ namespace Walkies.MAUI.ViewModels
                 {
                     Bookings[index] = result;
                 }
+                StartLocationUpdates(result.Id);
             }
             catch (Exception ex)
             {
@@ -181,6 +184,8 @@ namespace Walkies.MAUI.ViewModels
 
             try
             {
+                StopLocationUpdates();
+
                 var result = await _apiService.CheckOutAsync(booking.Id);
                 if (result == null)
                 {
@@ -202,6 +207,62 @@ namespace Walkies.MAUI.ViewModels
             {
                 IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// Starts sending the walkers GPS coordinates to the API at regular intervals
+        /// Related to US15 - GPS Tracking During Walk
+        /// </summary>
+        private void StartLocationUpdates(int bookingId)
+        {
+            StopLocationUpdates();
+            _locationCts = new CancellationTokenSource();
+            var token = _locationCts.Token;
+
+            Task.Run(async () =>
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    try
+                    {
+                        var location = await Geolocation.Default.GetLastKnownLocationAsync();
+                        if (location != null)
+                        {
+                            await _apiService.UpdateLocationAsync(
+                                bookingId, location.Latitude, location.Longitude);
+                        }
+                    }
+                    catch (FeatureNotSupportedException)
+                    {
+                        // GPS not supported
+                        StopLocationUpdates();
+                        break;
+                    }
+                    catch (PermissionException)
+                    {
+                        // Location permission not granted
+                        StopLocationUpdates();
+                        break;
+                    }
+                    catch (Exception)
+                    {
+                        // transient error continue polling
+                    }
+
+                    await Task.Delay(
+                        TimeSpan.FromSeconds(LocationIntervalSeconds), token);
+                }
+            }, token);
+        }
+
+        /// <summary>
+        /// Stops the walker GPS updates
+        /// </summary>
+        public void StopLocationUpdates()
+        {
+            _locationCts?.Cancel();
+            _locationCts?.Dispose();
+            _locationCts = null;
         }
 
         /// <summary>

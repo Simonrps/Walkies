@@ -1,13 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Mapsui;
-using MapsuiMap = Mapsui.Map;
-using Mapsui.Projections;
-using Mapsui.Tiling;
 using Mapsui.Layers;
+using Mapsui.Projections;
 using Mapsui.Styles;
+using Mapsui.Tiling;
 using Walkies.MAUI.Models;
 using Walkies.MAUI.Services;
+using MapsuiMap = Mapsui.Map;
 
 namespace Walkies.MAUI.ViewModels
 {
@@ -24,7 +24,7 @@ namespace Walkies.MAUI.ViewModels
         /// <summary>
         /// Gets or sets the Mapsui map instance
         /// </summary>
-        [ObservableProperty] 
+        [ObservableProperty]
         public partial MapsuiMap? MapInstance { get; set; }
 
         /// <summary>

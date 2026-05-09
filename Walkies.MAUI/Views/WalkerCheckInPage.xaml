@@ -52,15 +52,15 @@
                                         </FormattedString>
                                     </Label.FormattedText>
                                 </Label>
-                                <Button Text="Check In" FontSize="12"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:BookingViewModel}},
-                                    Path=CheckInCommand}" CommandParameter="{Binding .}" />
-                                <Button Text="Check Out" FontSize="12"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:BookingViewModel}},
-                                    Path=CheckOutCommand}" CommandParameter="{Binding .}" />
-                                <Button Text="Cancel Booking" FontSize="12" 
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:BookingViewModel}}, 
-                                    Path=CancelBookingCommand}" CommandParameter="{Binding .}" />
+                                <Button Text="Check In" FontSize="12" IsVisible="{Binding Status, Converter={StaticResource
+                                    StringEqualsConverter}, ConverterParameter=Confirmed}" Command="{Binding Source={RelativeSource
+                                    AncestorType={x:Type vm:BookingViewModel}}, Path=CheckInCommand}" CommandParameter="{Binding .}" />
+                                <Button Text="Check Out" FontSize="12" IsVisible="{Binding Status, Converter={StaticResource
+                                    StringEqualsConverter}, ConverterParameter=Active}" Command="{Binding Source={RelativeSource
+                                    AncestorType={x:Type vm:BookingViewModel}}, Path=CheckOutCommand}" CommandParameter="{Binding .}" />
+                                <Button Text="Cancel Booking" FontSize="12" IsVisible="{Binding Status, Converter={StaticResource
+                                    StringEqualsConverter}, ConverterParameter=Confirmed}" Command="{Binding Source={RelativeSource
+                                    AncestorType={x:Type vm:BookingViewModel}}, Path=CancelBookingCommand}" CommandParameter="{Binding .}" />
                             </VerticalStackLayout>
                         </Border>
                     </DataTemplate>

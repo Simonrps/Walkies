@@ -30,6 +30,7 @@
             <Button Text="Find Walkers" Command="{Binding NavigateToSearchWalkersCommand}" />
             <Button Text="My Bookings" Command="{Binding NavigateToBookingsCommand}" />
             <Button Text="Walker Map" Command="{Binding NavigateToMapCommand}" />
+            <Button Text="Track Walk" Command="{Binding NavigateToTrackingCommand}" />
             <Button Text="Logout" Command="{Binding LogoutCommand}" BackgroundColor="Red" Margin="0,16,0,0" />
         </VerticalStackLayout>
     </ScrollView>

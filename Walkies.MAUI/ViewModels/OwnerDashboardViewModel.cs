@@ -95,5 +95,14 @@ namespace Walkies.MAUI.ViewModels
         {
             await Shell.Current.GoToAsync("owner/map");
         }
+
+        /// <summary>
+        /// Navigates to the walker tracking page
+        /// </summary>
+        [RelayCommand]
+        private static async Task NavigateToTrackingAsync()
+        {
+            await Shell.Current.GoToAsync("owner/tracking");
+        }
     }
 }

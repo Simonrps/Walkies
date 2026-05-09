@@ -1,6 +1,42 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Walkies.MAUI.ViewModels" 
+             xmlns:views="clr-namespace:Walkies.MAUI.Views"
+             xmlns:mapsui="clr-namespace:Mapsui.UI.Maui;assembly=Mapsui.UI.Maui"
              x:Class="Walkies.MAUI.Views.OwnerTrackingPage"
-             Title="OwnerTrackingPage">
-</ContentPage>
+             x:DataType="vm:TrackingViewModel"
+             Title="Track Walk">
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="16">
+            <Label Text="Track Walk" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center"
+               TextColor="{StaticResource Primary}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+            <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding HasError}" FontSize="13" />
+
+            <Label Text="No active walk in progress" TextColor="Gray" IsVisible="{Binding NoActiveWalk}" />
+            <VerticalStackLayout IsVisible="{Binding IsTracking}" Spacing="8">
+                <Label FontSize=" 16" FontAttributes="Bold">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Tracking: " FontAttributes="Bold" />
+                            <Span Text="{Binding ActiveBooking.WalkerName}"/>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label FontSize=" 13">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Dog: " FontAttributes="Bold" />
+                            <Span Text="{Binding ActiveBooking.DogName}"/>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label Text="{Binding LastUpdated}" FontSize="12" TextColor="Gray" />
+                <Label Text="GPS signal lost - showing last known location" TextColor="Orange" FontSize="12"
+                       IsVisible="{Binding SignalLost}" />
+                <mapsui:MapControl Map="{Binding MapInstance}" HeightRequest="400" />
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</views:BasePage>

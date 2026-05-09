@@ -210,6 +210,18 @@ namespace Walkies.MAUI.Services
         }
 
         /// <summary>
+        /// Retrieves a single booking by its identifier.
+        /// Related to US15 - GPS Tracking During Walk
+        /// </summary>
+        public async Task<BookingModel?> GetBookingAsync(int bookingId)
+        {
+            var response = await _httpClient.GetAsync($"booking/{bookingId}");
+            if (!response.IsSuccessStatusCode)
+                return null;
+            return await response.Content.ReadFromJsonAsync<BookingModel>();
+        }
+
+        /// <summary>
         /// Sends a check-in request for the specified booking. Records start time
         /// and activates the GPS tracking.
         /// Related to US16 - Check In / Check Out

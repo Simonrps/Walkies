@@ -2,6 +2,7 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Walkies.MAUI"
+             xmlns:utilities="clr-namespace:Walkies.MAUI.Utilities"
              x:Class="Walkies.MAUI.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -10,6 +11,7 @@
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
                 <ResourceDictionary Source="Resources/Styles/AppStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <utilities:StringEqualsConverter x:Key="StringEqualsConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
