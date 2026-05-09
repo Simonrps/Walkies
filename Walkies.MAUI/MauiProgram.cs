@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using SkiaSharp.Views.Maui.Controls.Hosting;
 using Walkies.MAUI.Services;
 using Walkies.MAUI.ViewModels;
 using Walkies.MAUI.Views;
+
 
 namespace Walkies.MAUI;
 
@@ -14,6 +16,7 @@ public static class MauiProgram
         builder
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
+            .UseSkiaSharp()
 #if ANDROID || IOS || MACCATALYST
             .UseMauiMaps()
 #endif
