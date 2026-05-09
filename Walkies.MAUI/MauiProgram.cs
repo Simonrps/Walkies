@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using SkiaSharp.Views.Maui.Controls.Hosting;
 using Walkies.MAUI.Services;
 using Walkies.MAUI.ViewModels;
 using Walkies.MAUI.Views;
+
 
 namespace Walkies.MAUI;
 
@@ -14,9 +16,7 @@ public static class MauiProgram
         builder
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
-#if ANDROID || IOS || MACCATALYST
-            .UseMauiMaps()
-#endif
+            .UseSkiaSharp()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -40,6 +40,7 @@ public static class MauiProgram
         builder.Services.AddTransient<OwnerSearchViewModel>();
         builder.Services.AddTransient<BookingViewModel>();
         builder.Services.AddTransient<AvailabilityViewModel>();
+        builder.Services.AddTransient<MapViewModel>();
 
         // Views
         builder.Services.AddTransient<RegisterPage>();
@@ -56,6 +57,7 @@ public static class MauiProgram
         builder.Services.AddTransient<OwnerBookingsPage>();
         builder.Services.AddTransient<WalkerCheckInPage>();
         builder.Services.AddTransient<WalkerAvailabilityPage>();
+        builder.Services.AddTransient<OwnerMapPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

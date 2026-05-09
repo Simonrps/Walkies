@@ -86,5 +86,14 @@ namespace Walkies.MAUI.ViewModels
         {
             await Shell.Current.GoToAsync("owner/bookings");
         }
+
+        /// <summary>
+        /// Navigates to the map page
+        /// </summary>
+        [RelayCommand]
+        private static async Task NavigateToMapAsync()
+        {
+            await Shell.Current.GoToAsync("owner/map");
+        }
     }
 }
