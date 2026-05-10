@@ -11,23 +11,18 @@ namespace Walkies.API.Controllers
     /// for sending and retrieving messages between users.
     /// Related to US17 - Owner Messaging and US18 - Walker Messaging
     /// </summary>
+    /// <remarks>
+    /// Initialises a new instance of the MessagesController.
+    /// </remarks>
+    /// <param name="context">The database context</param>
     [ApiController]
     [Route("api/[controller]")]
-    public class MessagesController : ControllerBase
+    public class MessagesController(ApplicationDbContext context) : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context = context;
 
         /// <summary>
-        /// Initialises a new instance of the MessagesController.
-        /// </summary>
-        /// <param name="context">The database context</param>
-        public MessagesController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        /// <summary>
-        /// Sendsa new message from one user to another.
+        /// Sends a new message from one user to another.
         /// Related to US17 - Owner Messaging and US18 - Walker Messaging
         /// </summary>
         /// <param name="dto">The message details</param>
@@ -79,7 +74,7 @@ namespace Walkies.API.Controllers
                 Content = message.Content,
                 SentAt = message.SentAt
             };
-            return CreatedAtAction(nameof(GetMessages), new { id = message.Id }, messageDto);
+            return Created(string.Empty, messageDto);
         }
 
         /// <summary>

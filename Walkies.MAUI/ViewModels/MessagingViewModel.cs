@@ -143,7 +143,7 @@ namespace Walkies.MAUI.ViewModels
 
             if (RecipientId <= 0)
             {
-                SetError("Please select a recipient");
+                SetError($"Please select a recipient. Current RecipientId: {RecipientId}");
                 return;
             }
 
@@ -187,7 +187,9 @@ namespace Walkies.MAUI.ViewModels
         partial void OnSelectedContactChanged(ContactModel? value)
         {
             if (value != null)
+            {
                 RecipientId = value.Id;
+            }
         }
 
         /// <summary>

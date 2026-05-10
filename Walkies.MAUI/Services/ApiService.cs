@@ -204,9 +204,11 @@ namespace Walkies.MAUI.Services
         /// </summary>
         public async Task<List<BookingModel>?> GetBookingsAsync(int? ownerId = null)
         {
-            var url = ownerId.HasValue ? $"bookings?ownerId={ownerId}"
-                : $"bookings";
-            return await _httpClient.GetFromJsonAsync<List<BookingModel>>(url);
+            var url = ownerId.HasValue ? $"bookings?ownerId={ownerId}" : $"bookings";
+            var response = await _httpClient.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+                return null;
+            return await response.Content.ReadFromJsonAsync<List<BookingModel>>();
         }
 
         /// <summary>
@@ -327,9 +329,11 @@ namespace Walkies.MAUI.Services
         public async Task<MessageModel?> SendMessageAsync(object request)
         {
             var response = await _httpClient.PostAsJsonAsync($"messages", request);
-            if (!response.IsSuccessStatusCode)
-                return null;
-            return await response.Content.ReadFromJsonAsync<MessageModel>();
+            if (response.StatusCode == System.Net.HttpStatusCode.Created || response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<MessageModel>();
+            }
+            return null;
         }
 
         /// Payments
