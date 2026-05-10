@@ -1,9 +1,16 @@
+using Walkies.MAUI.ViewModels;
+
 namespace Walkies.MAUI.Views;
 
-public partial class OwnerPaymentPage : ContentPage
+/// <summary>
+/// Page for owners to view payment confirmations
+/// Related to US9 - Payment Confirmation Owner
+/// </summary>
+public partial class OwnerPaymentPage : BasePage
 {
-    public OwnerPaymentPage()
+    public OwnerPaymentPage(PaymentViewModel viewModel)
     {
         InitializeComponent();
+        BindingContext = viewModel;
     }
 }
