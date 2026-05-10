@@ -95,5 +95,14 @@ namespace Walkies.MAUI.ViewModels
         {
             await Shell.Current.GoToAsync("walker/messages");
         }
+
+        /// <summary>
+        /// Navigates to the walker payment confirmation page
+        /// </summary>
+        [RelayCommand]
+        private static async Task NavigateToPaymentsAsync()
+        {
+            await Shell.Current.GoToAsync("walker/payment");
+        }
     }
 }

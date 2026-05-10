@@ -1,9 +1,16 @@
+using Walkies.MAUI.ViewModels;
+
 namespace Walkies.MAUI.Views;
 
-public partial class WalkerPaymentsPage : ContentPage
+/// <summary>
+/// Page for walkers to view payment confirmations
+/// Related to US20 - Payment Confirmation Walker
+/// </summary>
+public partial class WalkerPaymentsPage : BasePage
 {
-    public WalkerPaymentsPage()
+    public WalkerPaymentsPage(PaymentViewModel viewModel)
     {
         InitializeComponent();
+        BindingContext = viewModel;
     }
 }

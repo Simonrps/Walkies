@@ -4,7 +4,7 @@ namespace Walkies.MAUI.Views;
 
 /// <summary>
 /// Page for owners to view payment confirmations
-/// Related to US9 - Payment Confirmation Owner
+/// Related to US19 - Payment Confirmation Owner
 /// </summary>
 public partial class OwnerPaymentPage : BasePage
 {
