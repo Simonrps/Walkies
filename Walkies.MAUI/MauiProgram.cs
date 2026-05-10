@@ -43,6 +43,7 @@ public static class MauiProgram
         builder.Services.AddTransient<MapViewModel>();
         builder.Services.AddTransient<TrackingViewModel>();
         builder.Services.AddTransient<MessagingViewModel>();
+        builder.Services.AddTransient<PaymentViewModel>();
 
         // Views
         builder.Services.AddTransient<RegisterPage>();
@@ -63,6 +64,8 @@ public static class MauiProgram
         builder.Services.AddTransient<OwnerTrackingPage>();
         builder.Services.AddTransient<OwnerMessagesPage>();
         builder.Services.AddTransient<WalkerMessagesPage>();
+        builder.Services.AddTransient<OwnerPaymentPage>();
+        builder.Services.AddTransient<WalkerPaymentsPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

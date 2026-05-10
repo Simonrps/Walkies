@@ -113,5 +113,14 @@ namespace Walkies.MAUI.ViewModels
         {
             await Shell.Current.GoToAsync("owner/messages");
         }
+
+        /// <summary>
+        /// Navigates to the owner payment confirmation page
+        /// </summary>
+        [RelayCommand]
+        private static async Task NavigateToPaymentsAsync()
+        {
+            await Shell.Current.GoToAsync("owner/payment");
+        }
     }
 }

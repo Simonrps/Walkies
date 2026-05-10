@@ -32,6 +32,7 @@
             <Button Text="Walker Map" Command="{Binding NavigateToMapCommand}" />
             <Button Text="Track Walk" Command="{Binding NavigateToTrackingCommand}" />
             <Button Text="Messages" Command="{Binding NavigateToMessagesCommand}" />
+            <Button Text="Payment Confirmation" Command="{Binding NavigateToPaymentsCommand}" />
             <Button Text="Logout" Command="{Binding LogoutCommand}" BackgroundColor="Red" Margin="0,16,0,0" />
         </VerticalStackLayout>
     </ScrollView>

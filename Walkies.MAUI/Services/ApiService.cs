@@ -349,7 +349,12 @@ namespace Walkies.MAUI.Services
         /// Retrieves all payment records for the specified walker
         /// Related to US20 - Payment Confirmation Walker
         /// </summary>
-        public async Task<PaymentModel?> GetPaymentsByWalkerAsync(int walkerId) =>
-            await _httpClient.GetFromJsonAsync<PaymentModel>($"payments/walker/{walkerId}");
+        public async Task<List<PaymentModel>?> GetPaymentsByWalkerAsync(int walkerId)
+        {
+            var response = await _httpClient.GetAsync($"payments/walker/{walkerId}");
+            if (!response.IsSuccessStatusCode)
+                return null;
+            return await response.Content.ReadFromJsonAsync<List<PaymentModel>>();
+        }
     }
 }

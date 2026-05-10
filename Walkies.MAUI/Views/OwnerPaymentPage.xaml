@@ -1,6 +1,71 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:Walkies.MAUI.Views"
+             xmlns:vm="clr-namespace:Walkies.MAUI.ViewModels"
+             xmlns:models="clr-namespace:Walkies.MAUI.Models"
              x:Class="Walkies.MAUI.Views.OwnerPaymentPage"
-             Title="OwnerPaymentPage">
-</ContentPage>
+             x:DataType="vm:PaymentViewModel"
+             Title="Payment Confirmations">
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="16">
+            <Label Text="Payment Confirmatons" FontSize="24" FontAttributes="Bold"
+                   HorizontalOptions="Center" TextColor="{StaticResource Primary}"/>
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               HorizontalOptions="Center" />
+            <Label Text="{Binding ErrorMessage}" FontSize="13" IsVisible="{Binding HasError}" TextColor="Red" />
+            <Label Text="No payment records found" FontSize="13" IsVisible="{Binding NoPayments}" TextColor="Gray" />
+            <CollectionView ItemsSource="{Binding Payments}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:PaymentModel">
+                        <Border Stroke="{StaticResource Primary}" StrokeThickness="1" Padding="12" Margin="0,4">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding DogName}" FontSize="16" FontAttributes="Bold" />
+                                <Label FontSize="13">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Walker: " FontAttributes="Bold" />
+                                            <Span Text="{Binding WalkerName}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label FontSize="13">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Walk Date: " FontAttributes="Bold" />
+                                            <Span Text="{Binding WalkDate, StringFormat='{0:dd MMM YYYY}'}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label FontSize="13">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Duration: " FontAttributes="Bold" />
+                                            <Span Text="{Binding DurationMinutes, StringFormat='{0} minutes'}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label FontSize="13">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Amount: " FontAttributes="Bold" />
+                                            <Span Text="{Binding Amount, StringFormat='€{0:F2}'}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label FontSize="13">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Status: " FontAttributes="Bold" />
+                                            <Span Text="{Binding Status}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+</views:BasePage>
