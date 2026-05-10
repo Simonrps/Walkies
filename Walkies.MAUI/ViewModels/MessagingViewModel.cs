@@ -95,7 +95,7 @@ namespace Walkies.MAUI.ViewModels
                             .Where(b => b.WalkerId == CurrentUserId && b.OwnerId > 0)
                             .GroupBy(b => b.OwnerId)
                             .Select(g => new ContactModel
-                            { 
+                            {
                                 Id = g.First().OwnerId,
                                 Name = g.First().OwnerName
                             });
