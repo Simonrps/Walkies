@@ -10,7 +10,7 @@
         public string SenderName { get; set; } = string.Empty;
         public int RecipientId { get; set; }
         public string RecipientName { get; set; } = string.Empty;
-        public string content { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
         public DateTime SentAt { get; set; }
     }
 }
