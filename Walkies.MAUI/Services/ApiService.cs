@@ -215,7 +215,7 @@ namespace Walkies.MAUI.Services
         /// </summary>
         public async Task<BookingModel?> GetBookingAsync(int bookingId)
         {
-            var response = await _httpClient.GetAsync($"booking/{bookingId}");
+            var response = await _httpClient.GetAsync($"bookings/{bookingId}");
             if (!response.IsSuccessStatusCode)
                 return null;
             return await response.Content.ReadFromJsonAsync<BookingModel>();

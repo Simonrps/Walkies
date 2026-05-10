@@ -16,9 +16,20 @@ namespace Walkies.MAUI.ViewModels
         private readonly AuthService _authService = authService;
 
         /// <summary>
-        /// Gets the list of messges for the current user
+        /// Gets the list of messages for the current user
         /// </summary>
         public ObservableCollection<MessageModel> Messages { get; } = [];
+
+        /// <summary>
+        /// Gets the list of contacts derived from bookings
+        /// </summary>
+        public ObservableCollection<ContactModel> Contacts { get; } = [];
+
+        /// <summary>
+        /// Gets or sets the selected contact
+        /// </summary>
+        [ObservableProperty]
+        public partial ContactModel? SelectedContact { get; set; }
 
         /// <summary>
         /// Gets or sets the recipient userID
@@ -60,10 +71,40 @@ namespace Walkies.MAUI.ViewModels
             ClearError();
             NoMessages = false;
             Messages.Clear();
+            Contacts.Clear();
 
             try
             {
                 CurrentUserId = await _authService.GetUserIdAsync();
+                var role = await _authService.GetUserRoleAsync();
+                var bookings = await _apiService.GetBookingsAsync(
+                    role == "Owner" ? CurrentUserId : null);
+
+                if (bookings != null)
+                {
+                    var contacts = role == "Owner"
+                        ? bookings
+                            .Where(b => b.WalkerId > 0)
+                            .GroupBy(b => b.WalkerId)
+                            .Select(g => new ContactModel
+                            {
+                                Id = g.First().WalkerId,
+                                Name = g.First().WalkerName
+                            })
+                        : bookings
+                            .Where(b => b.WalkerId == CurrentUserId && b.OwnerId > 0)
+                            .GroupBy(b => b.OwnerId)
+                            .Select(g => new ContactModel
+                            { 
+                                Id = g.First().OwnerId,
+                                Name = g.First().OwnerName
+                            });
+                    foreach (var contact in contacts)
+                    {
+                        Contacts.Add(contact);
+                    }
+                }
+
                 var messages = await _apiService.GetMessagesAsync(CurrentUserId);
 
                 if (messages == null || messages.Count == 0)
@@ -138,6 +179,15 @@ namespace Walkies.MAUI.ViewModels
             {
                 IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// Sets the recipient Id to the selected contact
+        /// </summary>
+        partial void OnSelectedContactChanged(ContactModel? value)
+        {
+            if (value != null)
+                RecipientId = value.Id;
         }
 
         /// <summary>
