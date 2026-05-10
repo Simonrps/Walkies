@@ -104,5 +104,14 @@ namespace Walkies.MAUI.ViewModels
         {
             await Shell.Current.GoToAsync("owner/tracking");
         }
+
+        /// <summary>
+        /// Navigates to the owner messaging page
+        /// </summary>
+        [RelayCommand]
+        private static async Task NavigateToMessagesAsync()
+        {
+            await Shell.Current.GoToAsync("owner/messages");
+        }
     }
 }

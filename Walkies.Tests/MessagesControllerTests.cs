@@ -74,7 +74,7 @@ namespace Walkies.Tests
             var result = await controller.SendMessage(dto);
 
             // Assert
-            var createdResult = Assert.IsType<CreatedAtActionResult>(result);
+            var createdResult = Assert.IsType<CreatedResult>(result);
             var message = Assert.IsType<MessageDto>(createdResult.Value);
             Assert.Equal("Simon Mulroy", message.SenderName);
             Assert.Equal("Simone Mulrooney", message.RecipientName);

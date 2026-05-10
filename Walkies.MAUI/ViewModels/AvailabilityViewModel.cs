@@ -11,10 +11,10 @@ namespace Walkies.MAUI.ViewModels
     /// adding and removing availability slots.
     /// Related to US12 - Walker Availability
     /// </summary>
-    public partial class AvailabilityViewModel(ApiService apiService, AuthService autService) : BaseViewModel
+    public partial class AvailabilityViewModel(ApiService apiService, AuthService authService) : BaseViewModel
     {
         private readonly ApiService _apiService = apiService;
-        private readonly AuthService _authService = autService;
+        private readonly AuthService _authService = authService;
 
         /// <summary>
         /// Gets the list of availability slots for the walker

@@ -86,5 +86,14 @@ namespace Walkies.MAUI.ViewModels
         {
             await Shell.Current.GoToAsync("walker/checkin");
         }
+
+        /// <summary>
+        /// Navigates to the walker messaging page
+        /// </summary>
+        [RelayCommand]
+        private static async Task NavigateToMessagesAsync()
+        {
+            await Shell.Current.GoToAsync("walker/messages");
+        }
     }
 }
