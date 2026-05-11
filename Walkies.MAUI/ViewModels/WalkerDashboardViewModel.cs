@@ -102,7 +102,7 @@ namespace Walkies.MAUI.ViewModels
         [RelayCommand]
         private static async Task NavigateToPaymentsAsync()
         {
-            await Shell.Current.GoToAsync("walker/payment");
+            await Shell.Current.GoToAsync("walker/payments");
         }
     }
 }
