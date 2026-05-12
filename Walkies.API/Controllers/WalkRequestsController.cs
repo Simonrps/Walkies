@@ -168,7 +168,7 @@ namespace Walkies.API.Controllers
             var walkRequests = await _context.WalkRequests
                 .Include(wr => wr.Owner)
                 .Include(wr => wr.Dog)
-                .Where(wr => wr.Status == "Open")
+                .Where(wr => wr.Status == "Open" && wr.RequestedDate.Date >= DateTime.UtcNow.Date)
                 .ToListAsync();
 
             if (latitude.HasValue && longitude.HasValue && distanceKm.HasValue)
