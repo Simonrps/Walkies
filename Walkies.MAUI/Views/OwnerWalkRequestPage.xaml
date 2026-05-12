@@ -9,7 +9,7 @@
                 x:DataType="vm:WalkRequestViewModel"
                 Title="Post Walk Request">
     <ScrollView>
-        <VerticalStackLayout Padding="32" Spacing="16">
+        <VerticalStackLayout Padding="32" Spacing="16" MaximumWidthRequest="500">
             <Label Text="Post Walk Request" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center"
                    TextColor="{StaticResource Primary}" />
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
@@ -18,7 +18,7 @@
             
             <!-- Post walk request form -->
             <Label Text="Select Dog(s)" FontAttributes="Bold" />
-            <Picker ItemsSource="{Binding Dogs}" ItemDisplayBinding="{Binding Name}" SelectedItem="{Binding SelectedDog}" />
+            <Picker ItemsSource="{Binding Dogs}" ItemDisplayBinding="{Binding Name, x:DataType=models:DogModel}" SelectedItem="{Binding SelectedDog}" />
             <Label Text="Date" FontAttributes="Bold" />
             <DatePicker Date="{Binding RequestedDate}" MinimumDate="{x:Static sys:DateTime.Today}" />
 

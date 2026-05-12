@@ -7,7 +7,7 @@
              x:DataType="vm:OwnerDashboardViewModel"
              Title="Dashboard">
     <ScrollView>
-        <VerticalStackLayout Padding="32" Spacing="16">
+        <VerticalStackLayout Padding="32" Spacing="16" MaximumWidthRequest="500">
             <Label Text="Walkies" FontSize="36" FontAttributes="Bold" HorizontalOptions="Center"
                    TextColor="{StaticResource Primary}" />
             <Label FontSize="20" HorizontalOptions="Center">

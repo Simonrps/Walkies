@@ -8,7 +8,7 @@
              x:DataType="vm:TrackingViewModel"
              Title="Track Walk">
     <ScrollView>
-        <VerticalStackLayout Padding="32" Spacing="16">
+        <VerticalStackLayout Padding="32" Spacing="16" MaximumWidthRequest="500">
             <Label Text="Track Walk" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center"
                TextColor="{StaticResource Primary}" />
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />

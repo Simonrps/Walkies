@@ -4,8 +4,9 @@
              xmlns:vm="clr-namespace:Walkies.MAUI.ViewModels"
              xmlns:views="clr-namespace:Walkies.MAUI.Views"
              xmlns:models="clr-namespace:Walkies.MAUI.Models"
+             x:DataType="vm:DogViewModel"
              x:Class="Walkies.MAUI.Views.OwnerDogsPage">
-    <VerticalStackLayout Padding="32" Spacing="16">
+    <VerticalStackLayout Padding="32" Spacing="16" MaximumWidthRequest="500">
         <Label Text="My Dogs" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="{StaticResource Primary}" />
         <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
         <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding HasError}" FontSize="13" />
