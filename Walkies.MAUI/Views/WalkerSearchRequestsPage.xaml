@@ -16,7 +16,7 @@
             
             <!-- Search contents -->
             <Label Text="Search Radius (km)" FontAttributes="Bold" />
-            <Picker ItemsSource="{Binding DistanceOptions}" SelectedItem="{Binding DistanceKm}" Title="Select distance (km)" />
+            <Picker ItemsSource="{Binding DistanceOptions}" SelectedItem="{Binding DistanceKm}" />
             <Button Text="Search" Command="{Binding SearchCommand}" />
 
             <Label Text="No open walk requests found in the search area" FontSize="13" TextColor="Gray" IsVisible="{Binding NoResults}" />

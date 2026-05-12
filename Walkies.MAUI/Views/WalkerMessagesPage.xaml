@@ -43,7 +43,7 @@
         </ScrollView>
         <!-- Compose message area -->
         <Grid Grid.Row="1" Padding="16" RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, Auto" MaximumWidthRequest="500">
-            <Label Grid.Row="0" Grid.ColumnSpan="2" Text="Choose the person you want to send a message to:" FontAttributes="Bold" Margin="0,0,0,4" />
+            <Label Grid.Row="0" Grid.ColumnSpan="2" Text="Choose the person you want to send a message:" FontAttributes="Bold" Margin="0,0,0,4" />
             <Picker Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding Contacts}"
                     SelectedItem="{Binding SelectedContact}" ItemDisplayBinding="{Binding Name,
                     x:DataType=models:ContactModel}" Margin="0,0,0,8" />
