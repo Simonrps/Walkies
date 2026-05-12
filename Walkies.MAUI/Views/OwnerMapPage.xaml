@@ -8,8 +8,9 @@
              x:Class="Walkies.MAUI.Views.OwnerMapPage"
              x:DataType="vm:MapViewModel"
              Title="Walker Map">
-    <ScrollView>
-        <VerticalStackLayout Padding="32" Spacing="16" MaximumWidthRequest="500">
+    <Grid RowDefinitions="Auto,*">
+    <ScrollView Grid.Row="0">
+        <VerticalStackLayout Padding="32,32,32,16" Spacing="16" MaximumWidthRequest="500">
             <Label Text="Find Walkers on Map" FontSize="24" FontAttributes="Bold"
                    HorizontalOptions="Center" TextColor="{StaticResource Primary}" />
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
@@ -25,9 +26,9 @@
             <Button Text="Search" Command="{Binding LoadMapCommand}" />
             <Label Text="No walkers available within the search radius" TextColor="Gray"
                    FontSize="13" IsVisible="{Binding NoWalkers}" />
-            
-            <!-- Map -->
-            <mapsui:MapControl x:Name="MapControl" Map="{Binding MapInstance}" HeightRequest="400" />
         </VerticalStackLayout>
     </ScrollView>
+    <!-- Map -->
+    <mapsui:MapControl Grid.Row="1" x:Name="MapControl" Map="{Binding MapInstance}" MaximumWidthRequest="500" />
+    </Grid>
 </views:BasePage>
