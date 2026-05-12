@@ -10,9 +10,9 @@ namespace Walkies.MAUI.ViewModels
     /// and communicates with AuthService to register new user account
     /// Related to US01 - Registration
     /// </summary>
-    public partial class RegisterViewModel : BaseViewModel
+    public partial class RegisterViewModel(AuthService authService) : BaseViewModel
     {
-        private readonly AuthService _authService;
+        private readonly AuthService _authService = authService;
 
         /// <summary>
         /// gets or sets the users first name
@@ -74,11 +74,6 @@ namespace Walkies.MAUI.ViewModels
         /// </summary>
         public List<string> Roles { get; set; } = ["Owner", "Walker"];
 
-        public RegisterViewModel(AuthService authService)
-        {
-            _authService = authService;
-        }
-
         /// <summary>
         /// Validates user input and submits a registration request
         /// vai AuthService. On success, navigates to the appropriate
@@ -90,7 +85,7 @@ namespace Walkies.MAUI.ViewModels
             // validates user input and sets validation properties for UI feedback
             IsFirstNameValid = !string.IsNullOrWhiteSpace(FirstName);
             IsLastNameValid = !string.IsNullOrWhiteSpace(LastName);
-            IsEmailValid = !string.IsNullOrWhiteSpace(Email) && Email.Contains("@");
+            IsEmailValid = !string.IsNullOrWhiteSpace(Email) && Email.Contains('@');
             IsPasswordValid = !string.IsNullOrWhiteSpace(Password) && Password.Length >= 8;
 
             // if any validation fails, set an error message and return early
