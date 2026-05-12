@@ -19,15 +19,41 @@
         <Setter Property="HeightRequest" Value="48" />
     </Style>
 
-    <!-- Entry fields -->
+    <!-- Danger button - logout, cancel, delete -->
+    <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="BackgroundColor" Value="{StaticResource DangerRed}" />
+    </Style>
+
+    <!-- Small action button inside list cards -->
+    <Style x:Key="CardActionButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="HeightRequest" Value="36" />
+        <Setter Property="Padding" Value="8,0" />
+    </Style>
+
+    <!-- Danger variant of small card button -->
+    <Style x:Key="CardActionDangerButton" TargetType="Button" BasedOn="{StaticResource CardActionButton}">
+        <Setter Property="BackgroundColor" Value="{StaticResource DangerRed}" />
+    </Style>
+
+    <!-- Entry fields - BackgroundColour only: height is controlled by EntryBrderStyle -->
     <Style TargetType="Entry">
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LightSecondaryBackground},
-                Dark={StaticResource DarkSecondaryBackground}}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground},
                 Dark={StaticResource LightOnDarkBackground}}" />
         <Setter Property="PlaceholderColor" Value="{StaticResource Gray400}" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="VerticalOptions" Value="Center" />
+    </Style>
+
+    <!-- Entry border style that wraps each Entry to enfore consistent height across platforms -->
+    <Style x:Key="EntryBorderStyle" TargetType="Border">
         <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 8" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LightSecondaryBackground},
+                Dark={StaticResource DarkSecondaryBackground}}" />
     </Style>
 
     <!-- Picker fields -->
@@ -36,6 +62,16 @@
             Dark={StaticResource DarkSecondaryBackground}}" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground},
                 Dark={StaticResource LightOnDarkBackground}}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="HeightRequest" Value="48" />
+    </Style>
+
+    <!-- DatePicker fields matches picker style -->
+    <Style TargetType="DatePicker">
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LightSecondaryBackground},
+        Dark={StaticResource DarkSecondaryBackground}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground},
+            Dark={StaticResource LightOnDarkBackground}}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="HeightRequest" Value="48" />
     </Style>
