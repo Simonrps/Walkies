@@ -62,12 +62,24 @@ namespace Walkies.MAUI.ViewModels
         [RelayCommand]
         private async Task RegisterAsync()
         {
-            if (string.IsNullOrWhiteSpace(FirstName) ||
-                string.IsNullOrWhiteSpace(LastName) ||
-                string.IsNullOrWhiteSpace(Email) ||
-                string.IsNullOrWhiteSpace(Password))
+            if (string.IsNullOrWhiteSpace(FirstName))
             {
-                SetError("All fields are required.");
+                SetError("First Name is required.");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(LastName))
+            {
+                SetError("Last Name is required.");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(Email))
+            {
+                SetError("Email is required.");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(Password))
+            {
+                SetError("Password is required.");
                 return;
             }
 

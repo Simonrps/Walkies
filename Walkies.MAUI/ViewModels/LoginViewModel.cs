@@ -35,9 +35,14 @@ namespace Walkies.MAUI.ViewModels
         [RelayCommand]
         private async Task LoginAsync()
         {
-            if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
+            if (string.IsNullOrWhiteSpace(Email))
             {
-                SetError("Email and password are required.");
+                SetError("You must enter your email to log in.");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(Password))
+            {
+                SetError("You must enter your password to log in.");
                 return;
             }
 
