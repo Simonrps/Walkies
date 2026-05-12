@@ -8,7 +8,7 @@
              x:DataType="vm:PaymentViewModel"
              Title="Payment Confirmations">
     <ScrollView>
-        <VerticalStackLayout Padding="32" Spacing="16">
+        <VerticalStackLayout Padding="32" Spacing="16" MaximumWidthRequest="500">
             <Label Text="Payment Confirmatons" FontSize="24" FontAttributes="Bold"
                    HorizontalOptions="Center" TextColor="{StaticResource Primary}"/>
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"

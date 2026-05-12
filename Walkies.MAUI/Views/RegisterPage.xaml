@@ -9,7 +9,7 @@
                 Title="RegisterPage">
 
     <ScrollView>
-        <VerticalStackLayout Padding="32" Spacing="16">
+        <VerticalStackLayout Padding="32" Spacing="16" MaximumWidthRequest="500">
             <Label Text="Walkies" FontSize="36" FontAttributes="Bold"
                    HorizontalOptions="Center" TextColor="{StaticResource Primary}" />
             <Label Text="Create your account" FontSize="16" HorizontalOptions="Center"
@@ -19,9 +19,9 @@
             <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email" ReturnType="Next"/>
             <Entry Placeholder="Password" Text="{Binding Password}" IsPassword="True" ReturnType="Done"/>
 
-            <Label Text="I am a:" FontSize="14" />
+            <Label Text="Choose whether you are registering as an Owner or Walker:" FontSize="14" />
 
-            <Picker Title="Select Role" ItemsSource="{Binding Roles}" SelectedItem="{Binding SelectedRole}" />
+            <Picker ItemsSource="{Binding Roles}" SelectedItem="{Binding SelectedRole}" />
             
             <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding HasError}" FontSize="13" />
 

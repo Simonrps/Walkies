@@ -8,7 +8,7 @@
              x:DataType="vm:WalkerSearchViewModel"
              Title="Find Walk Requests">
     <ScrollView>
-        <VerticalStackLayout Padding="32" Spacing="16">
+        <VerticalStackLayout Padding="32" Spacing="16" MaximumWidthRequest="500">
             <Label Text="Find Walk Requests" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center"
                    TextColor="{StaticResource Primary}" />
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
@@ -16,7 +16,7 @@
             
             <!-- Search contents -->
             <Label Text="Search Radius (km)" FontAttributes="Bold" />
-            <Picker ItemsSource="{Binding DistanceOptions}" SelectedItem="{Binding DistanceKm}" Title="Select distance (km)" />
+            <Picker ItemsSource="{Binding DistanceOptions}" SelectedItem="{Binding DistanceKm}" />
             <Button Text="Search" Command="{Binding SearchCommand}" />
 
             <Label Text="No open walk requests found in the search area" FontSize="13" TextColor="Gray" IsVisible="{Binding NoResults}" />

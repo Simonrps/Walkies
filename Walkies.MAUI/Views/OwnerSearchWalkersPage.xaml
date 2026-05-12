@@ -9,7 +9,7 @@
              x:DataType="vm:OwnerSearchViewModel"
              Title="Find Walkers">
     <ScrollView>
-        <VerticalStackLayout Padding="32" Spacing="16">
+        <VerticalStackLayout Padding="32" Spacing="16" MaximumWidthRequest="500">
             <Label Text="Find Walkers" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center"
                    TextColor="{StaticResource Primary}" />
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
@@ -17,7 +17,7 @@
 
             <!-- Search controls -->
             <Label Text="Search Radius (km)" FontAttributes="Bold" />
-            <Picker ItemsSource="{Binding DistanceOptions}" SelectedItem="{Binding DistanceKm}" Title="Select distance (km)" />
+            <Picker ItemsSource="{Binding DistanceOptions}" SelectedItem="{Binding DistanceKm}" />
             <Label Text="Date" FontAttributes="Bold" />
             <DatePicker Date="{Binding SearchDate}" MinimumDate="{x:Static sys:DateTime.Today}" />
             <Button Text="Search" Command="{Binding SearchCommand}" />
