@@ -21,10 +21,24 @@ namespace Walkies.MAUI.ViewModels
         public partial string Email { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets a value indicating if the password field has
+        /// a valid input. Used for UI validation feedback.
+        /// </summary>
+        [ObservableProperty]
+        public partial bool IsEmailValid { get; set; } = true;
+
+        /// <summary>
         /// gets or sets the users password
         /// </summary>
         [ObservableProperty]
         public partial string Password { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets a value indicating if the password field has
+        /// a valid input. Used for UI validation feedback.
+        /// </summary>
+        [ObservableProperty]
+        public partial bool IsPasswordValid { get; set; } = true;
 
         public LoginViewModel(AuthService authService) => _authService = authService;
 
@@ -35,14 +49,13 @@ namespace Walkies.MAUI.ViewModels
         [RelayCommand]
         private async Task LoginAsync()
         {
-            if (string.IsNullOrWhiteSpace(Email))
+            // validates user input and sets validation properties for UI feedback
+            IsEmailValid = !string.IsNullOrWhiteSpace(Email);
+            IsPasswordValid = !string.IsNullOrWhiteSpace(Password);
+            // if any validation fails, set an error message and return early
+            if (!IsEmailValid || !IsPasswordValid)
             {
-                SetError("You must enter your email to log in.");
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(Password))
-            {
-                SetError("You must enter your password to log in.");
+                SetError("Please correct the highlighted fields.");
                 return;
             }
 
