@@ -3,18 +3,28 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Walkies.MAUI.ViewModels"
              xmlns:views="clr-namespace:Walkies.MAUI.Views"
+                xmlns:converters="clr-namespace:Walkies.MAUI.Utilities"
              x:Class="Walkies.MAUI.Views.OwnerAddDogPage"
              x:DataType="vm:DogViewModel"
              Title="OwnerAddDogPage">
+    <views:BasePage.Resources>
+        <converters:BoolToValidationColorConverter x:Key="BoolToValidationColor" />
+    </views:BasePage.Resources>
     <ScrollView>
     <VerticalStackLayout Padding="32" Spacing="16" MaximumWidthRequest="500">
         <Label Text="Add / Edit a Dog" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center"
                TextColor="{StaticResource Primary}" />
         <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
         <Label Text="Name" FontAttributes="Bold" />
-        <Entry Text="{Binding Name}" Placeholder="Dog Name"/>
-        <Label Text="Breed" FontAttributes="Bold" />
-        <Entry Text="{Binding Breed}" Placeholder="Dog Breed"/>
+            <Border Stroke="{Binding IsNameValid, Converter={StaticResource BoolToValidationColor}}"
+                    StrokeThickness="1.5" StrokeShape="RoundRectangle 8">
+                <Entry Text="{Binding Name}" Placeholder="Dog Name"/>
+            </Border>
+            <Label Text="Breed" FontAttributes="Bold" />
+            <Border Stroke="{Binding IsNameValid, Converter={StaticResource BoolToValidationColor}}"
+                    StrokeThickness="1.5" StrokeShape="RoundRectangle 8">
+                <Entry Text="{Binding Breed}" Placeholder="Dog Breed"/>
+            </Border>
             <Label Text="Age" FontAttributes="Bold" />
             <Entry Text="{Binding Age}" Placeholder="Dog Age"/>
             <Label Text="Notes" FontAttributes="Bold" />
