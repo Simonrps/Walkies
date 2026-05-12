@@ -21,10 +21,24 @@ namespace Walkies.MAUI.ViewModels
         public partial string FirstName { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets a value indicating if the first name field has
+        /// a valid input. Used for UI validation feedback.
+        /// </summary>
+        [ObservableProperty]
+        public partial bool IsFirstNameValid { get; set; } = true;
+
+        /// <summary>
         /// gets or sets the users last name
         /// </summary>
         [ObservableProperty]
         public partial string LastName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets a value indicating if the last name field has
+        /// a valid input. Used for UI validation feedback.
+        /// </summary>
+        [ObservableProperty]
+        public partial bool IsLastNameValid { get; set; } = true;
 
         /// <summary>
         /// gets or sets the users email
@@ -115,9 +129,14 @@ namespace Walkies.MAUI.ViewModels
         [RelayCommand]
         public async Task SaveProfileAsync()
         {
-            if (string.IsNullOrWhiteSpace(FirstName) || string.IsNullOrWhiteSpace(LastName))
+            // validates user input and sets validation properties for UI feedback
+            IsFirstNameValid = !string.IsNullOrWhiteSpace(FirstName);
+            IsLastNameValid = !string.IsNullOrWhiteSpace(LastName);
+
+            // if any validation fails, set an error message and return early
+            if (!IsFirstNameValid || !IsLastNameValid)
             {
-                SetError("First name & last name are required.");
+                SetError("Please correct the highlighted fields.");
                 return;
             }
 

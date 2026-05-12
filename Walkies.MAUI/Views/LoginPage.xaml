@@ -3,10 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:Walkies.MAUI.Views"
              xmlns:vm="clr-namespace:Walkies.MAUI.ViewModels"
+             xmlns:converters="clr-namespace:Walkies.MAUI.Utilities"
              x:Class="Walkies.MAUI.Views.LoginPage"
              x:DataType="vm:LoginViewModel"
              BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}"
              Title="LoginPage">
+    <views:BasePage.Resources>
+        <converters:BoolToValidationColorConverter x:Key="BoolToValidationColor" />
+    </views:BasePage.Resources>
 
     <ScrollView>
         <VerticalStackLayout Padding="32" Spacing="16" MaximumWidthRequest="500">
@@ -14,9 +18,14 @@
                    HorizontalOptions="Center" TextColor="{StaticResource Primary}" />
             <Label Text="Welcome back! Please login to your account." FontSize="16" HorizontalOptions="Center"
                    Margin="0,0,0,16" />
-
-            <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email" ReturnType="Next"/>
-            <Entry Placeholder="Password" Text="{Binding Password}" IsPassword="True" ReturnType="Done" />
+            <Border Stroke="{Binding IsEmailValid, Converter={StaticResource BoolToValidationColor}}"
+                    StrokeThickness="1.5" StrokeShape="RoundRectangle 8">
+                <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email" ReturnType="Next"/>
+            </Border>
+            <Border Stroke="{Binding IsPasswordValid, Converter={StaticResource BoolToValidationColor}}"
+                    StrokeThickness="1.5" StrokeShape="RoundRectangle 8">
+                <Entry Placeholder="Password" Text="{Binding Password}" IsPassword="True" ReturnType="Done" />
+            </Border>
 
             <Label Text="{Binding ErrorMessage}" TextColor="Red" IsVisible="{Binding HasError}" FontSize="13" />
             <ActivityIndicator IsRunning="{Binding IsBusy}"

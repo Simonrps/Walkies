@@ -28,16 +28,37 @@ namespace Walkies.MAUI.ViewModels
         public partial string Name { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets a value indicating if the dogs name field has
+        /// a valid input. Used for UI validation feedback.
+        /// </summary>
+        [ObservableProperty]
+        public partial bool IsNameValid { get; set; } = true;
+
+        /// <summary>
         /// gets or sets the dog breed
         /// </summary>
         [ObservableProperty]
         public partial string Breed { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets a value indicating if the breed field has
+        /// a valid input. Used for UI validation feedback.
+        /// </summary>
+        [ObservableProperty]
+        public partial bool IsBreedValid { get; set; } = true;
+
+        /// <summary>
         /// gets or sets the dog age
         /// </summary>
         [ObservableProperty]
         public partial int Age { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating if the age field has
+        /// a valid input. Used for UI validation feedback.
+        /// </summary>
+        [ObservableProperty]
+        public partial bool IsAgeValid { get; set; } = true;
 
         /// <summary>
         /// gets or sets the notes related to the dog
@@ -122,6 +143,16 @@ namespace Walkies.MAUI.ViewModels
         [RelayCommand]
         private async Task SaveDogAsync()
         {
+            // validates user input and sets validation properties for UI feedback
+            IsNameValid = !string.IsNullOrWhiteSpace(Name);
+            IsBreedValid = !string.IsNullOrWhiteSpace(Breed);
+
+            // if any validation fails, set an error message and return early
+            if (!IsNameValid || !IsBreedValid)
+            {
+                SetError("Please correct the highlighted fields.");
+                return;
+            }
             if (string.IsNullOrWhiteSpace(Name))
             {
                 SetError("Dog name is required.");

@@ -3,17 +3,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:Walkies.MAUI.Views"
              xmlns:vm="clr-namespace:Walkies.MAUI.ViewModels"
+             xmlns:converters="clr-namespace:Walkies.MAUI.Utilities"
              x:Class="Walkies.MAUI.Views.WalkerProfilePage"
              x:DataType="vm:ProfileViewModel"
              Title="WalkerProfilePage">
+    <views:BasePage.Resources>
+        <converters:BoolToValidationColorConverter x:Key="BoolToValidationColor" />
+    </views:BasePage.Resources>
     <ScrollView>
         <VerticalStackLayout Padding="32" Spacing="8" MaximumWidthRequest="500">
             <Label Text="My Profile" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="{StaticResource Primary} "/>
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
             <Label Text="First Name" FontAttributes="Bold" />
-            <Entry Text="{Binding FirstName}" Placeholder="First Name" />
+            <Border Stroke="{Binding IsFirstNameValid, Converter={StaticResource BoolToValidationColor}}"
+                    StrokeThickness="1.5" StrokeShape="RoundRectangle 8">
+                <Entry Text="{Binding FirstName}" Placeholder="First Name" />
+            </Border>
             <Label Text="Last Name" FontAttributes="Bold" />
-            <Entry Text="{Binding LastName}" Placeholder="Last Name" />
+            <Border Stroke="{Binding IsFirstNameValid, Converter={StaticResource BoolToValidationColor}}"
+                    StrokeThickness="1.5" StrokeShape="RoundRectangle 8">
+                <Entry Text="{Binding LastName}" Placeholder="Last Name" />
+            </Border>
             <Label Text="Email" FontAttributes="Bold" />
             <Entry Text="{Binding Email}" IsReadOnly="True" TextColor="Gray" />
             <Label Text="Phone" FontAttributes="Bold" />
