@@ -9,7 +9,7 @@
              Title="LoginPage">
 
     <ScrollView>
-        <VerticalStackLayout Padding="32" Spacing="16">
+        <VerticalStackLayout Padding="32" Spacing="16" MaximumWidthRequest="500">
             <Label Text="Walkies" FontSize="36" FontAttributes="Bold"
                    HorizontalOptions="Center" TextColor="{StaticResource Primary}" />
             <Label Text="Welcome back! Please login to your account." FontSize="16" HorizontalOptions="Center"
