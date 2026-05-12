@@ -283,8 +283,10 @@ namespace Walkies.API.Controllers
                 return NotFound(new { message = BookingNotFoundMessage });
             }
 
-            booking.Status = "Cancelled";
             booking.WalkRequest.Status = "Open";
+
+            // remove the booking from db so a new one can be created if the owner wants to rebook with a different walker
+            _context.WalkBookings.Remove(booking);
 
             await _context.SaveChangesAsync();
 
