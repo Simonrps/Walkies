@@ -21,11 +21,24 @@ namespace Walkies.MAUI.ViewModels
         public partial string FirstName { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets a value indicating if the first name field has
+        /// a valid input. Used for UI validation feedback.
+        /// </summary>
+        [ObservableProperty]
+        public partial bool IsFirstNameValid { get; set; } = true;
+
+        /// <summary>
         /// gets or sets the users last name
         /// </summary>
         [ObservableProperty]
         public partial string LastName { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Gets or sets a value indicating if the last name field has
+        /// a valid input. Used for UI validation feedback.
+        /// </summary>
+        [ObservableProperty]
+        public partial bool IsLastNameValid { get; set; } = true;
         /// <summary>
         /// gets or sets the users email
         /// </summary>
@@ -33,11 +46,23 @@ namespace Walkies.MAUI.ViewModels
         public partial string Email { get; set; } = string.Empty;
 
         /// <summary>
+        /// Gets or sets a value indicating if the email field has
+        /// a valid input. Used for UI validation feedback.
+        /// </summary>
+        [ObservableProperty]
+        public partial bool IsEmailValid { get; set; } = true;
+        /// <summary>
         /// gets or sets the users password
         /// </summary>
         [ObservableProperty]
         public partial string Password { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Gets or sets a value indicating if the password field has
+        /// a valid input. Used for UI validation feedback.
+        /// </summary>
+        [ObservableProperty]
+        public partial bool IsPasswordValid { get; set; } = true;
         /// <summary>
         /// gets or sets the selected role
         /// </summary>
@@ -62,24 +87,16 @@ namespace Walkies.MAUI.ViewModels
         [RelayCommand]
         private async Task RegisterAsync()
         {
-            if (string.IsNullOrWhiteSpace(FirstName))
+            // validates user input and sets validation properties for UI feedback
+            IsFirstNameValid = !string.IsNullOrWhiteSpace(FirstName);
+            IsLastNameValid = !string.IsNullOrWhiteSpace(LastName);
+            IsEmailValid = !string.IsNullOrWhiteSpace(Email) && Email.Contains("@");
+            IsPasswordValid = !string.IsNullOrWhiteSpace(Password) && Password.Length >= 8;
+
+            // if any validation fails, set an error message and return early
+            if (!IsFirstNameValid || !IsLastNameValid || !IsEmailValid || !IsPasswordValid)
             {
-                SetError("First Name is required.");
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(LastName))
-            {
-                SetError("Last Name is required.");
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(Email))
-            {
-                SetError("Email is required.");
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(Password))
-            {
-                SetError("Password is required.");
+                SetError("Please correct the highlighted fields.");
                 return;
             }
 
