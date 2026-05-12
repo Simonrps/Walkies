@@ -9,7 +9,7 @@
              Title="Messages">
     <Grid RowDefinitions="*, Auto">
         <ScrollView Grid.Row="0">
-            <VerticalStackLayout Padding="32" Spacing="16">
+            <VerticalStackLayout Padding="32" Spacing="16" MaximumWidthRequest="500">
                 <Label Text="Messages" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center"
                        TextColor="{StaticResource Primary}" />
                 <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
@@ -42,12 +42,11 @@
             </VerticalStackLayout>
         </ScrollView>
         <!-- Compose message area -->
-        <Grid Grid.Row="1" Padding="16" RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, Auto"
-              BackgroundColor="{StaticResource Gray100}">
-            <Label Grid.Row="0" Grid.ColumnSpan="2" Text="Send To" FontAttributes="Bold" Margin="0,0,0,4" />
+        <Grid Grid.Row="1" Padding="16" RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, Auto" MaximumWidthRequest="500">
+            <Label Grid.Row="0" Grid.ColumnSpan="2" Text="Choose the person you want to send a message to:" FontAttributes="Bold" Margin="0,0,0,4" />
             <Picker Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding Contacts}"
                     SelectedItem="{Binding SelectedContact}" ItemDisplayBinding="{Binding Name,
-                    x:DataType=models:ContactModel}" Title="Select a contact" Margin="0,0,0,8" />
+                    x:DataType=models:ContactModel}" Margin="0,0,0,8" />
             <Entry Grid.Row="2" Grid.Column="0" Text="{Binding NewMessage}" Placeholder="Type new message..."
                    VerticalOptions="Center" />
             <Button Grid.Row="2" Grid.Column="1" Text="Send" Command="{Binding SendMessagesCommand}"

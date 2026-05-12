@@ -7,7 +7,7 @@
              x:DataType="vm:ProfileViewModel"
              Title="WalkerProfilePage">
     <ScrollView>
-        <VerticalStackLayout Padding="32" Spacing="8">
+        <VerticalStackLayout Padding="32" Spacing="8" MaximumWidthRequest="500">
             <Label Text="My Profile" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="{StaticResource Primary} "/>
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
             <Label Text="First Name" FontAttributes="Bold" />

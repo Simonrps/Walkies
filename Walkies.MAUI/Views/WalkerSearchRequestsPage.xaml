@@ -8,7 +8,7 @@
              x:DataType="vm:WalkerSearchViewModel"
              Title="Find Walk Requests">
     <ScrollView>
-        <VerticalStackLayout Padding="32" Spacing="16">
+        <VerticalStackLayout Padding="32" Spacing="16" MaximumWidthRequest="500">
             <Label Text="Find Walk Requests" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center"
                    TextColor="{StaticResource Primary}" />
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
