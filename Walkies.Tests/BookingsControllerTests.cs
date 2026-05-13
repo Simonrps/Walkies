@@ -343,7 +343,7 @@ namespace Walkies.Tests
 
         /// <summary>
         /// Verifies that cancelling a valid booking returns 200
-        /// and updates the booking status to Cancelled.
+        /// and removes the booking record and returns a success message.
         /// Relates to US11 - Cancellation
         /// </summary>
         /// <returns></returns>
@@ -365,10 +365,16 @@ namespace Walkies.Tests
             var controller = CreateController(context);
             // Act
             var result = await controller.CancelBooking(booking.Id);
-            // Assert
+            // Assert - 200 OK with success message is returned
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var bookingDto = Assert.IsType<BookingDto>(okResult.Value);
-            Assert.Equal("Cancelled", bookingDto.Status);
+            var response = okResult.Value!.ToString();
+            Assert.Contains("cancelled", response, StringComparison.OrdinalIgnoreCase);
+
+            // Verify that booking has been removed from the database
+            var deletedBooking = await context.WalkBookings
+                .FirstOrDefaultAsync(b => b.Id == booking.Id,
+                TestContext.Current.CancellationToken);
+            Assert.Null(deletedBooking);
         }
 
         /// <summary>
@@ -466,7 +472,8 @@ namespace Walkies.Tests
 
         /// <summary>
         /// Verifies that a walker cancelling a confirmed booking
-        /// returns 200 and updates the booking status to Cancelled
+        /// returns 200 and removes the booking record and returns
+        /// the walk request to Open status so it can be accepted by another walker.
         /// Related to US11 - Cancellation.
         /// </summary>
         [Fact]
@@ -491,10 +498,16 @@ namespace Walkies.Tests
             // Act
             var result = await controller.CancelBooking(booking.Id);
 
-            // Assert
+            // Assert - 200 OK with success message is returned
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var bookingDto = Assert.IsType<BookingDto>(okResult.Value);
-            Assert.Equal("Cancelled", bookingDto.Status);
+            var response = okResult.Value!.ToString();
+            Assert.Contains("cancelled", response, StringComparison.OrdinalIgnoreCase);
+
+            // Verify that booking has been removed from the database
+            var deletedBooking = await context.WalkBookings
+                .FirstOrDefaultAsync(b => b.Id == booking.Id,
+                TestContext.Current.CancellationToken);
+            Assert.Null(deletedBooking);
 
             // Verify twalk request returned to Open
             var walkRequestUpdated = await context.WalkRequests
