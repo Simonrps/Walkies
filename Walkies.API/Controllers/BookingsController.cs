@@ -290,7 +290,7 @@ namespace Walkies.API.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(new {message = "Booking cancelled successfully."});
+            return Ok(new { message = "Booking cancelled successfully." });
         }
 
         /// <summary>
