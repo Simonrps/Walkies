@@ -105,5 +105,30 @@ namespace Walkies.MAUI.ViewModels
         {
             await Shell.Current.GoToAsync("///register");
         }
+
+        /// <summary>
+        /// Clears input fields and resets validaiton state. called on
+        /// every page appearance via LoadCommand to ensure previously
+        /// entered credentials are not retained after logout
+        /// </summary>
+        private void ClearFields()
+        {
+            Email = string.Empty;
+            Password = string.Empty;
+            IsEmailValid = true;
+            IsPasswordValid = true;
+            ClearError();
+        }
+
+        /// <summary>
+        /// exposes ClearFieldsCommand as the basepage loadcommand so fields are 
+        /// cleared every time the login page appears
+        /// </summary>
+        public override IAsyncRelayCommand? LoadCommand =>
+            new AsyncRelayCommand(() =>
+            {
+                ClearFields();
+                return Task.CompletedTask;
+            });
     }
 }
