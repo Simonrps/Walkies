@@ -56,7 +56,7 @@ namespace Walkies.MAUI.ViewModels
         [RelayCommand]
         protected virtual async Task LogoutAsync()
         {
-            await Shell.Current.GoToAsync("///register");
+            await Shell.Current.GoToAsync("///login");
         }
 
         /// <summary>
