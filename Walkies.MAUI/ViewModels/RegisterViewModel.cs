@@ -145,5 +145,35 @@ namespace Walkies.MAUI.ViewModels
             // Absolute navigation is required when targeting a Shell element route (ShellContent Route="login").
             await Shell.Current.GoToAsync("///login");
         }
+
+        /// <summary>
+        /// Clears input fields and resets validaiton state. called on
+        /// every page appearance via LoadCommand to ensure previously
+        /// entered credentials are not retained after logout
+        /// </summary>
+        private void ClearFields()
+        {
+            FirstName = string.Empty;
+            LastName = string.Empty;
+            Email = string.Empty;
+            Password = string.Empty;
+            SelectedRole = "Owner";
+            IsFirstNameValid = true;
+            IsLastNameValid = true;
+            IsEmailValid = true;
+            IsPasswordValid = true;
+            ClearError();
+        }
+
+        /// <summary>
+        /// exposes ClearFieldsCommand as the basepage loadcommand so fields are 
+        /// cleared every time the registration page appears
+        /// </summary>
+        public override IAsyncRelayCommand? LoadCommand =>
+            new AsyncRelayCommand(() =>
+            {
+                ClearFields();
+                return Task.CompletedTask;
+            });
     }
 }
